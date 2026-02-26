@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useQuranProgress } from "@/hooks/useQuranProgress";
 import { useQuranVerse } from "@/hooks/useQuranVerse";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
-import { BookOpen, LogOut } from "lucide-react";
+import { BookOpen, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -12,6 +12,7 @@ const Index = () => {
   const { progress, loading: progressLoading, goToNext, goToPrev } = useQuranProgress(user);
   const { verse, audioUrl, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
     useQuranVerse(progress.surah_number, progress.ayah_number);
+  const navigate = useNavigate();
 
   if (authLoading) {
     return (
@@ -24,10 +25,6 @@ const Index = () => {
         </div>
       </div>
     );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth" replace />;
   }
 
   const isLoading = progressLoading || verseLoading;
@@ -43,17 +40,40 @@ const Index = () => {
             </div>
             <h1 className="font-display text-xl font-bold text-foreground">Quran Reader</h1>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={signOut}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          {user ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/auth")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              Sign In
+            </Button>
+          )}
         </div>
       </header>
+
+      {/* Guest Banner */}
+      {!user && (
+        <div className="bg-accent/20 border-b border-border">
+          <div className="container max-w-4xl mx-auto px-4 py-2 text-center">
+            <p className="text-sm text-muted-foreground">
+              Reading as guest. <button onClick={() => navigate("/auth")} className="text-gold font-semibold hover:underline">Sign in</button> to save your progress across devices.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="container max-w-4xl mx-auto px-4 py-8 md:py-16">
