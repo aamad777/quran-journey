@@ -76,10 +76,10 @@ export const useQuranProgress = (user: User | null) => {
         } else if (!error || error.code === "PGRST116") {
           // Sync guest progress to DB on first login
           const guestProgress = getGuestProgress();
-          await supabase.from("user_progress").insert({
+          await supabase.from("user_progress").upsert({
             user_id: user.id,
             ...guestProgress,
-          });
+          }, { onConflict: "user_id" });
           setProgress(guestProgress);
         }
         setLoading(false);
