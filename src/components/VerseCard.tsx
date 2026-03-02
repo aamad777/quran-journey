@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2 } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface Reciter {
   id: string;
@@ -45,6 +47,21 @@ const VerseCard = ({
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(() => {
+    try { return localStorage.getItem("quran_autoplay") === "true"; } catch { return false; }
+  });
+
+  // Persist autoPlay preference
+  useEffect(() => {
+    localStorage.setItem("quran_autoplay", String(autoPlay));
+  }, [autoPlay]);
+
+  // Auto-play audio when verse changes if autoPlay is on
+  useEffect(() => {
+    if (autoPlay && audioRef.current && audioUrl) {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [audioUrl, autoPlay]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -58,6 +75,9 @@ const VerseCard = ({
 
   const handleEnded = () => {
     setIsPlaying(false);
+    if (autoPlay) {
+      onNext();
+    }
   };
 
   return (
@@ -99,6 +119,13 @@ const VerseCard = ({
 
         {/* Audio Player */}
         <div className="space-y-4">
+          {/* Auto-play toggle */}
+          <div className="flex items-center justify-center gap-2">
+            <RotateCw className="w-3.5 h-3.5 text-muted-foreground" />
+            <Label htmlFor="autoplay" className="text-xs text-muted-foreground cursor-pointer">Auto-advance</Label>
+            <Switch id="autoplay" checked={autoPlay} onCheckedChange={setAutoPlay} className="scale-75" />
+          </div>
+
           {/* Reciter Selector */}
           <div className="flex items-center justify-center gap-2">
             <Volume2 className="w-4 h-4 text-muted-foreground" />
