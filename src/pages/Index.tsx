@@ -3,13 +3,14 @@ import { useQuranProgress } from "@/hooks/useQuranProgress";
 import { useQuranVerse } from "@/hooks/useQuranVerse";
 import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
+import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
-  const { progress, loading: progressLoading, goToNext, goToPrev } = useQuranProgress(user);
+  const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
   const { verse, audioUrl, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
     useQuranVerse(progress.surah_number, progress.ayah_number);
   const navigate = useNavigate();
@@ -40,6 +41,8 @@ const Index = () => {
             </div>
             <h1 className="font-display text-xl font-bold text-foreground">Quran Reader</h1>
           </div>
+          <div className="flex items-center gap-2">
+            <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
           {user ? (
             <Button
               variant="ghost"
@@ -61,6 +64,7 @@ const Index = () => {
               Sign In
             </Button>
           )}
+          </div>
         </div>
       </header>
 

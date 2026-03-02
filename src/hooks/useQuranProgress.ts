@@ -114,5 +114,16 @@ export const useQuranProgress = (user: User | null) => {
     }
   }, [user, progress]);
 
-  return { progress, loading, goToNext, goToPrev };
+  const goToSurah = useCallback(async (surahNumber: number) => {
+    const newProgress = { surah_number: surahNumber, ayah_number: 1 };
+    setProgress(newProgress);
+
+    if (user) {
+      await supabase.from("user_progress").update(newProgress).eq("user_id", user.id);
+    } else {
+      saveGuestProgress(newProgress);
+    }
+  }, [user]);
+
+  return { progress, loading, goToNext, goToPrev, goToSurah };
 };
