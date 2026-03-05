@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuranProgress } from "@/hooks/useQuranProgress";
 import { useQuranVerse } from "@/hooks/useQuranVerse";
@@ -11,8 +12,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
-  const { verse, audioUrl, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
-    useQuranVerse(progress.surah_number, progress.ayah_number);
+  const [verseCount, setVerseCount] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("quran_verse_count", String(verseCount));
+  }, [verseCount]);
+
+  const { verses, audioUrl, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
+    useQuranVerse(progress.surah_number, progress.ayah_number, verseCount);
   const navigate = useNavigate();
 
   if (authLoading) {
@@ -43,27 +52,17 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
-          {user ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={signOut}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/auth")}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <LogIn className="w-4 h-4 mr-2" />
-              Sign In
-            </Button>
-          )}
+            {user ? (
+              <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-foreground">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground">
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -81,7 +80,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container max-w-4xl mx-auto px-4 py-8 md:py-16">
-        {isLoading || !verse ? (
+        {isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
               <Skeleton className="h-10 w-48 mx-auto rounded-full" />
@@ -95,18 +94,15 @@ const Index = () => {
           </div>
         ) : (
           <VerseCard
-            arabic={verse.arabic}
-            translation={verse.translation}
-            surahName={verse.surahName}
-            surahNameArabic={verse.surahNameArabic}
-            surahNumber={progress.surah_number}
-            ayahNumber={progress.ayah_number}
+            verses={verses}
             audioUrl={audioUrl}
             reciters={reciters}
             selectedReciter={selectedReciter}
             onReciterChange={setSelectedReciter}
             onNext={goToNext}
             onPrev={goToPrev}
+            verseCount={verseCount}
+            onVerseCountChange={setVerseCount}
           />
         )}
       </main>

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -10,10 +10,20 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 interface Reciter {
   id: string;
   name: string;
+}
+
+interface VerseData {
+  arabic: string;
+  translation: string;
+  surahName: string;
+  surahNameArabic: string;
+  surahNumber: number;
+  ayahNumber: number;
 }
 
 const DELAY_OPTIONS = [
@@ -25,33 +35,27 @@ const DELAY_OPTIONS = [
 ];
 
 interface VerseCardProps {
-  arabic: string;
-  translation: string;
-  surahName: string;
-  surahNameArabic: string;
-  surahNumber: number;
-  ayahNumber: number;
+  verses: VerseData[];
   audioUrl: string;
   reciters: Reciter[];
   selectedReciter: string;
   onReciterChange: (id: string) => void;
   onNext: () => void;
   onPrev: () => void;
+  verseCount: number;
+  onVerseCountChange: (count: number) => void;
 }
 
 const VerseCard = ({
-  arabic,
-  translation,
-  surahName,
-  surahNameArabic,
-  surahNumber,
-  ayahNumber,
+  verses,
   audioUrl,
   reciters,
   selectedReciter,
   onReciterChange,
   onNext,
   onPrev,
+  verseCount,
+  onVerseCountChange,
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -61,39 +65,30 @@ const VerseCard = ({
   const [advanceDelay, setAdvanceDelay] = useState(() => {
     try { return localStorage.getItem("quran_advance_delay") || "0"; } catch { return "0"; }
   });
+  const [fontSize, setFontSize] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
+  });
   const [countdown, setCountdown] = useState<number | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Persist preferences
-  useEffect(() => {
-    localStorage.setItem("quran_autoplay", String(autoPlay));
-  }, [autoPlay]);
+  useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
+  useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
+  useEffect(() => { localStorage.setItem("quran_font_size", String(fontSize)); }, [fontSize]);
 
-  useEffect(() => {
-    localStorage.setItem("quran_advance_delay", advanceDelay);
-  }, [advanceDelay]);
-
-  // Auto-play audio when verse changes if autoPlay is on
   useEffect(() => {
     if (autoPlay && audioRef.current && audioUrl) {
       audioRef.current.play().catch(() => {});
     }
   }, [audioUrl, autoPlay]);
 
-  // Cleanup timer on unmount
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
+    if (isPlaying) audioRef.current.pause();
+    else audioRef.current.play();
     setIsPlaying(!isPlaying);
   };
 
@@ -104,12 +99,10 @@ const VerseCard = ({
       if (delay === 0) {
         onNext();
       } else {
-        // Start countdown
         setCountdown(parseInt(advanceDelay));
         const startTime = Date.now();
         const interval = setInterval(() => {
-          const elapsed = Date.now() - startTime;
-          const remaining = Math.ceil((delay - elapsed) / 1000);
+          const remaining = Math.ceil((delay - (Date.now() - startTime)) / 1000);
           if (remaining <= 0) {
             clearInterval(interval);
             setCountdown(null);
@@ -118,50 +111,103 @@ const VerseCard = ({
             setCountdown(remaining);
           }
         }, 200);
-        timerRef.current = interval as unknown as NodeJS.Timeout;
+        timerRef.current = interval;
       }
     }
   };
+
+  const primaryVerse = verses[0];
+  if (!primaryVerse) return null;
 
   return (
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
       {/* Surah Header */}
       <div className="text-center mb-6">
         <div className="inline-block px-6 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <span className="font-arabic text-lg text-gold">{surahNameArabic}</span>
+          <span className="font-arabic text-lg text-gold">{primaryVerse.surahNameArabic}</span>
           <span className="mx-3 text-border">|</span>
-          <span className="font-display text-sm text-foreground">{surahName}</span>
+          <span className="font-display text-sm text-foreground">{primaryVerse.surahName}</span>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
-          Surah {surahNumber} • Ayah {ayahNumber}
+          Surah {primaryVerse.surahNumber} • Ayah {primaryVerse.ayahNumber}
+          {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
       </div>
 
       {/* Verse Card */}
       <div className="bg-card rounded-2xl border border-border p-8 md:p-12 shadow-gold">
-        {/* Arabic Text */}
-        <div className="text-center mb-8">
-          <p className="font-arabic text-3xl md:text-4xl leading-[2.2] text-foreground" dir="rtl">
-            {arabic}
-          </p>
-        </div>
+        {/* Verses */}
+        {verses.map((v, i) => (
+          <div key={`${v.surahNumber}:${v.ayahNumber}`}>
+            {i > 0 && (
+              <div className="flex items-center gap-4 my-6">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-xs text-muted-foreground">{v.ayahNumber}</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            )}
+            {/* Arabic Text */}
+            <div className="text-center mb-4">
+              <p
+                className="font-arabic leading-[2.2] text-foreground"
+                dir="rtl"
+                style={{ fontSize: `${fontSize}px` }}
+              >
+                {v.arabic}
+              </p>
+            </div>
+            {/* Translation */}
+            <div className="text-center mb-4">
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-sans italic">
+                "{v.translation}"
+              </p>
+            </div>
+          </div>
+        ))}
 
-        {/* Divider */}
+        {/* Divider before controls */}
         <div className="flex items-center gap-4 my-6">
           <div className="flex-1 h-px bg-border" />
           <div className="w-2 h-2 rounded-full bg-gold" />
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Translation */}
-        <div className="text-center mb-8">
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-sans italic">
-            "{translation}"
-          </p>
-        </div>
-
-        {/* Audio Player */}
+        {/* Settings Row */}
         <div className="space-y-4">
+          {/* Font size + verse count */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* Font size */}
+            <div className="flex items-center gap-2 min-w-[180px]">
+              <Type className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+              <span className="text-xs text-muted-foreground whitespace-nowrap">Size</span>
+              <Slider
+                value={[fontSize]}
+                onValueChange={(v) => setFontSize(v[0])}
+                min={20}
+                max={56}
+                step={2}
+                className="w-24"
+              />
+              <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
+            </div>
+
+            {/* Verse count */}
+            <div className="flex items-center gap-2">
+              <Layers className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Verses</span>
+              <Select value={String(verseCount)} onValueChange={(v) => onVerseCountChange(parseInt(v))}>
+                <SelectTrigger className="w-16 h-8 bg-background text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {/* Auto-play toggle + delay */}
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
@@ -188,7 +234,7 @@ const VerseCard = ({
             )}
           </div>
 
-          {/* Countdown indicator */}
+          {/* Countdown */}
           {countdown !== null && (
             <div className="text-center">
               <span className="text-xs text-muted-foreground animate-pulse">
@@ -197,7 +243,7 @@ const VerseCard = ({
             </div>
           )}
 
-          {/* Reciter Selector */}
+          {/* Reciter */}
           <div className="flex items-center justify-center gap-2">
             <Volume2 className="w-4 h-4 text-muted-foreground" />
             <Select value={selectedReciter} onValueChange={onReciterChange}>
@@ -216,29 +262,13 @@ const VerseCard = ({
 
           {/* Controls */}
           <div className="flex items-center justify-center gap-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onPrev}
-              className="rounded-full border-border hover:bg-primary/10"
-            >
+            <Button variant="outline" size="icon" onClick={onPrev} className="rounded-full border-border hover:bg-primary/10">
               <SkipBack className="w-4 h-4" />
             </Button>
-
-            <Button
-              onClick={togglePlay}
-              size="icon"
-              className="w-14 h-14 rounded-full gradient-islamic text-gold hover:opacity-90 transition-opacity"
-            >
+            <Button onClick={togglePlay} size="icon" className="w-14 h-14 rounded-full gradient-islamic text-gold hover:opacity-90 transition-opacity">
               {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
             </Button>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onNext}
-              className="rounded-full border-border hover:bg-primary/10"
-            >
+            <Button variant="outline" size="icon" onClick={onNext} className="rounded-full border-border hover:bg-primary/10">
               <SkipForward className="w-4 h-4" />
             </Button>
           </div>
