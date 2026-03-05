@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,6 +15,14 @@ interface Reciter {
   id: string;
   name: string;
 }
+
+const DELAY_OPTIONS = [
+  { value: "0", label: "Instant" },
+  { value: "1", label: "1 second" },
+  { value: "2", label: "2 seconds" },
+  { value: "3", label: "3 seconds" },
+  { value: "5", label: "5 seconds" },
+];
 
 interface VerseCardProps {
   arabic: string;
@@ -50,11 +58,20 @@ const VerseCard = ({
   const [autoPlay, setAutoPlay] = useState(() => {
     try { return localStorage.getItem("quran_autoplay") === "true"; } catch { return false; }
   });
+  const [advanceDelay, setAdvanceDelay] = useState(() => {
+    try { return localStorage.getItem("quran_advance_delay") || "0"; } catch { return "0"; }
+  });
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Persist autoPlay preference
+  // Persist preferences
   useEffect(() => {
     localStorage.setItem("quran_autoplay", String(autoPlay));
   }, [autoPlay]);
+
+  useEffect(() => {
+    localStorage.setItem("quran_advance_delay", advanceDelay);
+  }, [advanceDelay]);
 
   // Auto-play audio when verse changes if autoPlay is on
   useEffect(() => {
@@ -62,6 +79,13 @@ const VerseCard = ({
       audioRef.current.play().catch(() => {});
     }
   }, [audioUrl, autoPlay]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -76,7 +100,26 @@ const VerseCard = ({
   const handleEnded = () => {
     setIsPlaying(false);
     if (autoPlay) {
-      onNext();
+      const delay = parseInt(advanceDelay) * 1000;
+      if (delay === 0) {
+        onNext();
+      } else {
+        // Start countdown
+        setCountdown(parseInt(advanceDelay));
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.ceil((delay - elapsed) / 1000);
+          if (remaining <= 0) {
+            clearInterval(interval);
+            setCountdown(null);
+            onNext();
+          } else {
+            setCountdown(remaining);
+          }
+        }, 200);
+        timerRef.current = interval as unknown as NodeJS.Timeout;
+      }
     }
   };
 
@@ -119,12 +162,40 @@ const VerseCard = ({
 
         {/* Audio Player */}
         <div className="space-y-4">
-          {/* Auto-play toggle */}
-          <div className="flex items-center justify-center gap-2">
-            <RotateCw className="w-3.5 h-3.5 text-muted-foreground" />
-            <Label htmlFor="autoplay" className="text-xs text-muted-foreground cursor-pointer">Auto-advance</Label>
-            <Switch id="autoplay" checked={autoPlay} onCheckedChange={setAutoPlay} className="scale-75" />
+          {/* Auto-play toggle + delay */}
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <RotateCw className="w-3.5 h-3.5 text-muted-foreground" />
+              <Label htmlFor="autoplay" className="text-xs text-muted-foreground cursor-pointer">Auto-advance</Label>
+              <Switch id="autoplay" checked={autoPlay} onCheckedChange={setAutoPlay} className="scale-75" />
+            </div>
+            {autoPlay && (
+              <div className="flex items-center gap-2">
+                <Timer className="w-3.5 h-3.5 text-muted-foreground" />
+                <Select value={advanceDelay} onValueChange={setAdvanceDelay}>
+                  <SelectTrigger className="w-32 h-8 bg-background text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DELAY_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
+
+          {/* Countdown indicator */}
+          {countdown !== null && (
+            <div className="text-center">
+              <span className="text-xs text-muted-foreground animate-pulse">
+                Next verse in {countdown}s...
+              </span>
+            </div>
+          )}
 
           {/* Reciter Selector */}
           <div className="flex items-center justify-center gap-2">

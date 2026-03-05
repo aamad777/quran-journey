@@ -14,6 +14,7 @@ const RECITERS = [
   { id: "ar.huthayfi", name: "Ali Al-Huthayfi" },
   { id: "ar.minshawi", name: "Muhammad Al-Minshawi" },
   { id: "ar.ahmedajamy", name: "Ahmed Al-Ajamy" },
+  { id: "ar.raaboralkurdi", name: "Raad Al-Kurdi" },
 ];
 
 export const useQuranVerse = (surahNumber: number, ayahNumber: number) => {
