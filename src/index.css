@@ -53,6 +53,11 @@
     --emerald-light: 152 25% 40%;
     --cream: 40 30% 97%;
     --cream-dark: 40 25% 90%;
+
+    --word-color-1: 152 40% 30%;
+    --word-color-2: 38 65% 45%;
+    --word-color-3: 200 50% 35%;
+    --word-color-4: 340 45% 40%;
   }
 
   .dark {
@@ -98,6 +103,11 @@
     --emerald-deep: 152 25% 6%;
     --emerald: 152 35% 28%;
     --emerald-light: 152 25% 35%;
+
+    --word-color-1: 152 50% 55%;
+    --word-color-2: 38 70% 60%;
+    --word-color-3: 200 60% 60%;
+    --word-color-4: 340 55% 65%;
     --cream: 40 20% 90%;
     --cream-dark: 40 15% 25%;
   }
