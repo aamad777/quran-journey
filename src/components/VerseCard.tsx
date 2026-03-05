@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -68,12 +68,23 @@ const VerseCard = ({
   const [fontSize, setFontSize] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
   });
+  const [wordColor, setWordColor] = useState(() => {
+    try { return localStorage.getItem("quran_word_color") === "true"; } catch { return false; }
+  });
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const WORD_COLORS = [
+    "hsl(var(--word-color-1))",
+    "hsl(var(--word-color-2))",
+    "hsl(var(--word-color-3))",
+    "hsl(var(--word-color-4))",
+  ];
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
   useEffect(() => { localStorage.setItem("quran_font_size", String(fontSize)); }, [fontSize]);
+  useEffect(() => { localStorage.setItem("quran_word_color", String(wordColor)); }, [wordColor]);
 
   useEffect(() => {
     if (autoPlay && audioRef.current && audioUrl) {
@@ -147,13 +158,23 @@ const VerseCard = ({
               </div>
             )}
             {/* Arabic Text */}
-            <div className="text-center mb-4">
+            <div className="text-center mb-4" dir="rtl">
               <p
-                className="font-arabic leading-[2.2] text-foreground"
-                dir="rtl"
+                className="font-arabic leading-[2.2]"
                 style={{ fontSize: `${fontSize}px` }}
               >
-                {v.arabic}
+                {wordColor ? (
+                  v.arabic.split(/\s+/).map((word, wi) => (
+                    <span
+                      key={wi}
+                      style={{ color: WORD_COLORS[wi % WORD_COLORS.length] }}
+                    >
+                      {word}{" "}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-foreground">{v.arabic}</span>
+                )}
               </p>
             </div>
             {/* Translation */}
@@ -189,6 +210,13 @@ const VerseCard = ({
                 className="w-24"
               />
               <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
+            </div>
+
+            {/* Word color */}
+            <div className="flex items-center gap-2">
+              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
+              <Label htmlFor="wordcolor" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Word colors</Label>
+              <Switch id="wordcolor" checked={wordColor} onCheckedChange={setWordColor} className="scale-75" />
             </div>
 
             {/* Verse count */}
