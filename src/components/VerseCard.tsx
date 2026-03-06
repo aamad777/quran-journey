@@ -96,6 +96,7 @@ const VerseCard = ({
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
   useEffect(() => { localStorage.setItem("quran_font_size", String(fontSize)); }, [fontSize]);
   useEffect(() => { localStorage.setItem("quran_word_color", String(wordColor)); }, [wordColor]);
+  useEffect(() => { localStorage.setItem("quran_tajweed", String(tajweedMode)); }, [tajweedMode]);
 
   useEffect(() => {
     if (autoPlay && audioRef.current && audioUrl) {
