@@ -175,7 +175,27 @@ const VerseCard = ({
                 className="font-arabic leading-[2.2]"
                 style={{ fontSize: `${fontSize}px` }}
               >
-                {wordColor ? (
+                {tajweedMode && v.tajweedText ? (
+                  parseTajweed(v.tajweedText).map((seg, si) => {
+                    const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
+                    return rule ? (
+                      <TooltipProvider key={si} delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span style={{ color: rule.color, fontWeight: 600 }}>{seg.text}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            <span className="font-arabic text-sm">{rule.labelAr}</span>
+                            <span className="mx-1">–</span>
+                            <span>{rule.label}</span>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <span key={si} className="text-foreground">{seg.text}</span>
+                    );
+                  })
+                ) : wordColor ? (
                   v.arabic.split(/\s+/).map((word, wi) => (
                     <span
                       key={wi}
