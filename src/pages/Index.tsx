@@ -55,12 +55,12 @@ const Index = () => {
             {user ? (
               <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-foreground">
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                خروج
               </Button>
             ) : (
               <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground">
                 <LogIn className="w-4 h-4 mr-2" />
-                Sign In
+                دخول
               </Button>
             )}
           </div>
