@@ -31,7 +31,7 @@ const Index = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
             <BookOpen className="w-8 h-8 text-gold" />
           </div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">جاري التحميل...</p>
         </div>
       </div>
     );
@@ -48,19 +48,19 @@ const Index = () => {
             <div className="w-10 h-10 rounded-full gradient-islamic flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-gold" />
             </div>
-            <h1 className="font-display text-xl font-bold text-foreground">Quran Reader</h1>
+            <h1 className="font-display text-xl font-bold text-foreground">قارئ القرآن</h1>
           </div>
           <div className="flex items-center gap-2">
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
               <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-foreground">
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                خروج
               </Button>
             ) : (
               <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground">
                 <LogIn className="w-4 h-4 mr-2" />
-                Sign In
+                دخول
               </Button>
             )}
           </div>
@@ -72,7 +72,7 @@ const Index = () => {
         <div className="bg-accent/20 border-b border-border">
           <div className="container max-w-4xl mx-auto px-4 py-2 text-center">
             <p className="text-sm text-muted-foreground">
-              Reading as guest. <button onClick={() => navigate("/auth")} className="text-gold font-semibold hover:underline">Sign in</button> to save your progress across devices.
+              تقرأ كضيف. <button onClick={() => navigate("/auth")} className="text-gold font-semibold hover:underline">سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
             </p>
           </div>
         </div>

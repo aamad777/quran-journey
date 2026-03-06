@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect, useMemo } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, Palette, BookOpen } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -35,11 +35,11 @@ interface VerseData {
 }
 
 const DELAY_OPTIONS = [
-  { value: "0", label: "Instant" },
-  { value: "1", label: "1 second" },
-  { value: "2", label: "2 seconds" },
-  { value: "3", label: "3 seconds" },
-  { value: "5", label: "5 seconds" },
+  { value: "0", label: "فوري" },
+  { value: "1", label: "١ ثانية" },
+  { value: "2", label: "٢ ثواني" },
+  { value: "3", label: "٣ ثواني" },
+  { value: "5", label: "٥ ثواني" },
 ];
 
 interface VerseCardProps {
@@ -76,26 +76,15 @@ const VerseCard = ({
   const [fontSize, setFontSize] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
   });
-  const [wordColor, setWordColor] = useState(() => {
-    try { return localStorage.getItem("quran_word_color") === "true"; } catch { return false; }
-  });
   const [tajweedMode, setTajweedMode] = useState(() => {
     try { return localStorage.getItem("quran_tajweed") === "true"; } catch { return false; }
   });
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const WORD_COLORS = [
-    "hsl(var(--word-color-1))",
-    "hsl(var(--word-color-2))",
-    "hsl(var(--word-color-3))",
-    "hsl(var(--word-color-4))",
-  ];
-
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
   useEffect(() => { localStorage.setItem("quran_font_size", String(fontSize)); }, [fontSize]);
-  useEffect(() => { localStorage.setItem("quran_word_color", String(wordColor)); }, [wordColor]);
   useEffect(() => { localStorage.setItem("quran_tajweed", String(tajweedMode)); }, [tajweedMode]);
 
   useEffect(() => {
@@ -152,7 +141,7 @@ const VerseCard = ({
           <span className="font-display text-sm text-foreground">{primaryVerse.surahName}</span>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
-          Surah {primaryVerse.surahNumber} • Ayah {primaryVerse.ayahNumber}
+          سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
           {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
       </div>
@@ -195,15 +184,6 @@ const VerseCard = ({
                       <span key={si} className="text-foreground">{seg.text}</span>
                     );
                   })
-                ) : wordColor ? (
-                  v.arabic.split(/\s+/).map((word, wi) => (
-                    <span
-                      key={wi}
-                      style={{ color: WORD_COLORS[wi % WORD_COLORS.length] }}
-                    >
-                      {word}{" "}
-                    </span>
-                  ))
                 ) : (
                   <span className="text-foreground">{v.arabic}</span>
                 )}
@@ -227,12 +207,12 @@ const VerseCard = ({
 
         {/* Settings Row */}
         <div className="space-y-4">
-          {/* Font size + verse count */}
+          {/* Font size + verse count + tajweed */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* Font size */}
             <div className="flex items-center gap-2 min-w-[180px]">
               <Type className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              <span className="text-xs text-muted-foreground whitespace-nowrap">Size</span>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">حجم الخط</span>
               <Slider
                 value={[fontSize]}
                 onValueChange={(v) => setFontSize(v[0])}
@@ -244,32 +224,25 @@ const VerseCard = ({
               <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
             </div>
 
-            {/* Word color */}
-            <div className="flex items-center gap-2">
-              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
-              <Label htmlFor="wordcolor" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Word colors</Label>
-              <Switch id="wordcolor" checked={wordColor} onCheckedChange={(v) => { setWordColor(v); if (v) setTajweedMode(false); }} className="scale-75" />
-            </div>
-
             {/* Tajweed */}
             <div className="flex items-center gap-2">
               <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
-              <Label htmlFor="tajweed" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Tajweed</Label>
-              <Switch id="tajweed" checked={tajweedMode} onCheckedChange={(v) => { setTajweedMode(v); if (v) setWordColor(false); }} className="scale-75" />
+              <Label htmlFor="tajweed" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">تجويد</Label>
+              <Switch id="tajweed" checked={tajweedMode} onCheckedChange={setTajweedMode} className="scale-75" />
             </div>
 
             {/* Verse count */}
             <div className="flex items-center gap-2">
               <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Verses</span>
+              <span className="text-xs text-muted-foreground">آيات</span>
               <Select value={String(verseCount)} onValueChange={(v) => onVerseCountChange(parseInt(v))}>
                 <SelectTrigger className="w-16 h-8 bg-background text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="1">١</SelectItem>
+                  <SelectItem value="2">٢</SelectItem>
+                  <SelectItem value="3">٣</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -281,7 +254,7 @@ const VerseCard = ({
               {Object.entries(TAJWEED_RULES).map(([key, rule]) => (
                 <span key={key} className="flex items-center gap-1 text-[10px]">
                   <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: rule.color }} />
-                  <span className="text-muted-foreground">{rule.label}</span>
+                  <span className="text-muted-foreground">{rule.labelAr}</span>
                 </span>
               ))}
             </div>
@@ -291,7 +264,7 @@ const VerseCard = ({
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <RotateCw className="w-3.5 h-3.5 text-muted-foreground" />
-              <Label htmlFor="autoplay" className="text-xs text-muted-foreground cursor-pointer">Auto-advance</Label>
+              <Label htmlFor="autoplay" className="text-xs text-muted-foreground cursor-pointer">تقدّم تلقائي</Label>
               <Switch id="autoplay" checked={autoPlay} onCheckedChange={setAutoPlay} className="scale-75" />
             </div>
             {autoPlay && (
@@ -317,7 +290,7 @@ const VerseCard = ({
           {countdown !== null && (
             <div className="text-center">
               <span className="text-xs text-muted-foreground animate-pulse">
-                Next verse in {countdown}s...
+                الآية التالية بعد {countdown} ثانية...
               </span>
             </div>
           )}
