@@ -210,7 +210,7 @@ const SurahList = ({ currentSurah, onSelect }: SurahListProps) => {
               </button>
             ))}
             {filtered.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-8">No surahs found</p>
+              <p className="text-sm text-muted-foreground text-center py-8">لم يتم العثور على سور</p>
             )}
           </div>
         </ScrollArea>
