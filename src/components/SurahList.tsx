@@ -202,9 +202,9 @@ const SurahList = ({ currentSurah, onSelect }: SurahListProps) => {
                     <span className="font-arabic text-base text-gold shrink-0 ml-2">{surah.arabic}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">{surah.ayahs} Ayahs</span>
+                    <span className="text-xs text-muted-foreground">{surah.ayahs} آية</span>
                     <span className="text-xs text-muted-foreground">•</span>
-                    <span className="text-xs text-muted-foreground">{surah.type}</span>
+                    <span className="text-xs text-muted-foreground">{surah.type === "Meccan" ? "مكية" : "مدنية"}</span>
                   </div>
                 </div>
               </button>
