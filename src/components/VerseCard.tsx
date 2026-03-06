@@ -248,7 +248,14 @@ const VerseCard = ({
             <div className="flex items-center gap-2">
               <Palette className="w-3.5 h-3.5 text-muted-foreground" />
               <Label htmlFor="wordcolor" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Word colors</Label>
-              <Switch id="wordcolor" checked={wordColor} onCheckedChange={setWordColor} className="scale-75" />
+              <Switch id="wordcolor" checked={wordColor} onCheckedChange={(v) => { setWordColor(v); if (v) setTajweedMode(false); }} className="scale-75" />
+            </div>
+
+            {/* Tajweed */}
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
+              <Label htmlFor="tajweed" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Tajweed</Label>
+              <Switch id="tajweed" checked={tajweedMode} onCheckedChange={(v) => { setTajweedMode(v); if (v) setWordColor(false); }} className="scale-75" />
             </div>
 
             {/* Verse count */}
