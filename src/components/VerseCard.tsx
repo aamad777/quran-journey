@@ -275,6 +275,18 @@ const VerseCard = ({
             </div>
           </div>
 
+          {/* Tajweed Legend */}
+          {tajweedMode && (
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-2">
+              {Object.entries(TAJWEED_RULES).map(([key, rule]) => (
+                <span key={key} className="flex items-center gap-1 text-[10px]">
+                  <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: rule.color }} />
+                  <span className="text-muted-foreground">{rule.label}</span>
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Auto-play toggle + delay */}
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
