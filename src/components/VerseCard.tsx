@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, Palette } from "lucide-react";
+import { useRef, useState, useEffect, useMemo } from "react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, Palette, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
