@@ -79,6 +79,9 @@ const VerseCard = ({
   const [wordColor, setWordColor] = useState(() => {
     try { return localStorage.getItem("quran_word_color") === "true"; } catch { return false; }
   });
+  const [tajweedMode, setTajweedMode] = useState(() => {
+    try { return localStorage.getItem("quran_tajweed") === "true"; } catch { return false; }
+  });
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
