@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, Palette } from "lucide-react";
+import { useRef, useState, useEffect, useMemo } from "react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, Palette, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,6 +11,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { parseTajweed, TAJWEED_RULES } from "@/lib/tajweedParser";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Reciter {
   id: string;
@@ -19,6 +26,7 @@ interface Reciter {
 
 interface VerseData {
   arabic: string;
+  tajweedText: string;
   translation: string;
   surahName: string;
   surahNameArabic: string;
@@ -71,6 +79,9 @@ const VerseCard = ({
   const [wordColor, setWordColor] = useState(() => {
     try { return localStorage.getItem("quran_word_color") === "true"; } catch { return false; }
   });
+  const [tajweedMode, setTajweedMode] = useState(() => {
+    try { return localStorage.getItem("quran_tajweed") === "true"; } catch { return false; }
+  });
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -85,6 +96,7 @@ const VerseCard = ({
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
   useEffect(() => { localStorage.setItem("quran_font_size", String(fontSize)); }, [fontSize]);
   useEffect(() => { localStorage.setItem("quran_word_color", String(wordColor)); }, [wordColor]);
+  useEffect(() => { localStorage.setItem("quran_tajweed", String(tajweedMode)); }, [tajweedMode]);
 
   useEffect(() => {
     if (autoPlay && audioRef.current && audioUrl) {
@@ -163,7 +175,27 @@ const VerseCard = ({
                 className="font-arabic leading-[2.2]"
                 style={{ fontSize: `${fontSize}px` }}
               >
-                {wordColor ? (
+                {tajweedMode && v.tajweedText ? (
+                  parseTajweed(v.tajweedText).map((seg, si) => {
+                    const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
+                    return rule ? (
+                      <TooltipProvider key={si} delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span style={{ color: rule.color, fontWeight: 600 }}>{seg.text}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            <span className="font-arabic text-sm">{rule.labelAr}</span>
+                            <span className="mx-1">–</span>
+                            <span>{rule.label}</span>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <span key={si} className="text-foreground">{seg.text}</span>
+                    );
+                  })
+                ) : wordColor ? (
                   v.arabic.split(/\s+/).map((word, wi) => (
                     <span
                       key={wi}
@@ -216,7 +248,14 @@ const VerseCard = ({
             <div className="flex items-center gap-2">
               <Palette className="w-3.5 h-3.5 text-muted-foreground" />
               <Label htmlFor="wordcolor" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Word colors</Label>
-              <Switch id="wordcolor" checked={wordColor} onCheckedChange={setWordColor} className="scale-75" />
+              <Switch id="wordcolor" checked={wordColor} onCheckedChange={(v) => { setWordColor(v); if (v) setTajweedMode(false); }} className="scale-75" />
+            </div>
+
+            {/* Tajweed */}
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
+              <Label htmlFor="tajweed" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">Tajweed</Label>
+              <Switch id="tajweed" checked={tajweedMode} onCheckedChange={(v) => { setTajweedMode(v); if (v) setWordColor(false); }} className="scale-75" />
             </div>
 
             {/* Verse count */}
@@ -235,6 +274,18 @@ const VerseCard = ({
               </Select>
             </div>
           </div>
+
+          {/* Tajweed Legend */}
+          {tajweedMode && (
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-2">
+              {Object.entries(TAJWEED_RULES).map(([key, rule]) => (
+                <span key={key} className="flex items-center gap-1 text-[10px]">
+                  <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: rule.color }} />
+                  <span className="text-muted-foreground">{rule.label}</span>
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* Auto-play toggle + delay */}
           <div className="flex items-center justify-center gap-3 flex-wrap">

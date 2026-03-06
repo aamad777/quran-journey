@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 interface VerseData {
   arabic: string;
+  tajweedText: string;
   translation: string;
   surahName: string;
   surahNameArabic: string;
@@ -57,15 +58,19 @@ export const useQuranVerse = (surahNumber: number, ayahNumber: number, verseCoun
       try {
         const refs = getVerseRefs(surahNumber, ayahNumber, verseCount);
         const fetches = refs.map(async (ref) => {
-          const res = await fetch(
-            `https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/editions/quran-uthmani,en.sahih`
-          );
+          const [res, tajRes] = await Promise.all([
+            fetch(`https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/editions/quran-uthmani,en.sahih`),
+            fetch(`https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/editions/quran-tajweed`),
+          ]);
           const data = await res.json();
+          const tajData = await tajRes.json();
           if (data.code === 200 && data.data) {
             const arabic = data.data[0];
             const english = data.data[1];
+            const tajweedText = tajData.code === 200 && tajData.data?.[0]?.text ? tajData.data[0].text : "";
             return {
               arabic: arabic.text,
+              tajweedText,
               translation: english.text,
               surahName: arabic.surah.englishName,
               surahNameArabic: arabic.surah.name,
