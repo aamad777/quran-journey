@@ -48,7 +48,7 @@ const Index = () => {
             <div className="w-10 h-10 rounded-full gradient-islamic flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-gold" />
             </div>
-            <h1 className="font-display text-xl font-bold text-foreground">Quran Reader</h1>
+            <h1 className="font-display text-xl font-bold text-foreground">قارئ القرآن</h1>
           </div>
           <div className="flex items-center gap-2">
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
