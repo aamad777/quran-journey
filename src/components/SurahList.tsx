@@ -155,12 +155,12 @@ const SurahList = ({ currentSurah, onSelect }: SurahListProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="border-border hover:bg-primary/10">
           <BookOpen className="w-4 h-4 mr-2" />
-          Surahs
+          السور
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md p-0 gap-0">
         <DialogHeader className="p-4 pb-2">
-          <DialogTitle className="font-display text-lg">Browse Surahs</DialogTitle>
+          <DialogTitle className="font-display text-lg">تصفّح السور</DialogTitle>
         </DialogHeader>
         <div className="px-4 pb-2">
           <div className="relative">
