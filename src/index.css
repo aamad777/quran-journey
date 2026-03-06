@@ -118,6 +118,17 @@
     --word-color-2: 38 70% 60%;
     --word-color-3: 200 60% 60%;
     --word-color-4: 340 55% 65%;
+
+    --tajweed-ghunnah: 152 55% 55%;
+    --tajweed-ikhfa: 38 75% 60%;
+    --tajweed-idgham-no-ghunnah: 270 50% 65%;
+    --tajweed-madd: 200 65% 60%;
+    --tajweed-madd-lazim: 15 75% 60%;
+    --tajweed-lam-shamsiyyah: 180 55% 55%;
+    --tajweed-hamzat-wasl: 300 45% 65%;
+    --tajweed-ikhfa-shafawi: 330 55% 60%;
+    --tajweed-qalqalah: 0 70% 60%;
+
     --cream: 40 20% 90%;
     --cream-dark: 40 15% 25%;
   }
