@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen } from "lucide-react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -18,6 +18,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Reciter {
   id: string;
@@ -27,7 +33,6 @@ interface Reciter {
 interface VerseData {
   arabic: string;
   tajweedText: string;
-  translation: string;
   surahName: string;
   surahNameArabic: string;
   surahNumber: number;
@@ -81,6 +86,11 @@ const VerseCard = ({
   });
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [tafseerOpen, setTafseerOpen] = useState(false);
+  const [tafseerText, setTafseerText] = useState("");
+  const [tafseerLoading, setTafseerLoading] = useState(false);
+  const [tafseerVerse, setTafseerVerse] = useState("");
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
@@ -128,6 +138,37 @@ const VerseCard = ({
     }
   };
 
+  const fetchTafseer = useCallback(async (surah: number, ayah: number) => {
+    setTafseerLoading(true);
+    setTafseerOpen(true);
+    setTafseerVerse(`${surah}:${ayah}`);
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.muyassar`);
+      const data = await res.json();
+      if (data.code === 200 && data.data?.text) {
+        setTafseerText(data.data.text);
+      } else {
+        setTafseerText("لم يتم العثور على التفسير");
+      }
+    } catch {
+      setTafseerText("حدث خطأ في تحميل التفسير");
+    }
+    setTafseerLoading(false);
+  }, []);
+
+  const handleLongPressStart = useCallback((surah: number, ayah: number) => {
+    longPressTimer.current = setTimeout(() => {
+      fetchTafseer(surah, ayah);
+    }, 600);
+  }, [fetchTafseer]);
+
+  const handleLongPressEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
   const primaryVerse = verses[0];
   if (!primaryVerse) return null;
 
@@ -158,8 +199,17 @@ const VerseCard = ({
                 <div className="flex-1 h-px bg-border" />
               </div>
             )}
-            {/* Arabic Text */}
-            <div className="text-center mb-4" dir="rtl">
+            {/* Arabic Text - long press for tafseer */}
+            <div
+              className="text-center mb-4 select-none cursor-pointer"
+              dir="rtl"
+              onMouseDown={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
+              onMouseUp={handleLongPressEnd}
+              onMouseLeave={handleLongPressEnd}
+              onTouchStart={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
+              onTouchEnd={handleLongPressEnd}
+              onContextMenu={(e) => e.preventDefault()}
+            >
               <p
                 className="font-arabic leading-[2.2]"
                 style={{ fontSize: `${fontSize}px` }}
@@ -188,15 +238,26 @@ const VerseCard = ({
                   <span className="text-foreground">{v.arabic}</span>
                 )}
               </p>
-            </div>
-            {/* Translation */}
-            <div className="text-center mb-4">
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-sans italic">
-                "{v.translation}"
-              </p>
+              <p className="text-xs text-muted-foreground mt-2">اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
         ))}
+
+        {/* Tafseer Dialog */}
+        <Dialog open={tafseerOpen} onOpenChange={setTafseerOpen}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="font-arabic text-lg text-foreground">
+                التفسير الميسّر — آية {tafseerVerse}
+              </DialogTitle>
+            </DialogHeader>
+            {tafseerLoading ? (
+              <p className="text-muted-foreground text-center py-8 animate-pulse">جاري تحميل التفسير...</p>
+            ) : (
+              <p className="font-arabic text-base leading-[2] text-foreground">{tafseerText}</p>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Divider before controls */}
         <div className="flex items-center gap-4 my-6">
