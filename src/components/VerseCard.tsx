@@ -33,7 +33,6 @@ interface Reciter {
 interface VerseData {
   arabic: string;
   tajweedText: string;
-  translation: string;
   surahName: string;
   surahNameArabic: string;
   surahNumber: number;
