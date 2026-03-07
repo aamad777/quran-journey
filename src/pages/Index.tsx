@@ -4,14 +4,18 @@ import { useQuranProgress } from "@/hooks/useQuranProgress";
 import { useQuranVerse } from "@/hooks/useQuranVerse";
 import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
+import PracticeMode from "@/components/PracticeMode";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn } from "lucide-react";
+import { BookOpen, LogOut, LogIn, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
+  const [activeTab, setActiveTab] = useState<"read" | "practice">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice") || "read"; } catch { return "read"; }
+  });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
   });
@@ -19,6 +23,10 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem("quran_verse_count", String(verseCount));
   }, [verseCount]);
+
+  useEffect(() => {
+    localStorage.setItem("quran_active_tab", activeTab);
+  }, [activeTab]);
 
   const { verses, audioUrl, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
     useQuranVerse(progress.surah_number, progress.ayah_number, verseCount);
@@ -78,8 +86,32 @@ const Index = () => {
         </div>
       )}
 
+      {/* Tab Switcher */}
+      <div className="container max-w-4xl mx-auto px-4 pt-6">
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant={activeTab === "read" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("read")}
+            className="rounded-full gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            قراءة
+          </Button>
+          <Button
+            variant={activeTab === "practice" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("practice")}
+            className="rounded-full gap-2"
+          >
+            <Mic className="w-4 h-4" />
+            تدريب
+          </Button>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="container max-w-4xl mx-auto px-4 py-8 md:py-16">
+      <main className="container max-w-4xl mx-auto px-4 py-8 md:py-12">
         {isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
@@ -92,7 +124,7 @@ const Index = () => {
               <Skeleton className="h-6 w-1/2 mx-auto" />
             </div>
           </div>
-        ) : (
+        ) : activeTab === "read" ? (
           <VerseCard
             verses={verses}
             audioUrl={audioUrl}
@@ -103,6 +135,12 @@ const Index = () => {
             onPrev={goToPrev}
             verseCount={verseCount}
             onVerseCountChange={setVerseCount}
+          />
+        ) : (
+          <PracticeMode
+            verses={verses}
+            onNext={goToNext}
+            onPrev={goToPrev}
           />
         )}
       </main>
