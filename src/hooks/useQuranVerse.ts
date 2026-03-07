@@ -58,7 +58,7 @@ export const useQuranVerse = (surahNumber: number, ayahNumber: number, verseCoun
         const refs = getVerseRefs(surahNumber, ayahNumber, verseCount);
         const fetches = refs.map(async (ref) => {
           const [res, tajRes] = await Promise.all([
-            fetch(`https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/editions/quran-uthmani,en.sahih`),
+            fetch(`https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/quran-uthmani`),
             fetch(`https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/editions/quran-tajweed`),
           ]);
           const data = await res.json();
