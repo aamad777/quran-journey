@@ -64,7 +64,7 @@ export const useQuranVerse = (surahNumber: number, ayahNumber: number, verseCoun
           const data = await res.json();
           const tajData = await tajRes.json();
           if (data.code === 200 && data.data) {
-            const arabic = data.data[0];
+            const arabic = data.data;
             const tajweedText = tajData.code === 200 && tajData.data?.[0]?.text ? tajData.data[0].text : "";
             return {
               arabic: arabic.text,
