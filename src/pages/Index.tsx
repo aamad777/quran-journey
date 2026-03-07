@@ -13,6 +13,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
+  const [activeTab, setActiveTab] = useState<"read" | "practice">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice") || "read"; } catch { return "read"; }
+  });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
   });
