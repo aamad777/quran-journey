@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 interface VerseData {
   arabic: string;
   tajweedText: string;
-  translation: string;
   surahName: string;
   surahNameArabic: string;
   revelationType: string;
