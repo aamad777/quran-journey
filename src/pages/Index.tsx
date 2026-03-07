@@ -4,8 +4,9 @@ import { useQuranProgress } from "@/hooks/useQuranProgress";
 import { useQuranVerse } from "@/hooks/useQuranVerse";
 import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
+import PracticeMode from "@/components/PracticeMode";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn } from "lucide-react";
+import { BookOpen, LogOut, LogIn, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
