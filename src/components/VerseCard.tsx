@@ -86,6 +86,11 @@ const VerseCard = ({
   });
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [tafseerOpen, setTafseerOpen] = useState(false);
+  const [tafseerText, setTafseerText] = useState("");
+  const [tafseerLoading, setTafseerLoading] = useState(false);
+  const [tafseerVerse, setTafseerVerse] = useState("");
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
