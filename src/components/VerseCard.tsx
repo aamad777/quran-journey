@@ -138,6 +138,37 @@ const VerseCard = ({
     }
   };
 
+  const fetchTafseer = useCallback(async (surah: number, ayah: number) => {
+    setTafseerLoading(true);
+    setTafseerOpen(true);
+    setTafseerVerse(`${surah}:${ayah}`);
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.muyassar`);
+      const data = await res.json();
+      if (data.code === 200 && data.data?.text) {
+        setTafseerText(data.data.text);
+      } else {
+        setTafseerText("لم يتم العثور على التفسير");
+      }
+    } catch {
+      setTafseerText("حدث خطأ في تحميل التفسير");
+    }
+    setTafseerLoading(false);
+  }, []);
+
+  const handleLongPressStart = useCallback((surah: number, ayah: number) => {
+    longPressTimer.current = setTimeout(() => {
+      fetchTafseer(surah, ayah);
+    }, 600);
+  }, [fetchTafseer]);
+
+  const handleLongPressEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
   const primaryVerse = verses[0];
   if (!primaryVerse) return null;
 
