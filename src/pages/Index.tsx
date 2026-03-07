@@ -86,8 +86,32 @@ const Index = () => {
         </div>
       )}
 
+      {/* Tab Switcher */}
+      <div className="container max-w-4xl mx-auto px-4 pt-6">
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant={activeTab === "read" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("read")}
+            className="rounded-full gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            قراءة
+          </Button>
+          <Button
+            variant={activeTab === "practice" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("practice")}
+            className="rounded-full gap-2"
+          >
+            <Mic className="w-4 h-4" />
+            تدريب
+          </Button>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="container max-w-4xl mx-auto px-4 py-8 md:py-16">
+      <main className="container max-w-4xl mx-auto px-4 py-8 md:py-12">
         {isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
@@ -100,7 +124,7 @@ const Index = () => {
               <Skeleton className="h-6 w-1/2 mx-auto" />
             </div>
           </div>
-        ) : (
+        ) : activeTab === "read" ? (
           <VerseCard
             verses={verses}
             audioUrl={audioUrl}
@@ -111,6 +135,12 @@ const Index = () => {
             onPrev={goToPrev}
             verseCount={verseCount}
             onVerseCountChange={setVerseCount}
+          />
+        ) : (
+          <PracticeMode
+            verses={verses}
+            onNext={goToNext}
+            onPrev={goToPrev}
           />
         )}
       </main>
