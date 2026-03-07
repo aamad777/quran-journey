@@ -199,8 +199,17 @@ const VerseCard = ({
                 <div className="flex-1 h-px bg-border" />
               </div>
             )}
-            {/* Arabic Text */}
-            <div className="text-center mb-4" dir="rtl">
+            {/* Arabic Text - long press for tafseer */}
+            <div
+              className="text-center mb-4 select-none cursor-pointer"
+              dir="rtl"
+              onMouseDown={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
+              onMouseUp={handleLongPressEnd}
+              onMouseLeave={handleLongPressEnd}
+              onTouchStart={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
+              onTouchEnd={handleLongPressEnd}
+              onContextMenu={(e) => e.preventDefault()}
+            >
               <p
                 className="font-arabic leading-[2.2]"
                 style={{ fontSize: `${fontSize}px` }}
@@ -229,15 +238,26 @@ const VerseCard = ({
                   <span className="text-foreground">{v.arabic}</span>
                 )}
               </p>
-            </div>
-            {/* Translation */}
-            <div className="text-center mb-4">
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-sans italic">
-                "{v.translation}"
-              </p>
+              <p className="text-xs text-muted-foreground mt-2">اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
         ))}
+
+        {/* Tafseer Dialog */}
+        <Dialog open={tafseerOpen} onOpenChange={setTafseerOpen}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="font-arabic text-lg text-foreground">
+                التفسير الميسّر — آية {tafseerVerse}
+              </DialogTitle>
+            </DialogHeader>
+            {tafseerLoading ? (
+              <p className="text-muted-foreground text-center py-8 animate-pulse">جاري تحميل التفسير...</p>
+            ) : (
+              <p className="font-arabic text-base leading-[2] text-foreground">{tafseerText}</p>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Divider before controls */}
         <div className="flex items-center gap-4 my-6">
