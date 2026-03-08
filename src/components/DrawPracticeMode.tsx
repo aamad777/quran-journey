@@ -29,6 +29,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
   const [isChecking, setIsChecking] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [showVerse, setShowVerse] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
