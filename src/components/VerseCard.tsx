@@ -117,6 +117,7 @@ const VerseCard = ({
   const [tajweedAudioLoading, setTajweedAudioLoading] = useState(false);
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
   const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
+  const [pulseDuration, setPulseDuration] = useState(1.5);
 
   // Vivid gradient colors for active word during recitation
   const RECITE_GRADIENTS = [
