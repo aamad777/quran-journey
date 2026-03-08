@@ -124,6 +124,22 @@ const VerseCard = ({
 
   const handleEnded = () => {
     setIsPlaying(false);
+    currentRepeatRef.current += 1;
+
+    // If we haven't reached the repeat count, replay
+    if (currentRepeatRef.current < repeatCount) {
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play().catch(() => {});
+        }
+      }, 500);
+      return;
+    }
+
+    // All repeats done, reset counter
+    currentRepeatRef.current = 0;
+
     if (autoPlay) {
       const delay = parseInt(advanceDelay) * 1000;
       if (delay === 0) {
