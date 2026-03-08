@@ -54,6 +54,7 @@ const Index = () => {
   const TOTAL_VERSES = 6236;
   const versesRead = SURAH_AYAH_COUNT.slice(0, progress.surah_number - 1).reduce((a, b) => a + b, 0) + progress.ayah_number;
   const versesRemaining = TOTAL_VERSES - versesRead;
+  const progressPercent = Math.round((versesRead / TOTAL_VERSES) * 100);
   const isLoading = progressLoading || verseLoading;
 
 
