@@ -343,7 +343,7 @@ const VerseCard = ({
             >
               <p
                 className="font-arabic leading-[2.2]"
-                style={{ fontSize: `${fontSize}px` }}
+                style={{ fontSize: `${fontSize}px`, color: themeTextColor, textShadow: themeTextColor ? `0 1px 10px ${themeTextColor}22` : undefined }}
               >
                 {tajweedMode && v.tajweedText ? (
                   (() => {
