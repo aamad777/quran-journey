@@ -666,10 +666,10 @@ const VerseCard = ({
           ref={audioRef}
           src={audioUrls[0] || audioUrl}
           onEnded={() => { handleEnded(); setActiveWordIndex(null); }}
-          onPause={() => { setIsPlaying(false); setActiveWordIndex(null); }}
-          onPlay={() => setIsPlaying(true)}
+          onPause={() => { setIsPlaying(false); isPlayingRef.current = false; setActiveWordIndex(null); }}
+          onPlay={() => { setIsPlaying(true); isPlayingRef.current = true; }}
           onTimeUpdate={() => {
-            if (!audioRef.current || !isPlaying) return;
+            if (!audioRef.current || !isPlayingRef.current) return;
             const { currentTime, duration } = audioRef.current;
             if (!duration || isNaN(duration)) return;
             const currentVerse = verses[currentAudioIndex];
