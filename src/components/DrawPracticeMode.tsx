@@ -16,6 +16,7 @@ interface DrawPracticeModeProps {
   verses: VerseData[];
   onNext: () => void;
   onPrev: () => void;
+  onCorrectWord?: () => void;
 }
 
 const splitWords = (text: string): string[] => {
