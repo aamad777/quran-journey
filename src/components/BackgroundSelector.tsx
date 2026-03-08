@@ -29,6 +29,74 @@ interface PatternInfo {
   image: string | null;
 }
 
+export interface BgThemeColors {
+  btnBg: string;
+  btnText: string;
+  btnOutlineBorder: string;
+  btnOutlineText: string;
+  activeWordColor: string;
+  activeWordGlow: string;
+}
+
+export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
+  none: {
+    btnBg: "hsl(var(--primary))",
+    btnText: "hsl(var(--primary-foreground))",
+    btnOutlineBorder: "hsl(var(--border))",
+    btnOutlineText: "hsl(var(--foreground))",
+    activeWordColor: "hsl(38 65% 50%)",
+    activeWordGlow: "0 0 12px hsl(38 65% 50% / 0.4)",
+  },
+  geometric: {
+    btnBg: "hsl(38 70% 55%)",
+    btnText: "hsl(220 30% 10%)",
+    btnOutlineBorder: "hsl(38 50% 40% / 0.5)",
+    btnOutlineText: "hsl(38 60% 80%)",
+    activeWordColor: "hsl(38 80% 60%)",
+    activeWordGlow: "0 0 14px hsl(38 80% 55% / 0.5)",
+  },
+  mosque: {
+    btnBg: "hsl(35 60% 45%)",
+    btnText: "hsl(40 30% 97%)",
+    btnOutlineBorder: "hsl(35 40% 50% / 0.5)",
+    btnOutlineText: "hsl(35 50% 30%)",
+    activeWordColor: "hsl(25 70% 45%)",
+    activeWordGlow: "0 0 14px hsl(25 70% 45% / 0.4)",
+  },
+  arabesque: {
+    btnBg: "hsl(152 45% 35%)",
+    btnText: "hsl(40 30% 97%)",
+    btnOutlineBorder: "hsl(152 30% 40% / 0.5)",
+    btnOutlineText: "hsl(152 40% 80%)",
+    activeWordColor: "hsl(152 55% 50%)",
+    activeWordGlow: "0 0 14px hsl(152 55% 45% / 0.5)",
+  },
+  night: {
+    btnBg: "hsl(270 50% 50%)",
+    btnText: "hsl(0 0% 100%)",
+    btnOutlineBorder: "hsl(270 40% 50% / 0.5)",
+    btnOutlineText: "hsl(270 40% 85%)",
+    activeWordColor: "hsl(280 60% 70%)",
+    activeWordGlow: "0 0 14px hsl(280 60% 65% / 0.5)",
+  },
+  calligraphy: {
+    btnBg: "hsl(350 45% 35%)",
+    btnText: "hsl(38 60% 80%)",
+    btnOutlineBorder: "hsl(38 50% 45% / 0.5)",
+    btnOutlineText: "hsl(38 60% 75%)",
+    activeWordColor: "hsl(38 75% 60%)",
+    activeWordGlow: "0 0 14px hsl(38 75% 55% / 0.5)",
+  },
+  tiles: {
+    btnBg: "hsl(185 60% 40%)",
+    btnText: "hsl(0 0% 100%)",
+    btnOutlineBorder: "hsl(185 50% 45% / 0.5)",
+    btnOutlineText: "hsl(200 60% 30%)",
+    activeWordColor: "hsl(195 70% 45%)",
+    activeWordGlow: "0 0 14px hsl(195 70% 40% / 0.5)",
+  },
+};
+
 const PATTERNS: PatternInfo[] = [
   { id: "none", labelAr: "بدون", image: null },
   { id: "geometric", labelAr: "هندسي", image: bgGeometric },
