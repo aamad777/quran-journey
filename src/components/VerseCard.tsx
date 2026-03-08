@@ -279,7 +279,7 @@ const VerseCard = ({
                       <TooltipProvider key={si} delayDuration={200}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span style={{ color: rule.color, fontWeight: 600 }}>{seg.text}</span>
+                            <span style={{ color: rule.color, backgroundColor: rule.bg, borderRadius: '2px', padding: '0 1px', fontWeight: 700 }}>{seg.text}</span>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">
                             <span className="font-arabic text-sm">{rule.labelAr}</span>
