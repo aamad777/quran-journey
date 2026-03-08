@@ -30,7 +30,7 @@ const PrayerBanner = () => {
       <div className="container max-w-4xl mx-auto px-4 py-2 flex items-center justify-center gap-3" dir="rtl">
         <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
         <span className="text-xs font-semibold text-foreground">
-          {nextPrayer.nameAr}
+          صلاة {nextPrayer.nameAr}
         </span>
         <span className="text-xs text-muted-foreground">
           {nextPrayer.time}
