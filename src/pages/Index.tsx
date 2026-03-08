@@ -171,7 +171,17 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container max-w-4xl mx-auto px-4 py-8 md:py-12">
-        {isLoading || verses.length === 0 ? (
+        {activeTab === "stats" ? (
+          <QuranStats
+            surahNumber={progress.surah_number}
+            ayahNumber={progress.ayah_number}
+            versesRead={versesRead}
+            versesRemaining={versesRemaining}
+            progressPercent={progressPercent}
+            voiceCorrect={voiceCorrect}
+            drawCorrect={drawCorrect}
+          />
+        ) : isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
               <Skeleton className="h-10 w-48 mx-auto rounded-full" />
