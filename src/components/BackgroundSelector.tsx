@@ -36,6 +36,9 @@ export interface BgThemeColors {
   btnOutlineText: string;
   activeWordColor: string;
   activeWordGlow: string;
+  textColor: string;
+  mutedText: string;
+  cardBg: string;
 }
 
 export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
