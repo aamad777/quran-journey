@@ -123,6 +123,8 @@ const Index = () => {
           versesRead={versesRead}
           versesRemaining={versesRemaining}
           progressPercent={progressPercent}
+          voiceCorrect={voiceCorrect}
+          drawCorrect={drawCorrect}
         />
       </div>
 
