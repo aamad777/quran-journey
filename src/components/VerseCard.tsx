@@ -686,6 +686,9 @@ const VerseCard = ({
             if (!currentVerse) return;
             const words = currentVerse.arabic.trim().split(/\s+/);
             const totalChars = words.reduce((s, w) => s + w.length, 0);
+            const wordDurationSec = duration / words.length;
+            // Faster recitation = faster pulse (clamp between 0.4s and 2s)
+            setPulseDuration(Math.max(0.4, Math.min(2, wordDurationSec * 0.8)));
             let acc = 0;
             for (let i = 0; i < words.length; i++) {
               acc += words[i].length;
