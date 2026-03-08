@@ -30,28 +30,32 @@ const saveGuestProgress = (p: Progress) => {
   localStorage.setItem(GUEST_PROGRESS_KEY, JSON.stringify(p));
 };
 
-const calcNext = (progress: Progress): Progress => {
+const calcNext = (progress: Progress, step: number = 1): Progress => {
   let { surah_number, ayah_number } = progress;
-  const maxAyah = SURAH_AYAH_COUNT[surah_number - 1];
-  if (ayah_number < maxAyah) {
-    ayah_number += 1;
-  } else if (surah_number < 114) {
-    surah_number += 1;
-    ayah_number = 1;
-  } else {
-    surah_number = 1;
-    ayah_number = 1;
+  for (let i = 0; i < step; i++) {
+    const maxAyah = SURAH_AYAH_COUNT[surah_number - 1];
+    if (ayah_number < maxAyah) {
+      ayah_number += 1;
+    } else if (surah_number < 114) {
+      surah_number += 1;
+      ayah_number = 1;
+    } else {
+      surah_number = 1;
+      ayah_number = 1;
+    }
   }
   return { surah_number, ayah_number };
 };
 
-const calcPrev = (progress: Progress): Progress => {
+const calcPrev = (progress: Progress, step: number = 1): Progress => {
   let { surah_number, ayah_number } = progress;
-  if (ayah_number > 1) {
-    ayah_number -= 1;
-  } else if (surah_number > 1) {
-    surah_number -= 1;
-    ayah_number = SURAH_AYAH_COUNT[surah_number - 1];
+  for (let i = 0; i < step; i++) {
+    if (ayah_number > 1) {
+      ayah_number -= 1;
+    } else if (surah_number > 1) {
+      surah_number -= 1;
+      ayah_number = SURAH_AYAH_COUNT[surah_number - 1];
+    }
   }
   return { surah_number, ayah_number };
 };
