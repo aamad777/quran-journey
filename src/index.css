@@ -220,3 +220,19 @@
 audio::-webkit-media-controls-panel {
   background-color: hsl(var(--card));
 }
+
+/* Override text colors inside themed verse card */
+.verse-card-themed .text-muted-foreground {
+  color: var(--themed-muted, hsl(var(--muted-foreground))) !important;
+}
+.verse-card-themed .text-foreground {
+  color: var(--themed-text, hsl(var(--foreground))) !important;
+}
+.verse-card-themed .text-primary\/70 {
+  color: var(--themed-accent, hsl(var(--primary) / 0.7)) !important;
+}
+.verse-card-themed .bg-border,
+.verse-card-themed .h-px.bg-border {
+  background-color: var(--themed-muted, hsl(var(--border))) !important;
+  opacity: 0.3;
+}

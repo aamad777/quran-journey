@@ -305,19 +305,30 @@ const VerseCard = ({
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
       {/* Surah Header */}
       <div className="text-center mb-6">
-        <div className="inline-block px-6 py-2 rounded-full border" style={{ backgroundColor: themeAccentColor ? `${themeAccentColor}15` : undefined, borderColor: themeAccentColor ? `${themeAccentColor}30` : undefined }}>
-          <span className="font-arabic text-lg" style={{ color: themeAccentColor || 'hsl(var(--gold))' }}>{primaryVerse.surahNameArabic}</span>
-          <span className="mx-3" style={{ color: themeMutedText ? `${themeMutedText}50` : undefined }}>|</span>
-          <span className="font-display text-sm" style={{ color: themeTextColor }}>{primaryVerse.surahName}</span>
+        <div className="inline-block px-6 py-2 rounded-full border backdrop-blur-sm" style={{ backgroundColor: themeCardBg, borderColor: themeAccentColor ? `${themeAccentColor}40` : undefined }}>
+          <span className="font-arabic text-lg font-bold" style={{ color: themeAccentColor || 'hsl(var(--gold))' }}>{primaryVerse.surahNameArabic}</span>
+          <span className="mx-3" style={{ color: themeMutedText }}>|</span>
+          <span className="font-display text-sm font-medium" style={{ color: themeTextColor }}>{primaryVerse.surahName}</span>
         </div>
-        <p className="text-sm mt-2" style={{ color: themeMutedText }}>
+        <p className="text-sm mt-2 font-semibold" style={{ color: themeTextColor, textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
           سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
           {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
       </div>
 
       {/* Verse Card */}
-      <div className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm" style={{ backgroundColor: themeCardBg, borderColor: themeMutedText ? `${themeMutedText}30` : undefined, boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined }}>
+      <div
+        className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed"
+        style={{
+          backgroundColor: themeCardBg,
+          borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
+          boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
+          color: themeTextColor,
+          '--themed-muted': themeMutedText,
+          '--themed-text': themeTextColor,
+          '--themed-accent': themeAccentColor,
+        } as React.CSSProperties}
+      >
         {/* Verses */}
         {verses.map((v, i) => {
           const isActive = isPlaying && i === currentAudioIndex;
