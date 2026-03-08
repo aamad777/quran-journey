@@ -350,6 +350,24 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
               </Button>
 
               <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  // Skip current word
+                  const newCount = revealedCount + 1;
+                  setRevealedCount(newCount);
+                  clearCanvas();
+                  if (newCount >= words.length) {
+                    setVerseComplete(true);
+                  }
+                }}
+                className="rounded-full border-border hover:bg-primary/10"
+                title="تخطي الكلمة"
+              >
+                <SkipForward className="w-4 h-4" />
+              </Button>
+
+              <Button
                 onClick={checkDrawing}
                 disabled={isChecking}
                 size="icon"
