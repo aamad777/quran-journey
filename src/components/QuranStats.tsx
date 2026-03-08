@@ -55,7 +55,7 @@ interface QuranStatsProps {
   drawCorrect: number;
 }
 
-export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent }: QuranStatsProps) {
+export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent, voiceCorrect, drawCorrect }: QuranStatsProps) {
   const currentJuz = getCurrentPart(surahNumber, ayahNumber, JUZ_STARTS);
   const currentHizb = getCurrentPart(surahNumber, ayahNumber, HIZB_STARTS);
   const completedJuz = currentJuz - 1;
