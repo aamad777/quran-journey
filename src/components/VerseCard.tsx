@@ -464,7 +464,7 @@ const VerseCard = ({
 
         <audio
           ref={audioRef}
-          src={audioUrl}
+          src={audioUrls[0] || audioUrl}
           onEnded={handleEnded}
           onPause={() => setIsPlaying(false)}
           onPlay={() => setIsPlaying(true)}
