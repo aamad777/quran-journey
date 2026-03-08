@@ -405,8 +405,8 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                           <span
-                          className={`inline transition-all duration-500 ease-in-out ${isActive && activeWordIndex === wi ? 'animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]' : ''}`}
-                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
+                          className="inline transition-all duration-500 ease-in-out"
+                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)`, animation: `pulse ${pulseDuration}s cubic-bezier(0.4,0,0.6,1) infinite` } : undefined}
                         >
                           {word}
                         </span>
