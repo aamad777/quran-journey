@@ -54,7 +54,26 @@ const Index = () => {
   const TOTAL_VERSES = 6236;
   const versesRead = SURAH_AYAH_COUNT.slice(0, progress.surah_number - 1).reduce((a, b) => a + b, 0) + progress.ayah_number;
   const versesRemaining = TOTAL_VERSES - versesRead;
-  const progressPercent = Math.round((versesRead / TOTAL_VERSES) * 100);
+  const progressPercent = Math.min(100, Math.ceil((versesRead / TOTAL_VERSES) * 100));
+
+  // Practice counters (persisted in localStorage)
+  const [voiceCorrect, setVoiceCorrect] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_voice_correct") || "0"); } catch { return 0; }
+  });
+  const [drawCorrect, setDrawCorrect] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_draw_correct") || "0"); } catch { return 0; }
+  });
+
+  const onVoiceCorrect = () => setVoiceCorrect(prev => {
+    const n = prev + 1;
+    localStorage.setItem("quran_voice_correct", String(n));
+    return n;
+  });
+  const onDrawCorrect = () => setDrawCorrect(prev => {
+    const n = prev + 1;
+    localStorage.setItem("quran_draw_correct", String(n));
+    return n;
+  });
   const isLoading = progressLoading || verseLoading;
 
 
