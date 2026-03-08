@@ -32,6 +32,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
   const [showVerse, setShowVerse] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasDrawn = useRef(false);
 
   const currentVerse = verses[currentVerseIndex] || verses[0];
   const words = currentVerse ? splitWords(currentVerse.arabic) : [];
