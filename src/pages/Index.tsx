@@ -104,13 +104,13 @@ const Index = () => {
       )}
       <div className="relative z-[1]">
       {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: bgTheme.cardBg, borderColor: `${bgTheme.mutedText}30` }}>
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
           <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center shadow-gold">
               <span className="text-xl font-arabic font-bold text-primary-foreground">قـ</span>
             </div>
-            <h1 className="font-arabic text-xl font-bold text-foreground tracking-wide">قارئ القرآن</h1>
+            <h1 className="font-arabic text-xl font-bold tracking-wide" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
           </button>
           <div className="flex items-center gap-2">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
