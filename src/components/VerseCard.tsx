@@ -60,6 +60,10 @@ interface VerseCardProps {
   onVerseCountChange: (count: number) => void;
   activeWordColor?: string;
   activeWordGlow?: string;
+  themeTextColor?: string;
+  themeMutedText?: string;
+  themeCardBg?: string;
+  themeAccentColor?: string;
 }
 
 const VerseCard = ({
@@ -75,6 +79,10 @@ const VerseCard = ({
   onVerseCountChange,
   activeWordColor = "hsl(38 65% 50%)",
   activeWordGlow = "0 0 12px hsl(38 65% 50% / 0.4)",
+  themeTextColor,
+  themeMutedText,
+  themeCardBg,
+  themeAccentColor,
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
