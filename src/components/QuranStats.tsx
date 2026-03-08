@@ -122,8 +122,8 @@ export default function QuranStats({ surahNumber, ayahNumber, versesRead, verses
               <stat.icon className="w-4 h-4 text-primary" />
               <span className="text-xs font-bold text-foreground">{stat.label}</span>
             </div>
-            <span className="text-lg font-bold text-primary">{stat.value}</span>
-            <ProgressBar value={stat.percent} className="h-1.5" />
+          <span className="text-lg font-bold text-primary">{stat.value}</span>
+          {stat.percent !== null && <ProgressBar value={stat.percent} className="h-1.5" />}
             <span className="text-[10px] text-muted-foreground">{stat.detail}</span>
           </div>
         ))}

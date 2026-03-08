@@ -23,7 +23,7 @@ const splitWords = (text: string): string[] => {
   return text.split(/\s+/).filter(Boolean);
 };
 
-const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => {
+const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPracticeModeProps) => {
   const [revealedCount, setRevealedCount] = useState(0);
   const [verseComplete, setVerseComplete] = useState(false);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);

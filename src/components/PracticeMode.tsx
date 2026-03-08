@@ -35,7 +35,7 @@ const splitWords = (text: string): string[] => {
   return text.split(/\s+/).filter(Boolean);
 };
 
-const PracticeMode = ({ verses, onNext, onPrev }: PracticeModeProps) => {
+const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModeProps) => {
   const [fontSize, setFontSize] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
   });
