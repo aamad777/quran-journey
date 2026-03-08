@@ -37,6 +37,7 @@ const Index = () => {
   const bgStyle = bgPattern?.image
     ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
     : {};
+  const bgTheme = BG_THEMES[background];
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
   const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
