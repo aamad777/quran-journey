@@ -343,7 +343,7 @@ const VerseCard = ({
             >
               <p
                 className="font-arabic leading-[2.2]"
-                style={{ fontSize: `${fontSize}px` }}
+                style={{ fontSize: `${fontSize}px`, color: themeTextColor, textShadow: themeTextColor ? `0 1px 10px ${themeTextColor}22` : undefined }}
               >
                 {tajweedMode && v.tajweedText ? (
                   (() => {
@@ -367,7 +367,7 @@ const VerseCard = ({
                                 }}
                               >{seg.text}</span>
                             ) : (
-                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : undefined }} className={isActive && activeWordIndex === wi ? '' : 'text-foreground'}>{seg.text}</span>
+                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : (themeTextColor || undefined) }} className={isActive && activeWordIndex === wi ? '' : ''}>{seg.text}</span>
                             );
                           })}
                         </span>
@@ -395,7 +395,7 @@ const VerseCard = ({
                   ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
                 </span>
               </p>
-              <p className="text-xs text-muted-foreground mt-2">اضغط مطوّلاً للتفسير</p>
+              <p className="text-xs mt-2" style={{ color: themeMutedText }}>اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
           );
