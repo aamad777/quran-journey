@@ -8,7 +8,7 @@ import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
+import { BookOpen, LogOut, LogIn, Mic, PenTool, BarChart3 } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
