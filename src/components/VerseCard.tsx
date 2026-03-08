@@ -105,14 +105,19 @@ const VerseCard = ({
   useEffect(() => { localStorage.setItem("quran_tajweed", String(tajweedMode)); }, [tajweedMode]);
   useEffect(() => { localStorage.setItem("quran_repeat_count", String(repeatCount)); }, [repeatCount]);
 
-  // Reset repeat counter when verse changes
-  useEffect(() => { currentRepeatRef.current = 0; }, [audioUrl]);
+  // Reset when verses change
+  useEffect(() => {
+    currentRepeatRef.current = 0;
+    setCurrentAudioIndex(0);
+  }, [audioUrl]);
 
   useEffect(() => {
-    if (autoPlay && audioRef.current && audioUrl) {
+    if (autoPlay && audioRef.current && audioUrls.length > 0) {
+      setCurrentAudioIndex(0);
+      audioRef.current.src = audioUrls[0];
       audioRef.current.play().catch(() => {});
     }
-  }, [audioUrl, autoPlay]);
+  }, [audioUrls, autoPlay]);
 
   useEffect(() => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
