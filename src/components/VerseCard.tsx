@@ -366,7 +366,8 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                         <span
-                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'text-primary scale-110 inline-block' : ''}`}
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-105' : ''}`}
+                          style={isActive && activeWordIndex === wi ? { color: activeWordColor, textShadow: activeWordGlow, backgroundColor: `${activeWordColor}15`, borderRadius: '4px', padding: '1px 3px' } : undefined}
                         >
                           {word}
                         </span>
