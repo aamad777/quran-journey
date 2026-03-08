@@ -85,7 +85,7 @@ const VerseCard = ({
     try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
   });
   const [tajweedMode, setTajweedMode] = useState(() => {
-    try { return localStorage.getItem("quran_tajweed") === "true"; } catch { return false; }
+    try { const v = localStorage.getItem("quran_tajweed"); return v === null ? true : v === "true"; } catch { return true; }
   });
   const [countdown, setCountdown] = useState<number | null>(null);
   const [repeatCount, setRepeatCount] = useState(() => {
