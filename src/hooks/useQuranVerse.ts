@@ -16,7 +16,13 @@ const RECITERS = [
   { id: "ar.huthayfi", name: "Ali Al-Huthayfi" },
   { id: "ar.minshawi", name: "Muhammad Al-Minshawi" },
   { id: "ar.ahmedajamy", name: "Ahmed Al-Ajamy" },
-  { id: "ar.raaboralkurdi", name: "Raad Al-Kurdi" },
+  { id: "ar.abdulsamad", name: "Abdul Samad" },
+  { id: "ar.shaatree", name: "Abu Bakr Ash-Shaatree" },
+  { id: "ar.husary", name: "Mahmoud Khalil Al-Husary" },
+  { id: "ar.husarymujawwad", name: "Al-Husary (Mujawwad)" },
+  { id: "ar.maaboralkurdi", name: "Maher Al-Muaiqly" },
+  { id: "ar.parhizgar", name: "Shahhat Muhammad" },
+  { id: "ar.ibrahimakhbar", name: "Ibrahim Al-Akhdar" },
 ];
 
 // Surah ayah counts for boundary checking
