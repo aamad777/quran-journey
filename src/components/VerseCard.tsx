@@ -25,9 +25,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type ReciterSource =
+  | { type: "alquran"; id: string }
+  | { type: "everyayah"; folder: string }
+  | { type: "mp3quran"; server: string; path: string };
+
 interface Reciter {
   id: string;
   name: string;
+  source: ReciterSource;
 }
 
 interface VerseData {
@@ -64,6 +70,7 @@ interface VerseCardProps {
   themeMutedText?: string;
   themeCardBg?: string;
   themeAccentColor?: string;
+  isSurahLevel?: boolean;
 }
 
 const VerseCard = ({
@@ -83,6 +90,7 @@ const VerseCard = ({
   themeMutedText,
   themeCardBg,
   themeAccentColor,
+  isSurahLevel = false,
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -619,20 +627,28 @@ const VerseCard = ({
           )}
 
           {/* Reciter */}
-          <div className="flex items-center justify-center gap-2">
-            <Volume2 className="w-4 h-4 text-muted-foreground" />
-            <Select value={selectedReciter} onValueChange={onReciterChange}>
-              <SelectTrigger className="w-64 bg-background text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {reciters.map((r) => (
-                  <SelectItem key={r.id} value={r.id}>
-                    {r.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4 text-muted-foreground" />
+              <Select value={selectedReciter} onValueChange={onReciterChange}>
+                <SelectTrigger className="w-64 bg-background text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-80">
+                  {reciters.map((r) => (
+                    <SelectItem key={r.id} value={r.id}>
+                      {r.name}
+                      {r.source.type === "mp3quran" && " (سورة كاملة)"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {isSurahLevel && (
+              <p className="text-xs text-amber-600 dark:text-amber-400 text-center">
+                ⚠️ هذا القارئ يشغّل السورة كاملة - تتبع الكلمات غير متاح
+              </p>
+            )}
           </div>
 
           {/* Controls */}
