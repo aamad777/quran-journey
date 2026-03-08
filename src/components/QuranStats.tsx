@@ -1,4 +1,4 @@
-import { BookOpen, Layers, Grid3X3, FileText } from "lucide-react";
+import { BookOpen, Layers, Grid3X3, FileText, Mic, PenTool } from "lucide-react";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 
 // Juz boundaries: [surah, ayah] for the start of each juz (1-30)
