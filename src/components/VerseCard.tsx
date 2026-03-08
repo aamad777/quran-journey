@@ -395,7 +395,7 @@ const VerseCard = ({
                   ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
                 </span>
               </p>
-              <p className="text-xs text-muted-foreground mt-2">اضغط مطوّلاً للتفسير</p>
+              <p className="text-xs mt-2" style={{ color: themeMutedText }}>اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
           );

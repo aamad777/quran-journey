@@ -100,8 +100,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative" style={bgStyle}>
-      {bgPattern?.image && bgOpacity < 1 && (
-        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: 1 - bgOpacity }} />
+      {overlayOpacity > 0 && (
+        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: overlayOpacity }} />
       )}
       <div className="relative z-[1]">
       {/* Header */}
