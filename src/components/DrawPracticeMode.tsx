@@ -220,7 +220,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           />
         </div>
 
-        {/* Words display */}
+        {/* Words display - only show revealed words */}
         <div className="text-center mb-4 select-none" dir="rtl">
           <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
             {words.map((word, i) => (
@@ -229,25 +229,20 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
                 className={`inline-block mx-1 transition-all duration-300 ${
                   i < revealedCount
                     ? "text-foreground"
-                    : i === revealedCount
-                    ? "text-primary font-bold border-b-2 border-primary pb-1"
-                    : "text-muted-foreground/20"
+                    : "text-transparent"
                 }`}
-                style={{
-                  filter: i <= revealedCount ? "none" : "blur(2px)",
-                }}
               >
-                {word}
+                {i < revealedCount ? word : "ـــ"}
               </span>
             ))}
           </p>
         </div>
 
-        {/* Current word to draw */}
+        {/* Current word hint - hidden */}
         {!verseComplete && (
           <div className="text-center mb-4">
-            <p className="text-xs text-muted-foreground mb-1">ارسم هذه الكلمة:</p>
-            <span className="font-arabic text-4xl text-primary">{currentWord}</span>
+            <p className="text-xs text-muted-foreground">ارسم الكلمة التالية</p>
+            <span className="text-sm text-muted-foreground">كلمة {revealedCount + 1} من {words.length}</span>
           </div>
         )}
 
