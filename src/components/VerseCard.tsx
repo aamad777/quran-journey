@@ -73,6 +73,8 @@ const VerseCard = ({
   onPrev,
   verseCount,
   onVerseCountChange,
+  activeWordColor = "hsl(38 65% 50%)",
+  activeWordGlow = "0 0 12px hsl(38 65% 50% / 0.4)",
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
