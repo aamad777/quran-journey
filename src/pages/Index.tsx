@@ -151,15 +151,26 @@ const Index = () => {
         <PermissionPrompt />
       </div>
 
-      {/* Progress counter only */}
+      {/* Progress Banner */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <div className="flex items-center gap-3 backdrop-blur-sm rounded-full px-4 py-2" style={{ backgroundColor: `${bgTheme.cardBg}`, border: `1px solid ${bgTheme.mutedText}30` }}>
-          <div className="h-2 flex-1 overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}30` }}>
-            <div className="h-full transition-all duration-700 rounded-full" style={{ width: `${progressPercent}%`, backgroundColor: bgTheme.btnBg }} />
+        <div className="flex items-center gap-4 backdrop-blur-md rounded-2xl px-5 py-3.5" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}25`, boxShadow: `0 2px 16px ${bgTheme.btnBg}15` }}>
+          <div className="flex flex-col items-center min-w-[56px]">
+            <span className="text-2xl font-bold font-arabic leading-none" style={{ color: bgTheme.btnBg }}>{progressPercent}٪</span>
+            <span className="text-[10px] mt-0.5" style={{ color: bgTheme.mutedText }}>مكتمل</span>
           </div>
-          <span className="text-xs font-semibold whitespace-nowrap" style={{ color: bgTheme.mutedText }}>
-            {versesRemaining.toLocaleString("ar-EG")} آية متبقية ({progressPercent}٪)
-          </span>
+          <div className="flex-1 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>
+                {versesRead.toLocaleString("ar-EG")} آية مقروءة
+              </span>
+              <span className="text-xs" style={{ color: bgTheme.mutedText }}>
+                {versesRemaining.toLocaleString("ar-EG")} متبقية
+              </span>
+            </div>
+            <div className="h-2.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}25` }}>
+              <div className="h-full transition-all duration-700 rounded-full" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})`, boxShadow: `0 0 8px ${bgTheme.btnBg}60` }} />
+            </div>
+          </div>
         </div>
       </div>
 
