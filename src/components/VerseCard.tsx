@@ -60,6 +60,10 @@ interface VerseCardProps {
   onVerseCountChange: (count: number) => void;
   activeWordColor?: string;
   activeWordGlow?: string;
+  themeTextColor?: string;
+  themeMutedText?: string;
+  themeCardBg?: string;
+  themeAccentColor?: string;
 }
 
 const VerseCard = ({
@@ -75,6 +79,10 @@ const VerseCard = ({
   onVerseCountChange,
   activeWordColor = "hsl(38 65% 50%)",
   activeWordGlow = "0 0 12px hsl(38 65% 50% / 0.4)",
+  themeTextColor,
+  themeMutedText,
+  themeCardBg,
+  themeAccentColor,
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -297,19 +305,19 @@ const VerseCard = ({
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
       {/* Surah Header */}
       <div className="text-center mb-6">
-        <div className="inline-block px-6 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <span className="font-arabic text-lg text-gold">{primaryVerse.surahNameArabic}</span>
-          <span className="mx-3 text-border">|</span>
-          <span className="font-display text-sm text-foreground">{primaryVerse.surahName}</span>
+        <div className="inline-block px-6 py-2 rounded-full border" style={{ backgroundColor: themeAccentColor ? `${themeAccentColor}15` : undefined, borderColor: themeAccentColor ? `${themeAccentColor}30` : undefined }}>
+          <span className="font-arabic text-lg" style={{ color: themeAccentColor || 'hsl(var(--gold))' }}>{primaryVerse.surahNameArabic}</span>
+          <span className="mx-3" style={{ color: themeMutedText ? `${themeMutedText}50` : undefined }}>|</span>
+          <span className="font-display text-sm" style={{ color: themeTextColor }}>{primaryVerse.surahName}</span>
         </div>
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="text-sm mt-2" style={{ color: themeMutedText }}>
           سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
           {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
       </div>
 
       {/* Verse Card */}
-      <div className="bg-card rounded-2xl border border-border p-8 md:p-12 shadow-gold">
+      <div className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm" style={{ backgroundColor: themeCardBg, borderColor: themeMutedText ? `${themeMutedText}30` : undefined, boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined }}>
         {/* Verses */}
         {verses.map((v, i) => {
           const isActive = isPlaying && i === currentAudioIndex;

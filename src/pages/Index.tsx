@@ -104,25 +104,25 @@ const Index = () => {
       )}
       <div className="relative z-[1]">
       {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: bgTheme.cardBg, borderColor: `${bgTheme.mutedText}30` }}>
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
           <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center shadow-gold">
               <span className="text-xl font-arabic font-bold text-primary-foreground">قـ</span>
             </div>
-            <h1 className="font-arabic text-xl font-bold text-foreground tracking-wide">قارئ القرآن</h1>
+            <h1 className="font-arabic text-xl font-bold tracking-wide" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
           </button>
           <div className="flex items-center gap-2">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
-              <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={signOut} style={{ color: bgTheme.mutedText }}>
                 <LogOut className="w-4 h-4 mr-2" />
                 خروج
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
                 <LogIn className="w-4 h-4 mr-2" />
                 دخول
               </Button>
@@ -132,14 +132,14 @@ const Index = () => {
       </header>
 
       {/* Prayer Times Banner */}
-      <PrayerBanner />
+      <PrayerBanner textColor={bgTheme.textColor} mutedText={bgTheme.mutedText} accentColor={bgTheme.btnBg} cardBg={bgTheme.cardBg} />
 
       {/* Guest Banner */}
       {!user && (
-        <div className="bg-accent/20 border-b border-border">
+        <div className="border-b backdrop-blur-sm" style={{ backgroundColor: `${bgTheme.btnBg}15`, borderColor: `${bgTheme.mutedText}30` }}>
           <div className="container max-w-4xl mx-auto px-4 py-2 text-center">
-            <p className="text-sm text-muted-foreground">
-              تقرأ كضيف. <button onClick={() => navigate("/auth")} className="text-gold font-semibold hover:underline">سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
+            <p className="text-sm" style={{ color: bgTheme.mutedText }}>
+              تقرأ كضيف. <button onClick={() => navigate("/auth")} className="font-semibold hover:underline" style={{ color: bgTheme.btnBg }}>سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
             </p>
           </div>
         </div>
@@ -152,11 +152,11 @@ const Index = () => {
 
       {/* Progress counter only */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <div className="flex items-center gap-3 bg-card/60 backdrop-blur-sm rounded-full border border-border px-4 py-2">
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+        <div className="flex items-center gap-3 backdrop-blur-sm rounded-full px-4 py-2" style={{ backgroundColor: `${bgTheme.cardBg}`, border: `1px solid ${bgTheme.mutedText}30` }}>
+          <div className="h-2 flex-1 overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}30` }}>
             <div className="h-full transition-all duration-700 rounded-full" style={{ width: `${progressPercent}%`, backgroundColor: bgTheme.btnBg }} />
           </div>
-          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+          <span className="text-xs font-semibold whitespace-nowrap" style={{ color: bgTheme.mutedText }}>
             {versesRemaining.toLocaleString("ar-EG")} آية متبقية ({progressPercent}٪)
           </span>
         </div>
@@ -226,6 +226,10 @@ const Index = () => {
             onVerseCountChange={setVerseCount}
             activeWordColor={bgTheme.activeWordColor}
             activeWordGlow={bgTheme.activeWordGlow}
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
           />
         ) : activeTab === "practice" ? (
           <PracticeMode
