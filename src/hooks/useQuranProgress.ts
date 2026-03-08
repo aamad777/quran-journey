@@ -96,8 +96,8 @@ export const useQuranProgress = (user: User | null) => {
     }
   }, [user]);
 
-  const goToNext = useCallback(async () => {
-    const newProgress = calcNext(progress);
+  const goToNext = useCallback(async (step: number = 1) => {
+    const newProgress = calcNext(progress, step);
     setProgress(newProgress);
 
     if (user) {
@@ -107,8 +107,8 @@ export const useQuranProgress = (user: User | null) => {
     }
   }, [user, progress]);
 
-  const goToPrev = useCallback(async () => {
-    const newProgress = calcPrev(progress);
+  const goToPrev = useCallback(async (step: number = 1) => {
+    const newProgress = calcPrev(progress, step);
     setProgress(newProgress);
 
     if (user) {
