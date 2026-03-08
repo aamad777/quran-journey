@@ -18,8 +18,8 @@ const Index = () => {
   const { theme, setTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
-  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw">(() => {
-    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw") || "read"; } catch { return "read"; }
+  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw" | "stats") || "read"; } catch { return "read"; }
   });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
