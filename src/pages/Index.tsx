@@ -226,6 +226,10 @@ const Index = () => {
             onVerseCountChange={setVerseCount}
             activeWordColor={bgTheme.activeWordColor}
             activeWordGlow={bgTheme.activeWordGlow}
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
           />
         ) : activeTab === "practice" ? (
           <PracticeMode
