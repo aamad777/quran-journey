@@ -132,7 +132,7 @@ const Index = () => {
       </header>
 
       {/* Prayer Times Banner */}
-      <PrayerBanner />
+      <PrayerBanner textColor={bgTheme.textColor} mutedText={bgTheme.mutedText} accentColor={bgTheme.btnBg} cardBg={bgTheme.cardBg} />
 
       {/* Guest Banner */}
       {!user && (
