@@ -123,10 +123,16 @@ const Index = () => {
                 <LogOut className="w-4 h-4" />
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
-                <LogIn className="w-3.5 h-3.5" />
-                دخول
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
+                  <LogIn className="w-3.5 h-3.5" />
+                  دخول
+                </Button>
+                <Button size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
+                  <UserPlus className="w-3.5 h-3.5" />
+                  تسجيل
+                </Button>
+              </>
             )}
           </div>
         </div>
