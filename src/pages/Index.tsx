@@ -5,6 +5,7 @@ import { useQuranVerse } from "@/hooks/useQuranVerse";
 import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
 import PracticeMode from "@/components/PracticeMode";
+import DrawPracticeMode from "@/components/DrawPracticeMode";
 import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
