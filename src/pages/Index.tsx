@@ -51,10 +51,8 @@ const Index = () => {
 
   const isLoading = progressLoading || verseLoading;
 
-  const themeClass = theme !== "emerald" ? `theme-${theme}` : "";
-
   return (
-    <div className={`min-h-screen bg-background islamic-pattern ${themeClass}`}>
+    <div className="min-h-screen bg-background islamic-pattern">
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
