@@ -115,17 +115,16 @@ const Index = () => {
         </div>
       )}
 
-      {/* Quran Stats */}
+      {/* Progress counter only */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <QuranStats
-          surahNumber={progress.surah_number}
-          ayahNumber={progress.ayah_number}
-          versesRead={versesRead}
-          versesRemaining={versesRemaining}
-          progressPercent={progressPercent}
-          voiceCorrect={voiceCorrect}
-          drawCorrect={drawCorrect}
-        />
+        <div className="flex items-center gap-3 bg-card/60 backdrop-blur-sm rounded-full border border-border px-4 py-2">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+            <div className="h-full bg-primary transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+          </div>
+          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+            {versesRemaining.toLocaleString("ar-EG")} آية متبقية ({progressPercent}٪)
+          </span>
+        </div>
       </div>
 
 
