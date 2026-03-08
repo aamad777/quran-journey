@@ -8,7 +8,7 @@ import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, Mic, PenTool, BarChart3 } from "lucide-react";
+import { BookOpen, LogOut, LogIn, Mic, PenTool, BarChart3, Heart } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
 import PermissionPrompt from "@/components/PermissionPrompt";
@@ -156,6 +156,17 @@ const Index = () => {
         <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
           {/* Progress Row */}
           <div className="flex items-center gap-3 px-4 py-3">
+            {/* Beating Heart */}
+            <div className="relative shrink-0">
+              <Heart
+                className="w-7 h-7 fill-current"
+                style={{
+                  color: bgTheme.btnBg,
+                  filter: `drop-shadow(0 0 ${4 + progressPercent * 0.1}px ${bgTheme.btnBg})`,
+                  animation: `heartbeat ${Math.max(0.3, 1.5 - (progressPercent * 0.012))}s ease-in-out infinite`,
+                }}
+              />
+            </div>
             {/* Percentage Circle */}
             <div className="relative w-11 h-11 shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
