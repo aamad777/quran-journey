@@ -62,7 +62,7 @@ const Index = () => {
     localStorage.setItem("quran_active_tab", activeTab);
   }, [activeTab]);
 
-  const { verses, audioUrl, audioUrls, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
+  const { verses, audioUrl, audioUrls, loading: verseLoading, selectedReciter, setSelectedReciter, reciters, isSurahLevel } =
     useQuranVerse(progress.surah_number, progress.ayah_number, verseCount);
   const navigate = useNavigate();
 
