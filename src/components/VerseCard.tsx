@@ -58,6 +58,8 @@ interface VerseCardProps {
   onPrev: () => void;
   verseCount: number;
   onVerseCountChange: (count: number) => void;
+  activeWordColor?: string;
+  activeWordGlow?: string;
 }
 
 const VerseCard = ({
