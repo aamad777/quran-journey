@@ -367,7 +367,7 @@ const VerseCard = ({
                                 }}
                               >{seg.text}</span>
                             ) : (
-                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : undefined }} className={isActive && activeWordIndex === wi ? '' : 'text-foreground'}>{seg.text}</span>
+                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : (themeTextColor || undefined) }} className={isActive && activeWordIndex === wi ? '' : ''}>{seg.text}</span>
                             );
                           })}
                         </span>
