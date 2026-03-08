@@ -22,13 +22,20 @@ const Index = () => {
   const [background, setBackgroundState] = useState<BackgroundPattern>(() => {
     try { return (localStorage.getItem("quran_bg_pattern") as BackgroundPattern) || "geometric"; } catch { return "geometric"; }
   });
+  const [bgOpacity, setBgOpacityState] = useState(() => {
+    try { return parseFloat(localStorage.getItem("quran_bg_opacity") || "1"); } catch { return 1; }
+  });
   const setBackground = (bg: BackgroundPattern) => {
     setBackgroundState(bg);
     localStorage.setItem("quran_bg_pattern", bg);
   };
+  const setBgOpacity = (val: number) => {
+    setBgOpacityState(val);
+    localStorage.setItem("quran_bg_opacity", String(val));
+  };
   const bgPattern = PATTERNS.find(p => p.id === background);
   const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" as const }
+    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
     : {};
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
@@ -90,7 +97,11 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background" style={bgStyle}>
+    <div className="min-h-screen bg-background relative" style={bgStyle}>
+      {bgPattern?.image && bgOpacity < 1 && (
+        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: 1 - bgOpacity }} />
+      )}
+      <div className="relative z-[1]">
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
@@ -101,7 +112,7 @@ const Index = () => {
             <h1 className="font-arabic text-xl font-bold text-foreground tracking-wide">قارئ القرآن</h1>
           </button>
           <div className="flex items-center gap-2">
-            <BackgroundSelector background={background} setBackground={setBackground} />
+            <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
@@ -245,6 +256,7 @@ const Index = () => {
           />
         )}
       </main>
+      </div>
     </div>
   );
 };
