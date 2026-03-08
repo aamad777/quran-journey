@@ -176,7 +176,7 @@ const Index = () => {
                 {/* Inner shimmer */}
                 <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)' }} />
                 {/* Star end cap */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-5 h-5 flex items-center justify-center" style={{ color: bgTheme.btnBg, filter: `drop-shadow(0 0 4px ${bgTheme.btnBg})` }}>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-5 h-5 flex items-center justify-center animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" style={{ color: bgTheme.btnBg, filter: `drop-shadow(0 0 4px ${bgTheme.btnBg})` }}>
                   <span className="text-xs">✦</span>
                 </div>
               </div>
