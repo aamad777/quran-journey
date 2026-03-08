@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
 import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
+import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
 import { Progress as ProgressBar } from "@/components/ui/progress";
