@@ -193,12 +193,14 @@ const Index = () => {
             verses={verses}
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}
+            onCorrectWord={onVoiceCorrect}
           />
         ) : (
           <DrawPracticeMode
             verses={verses}
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}
+            onCorrectWord={onDrawCorrect}
           />
         )}
       </main>
