@@ -134,7 +134,7 @@ const VerseCard = ({
     setIsPlaying(false);
     currentRepeatRef.current += 1;
 
-    // If we haven't reached the repeat count, replay
+    // If we haven't reached the repeat count for this verse, replay
     if (currentRepeatRef.current < repeatCount) {
       setTimeout(() => {
         if (audioRef.current) {
@@ -145,8 +145,24 @@ const VerseCard = ({
       return;
     }
 
-    // All repeats done, reset counter
+    // All repeats done for current verse, move to next verse audio
     currentRepeatRef.current = 0;
+    const nextIndex = currentAudioIndex + 1;
+
+    if (nextIndex < audioUrls.length) {
+      // Play next verse's audio
+      setCurrentAudioIndex(nextIndex);
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.src = audioUrls[nextIndex];
+          audioRef.current.play().catch(() => {});
+        }
+      }, 500);
+      return;
+    }
+
+    // All verses done, reset
+    setCurrentAudioIndex(0);
 
     if (autoPlay) {
       const delay = parseInt(advanceDelay) * 1000;
