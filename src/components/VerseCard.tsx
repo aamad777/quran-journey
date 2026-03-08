@@ -25,9 +25,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type ReciterSource =
+  | { type: "alquran"; id: string }
+  | { type: "everyayah"; folder: string }
+  | { type: "mp3quran"; server: string; path: string };
+
 interface Reciter {
   id: string;
   name: string;
+  source: ReciterSource;
 }
 
 interface VerseData {
