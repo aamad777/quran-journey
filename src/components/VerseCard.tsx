@@ -507,12 +507,27 @@ const VerseCard = ({
             )}
           </div>
 
-          {/* Countdown */}
+          {/* Countdown with pause */}
           {countdown !== null && (
-            <div className="text-center">
+            <div className="flex items-center justify-center gap-3">
               <span className="text-xs text-muted-foreground animate-pulse">
                 الآية التالية بعد {countdown} ثانية...
               </span>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 px-3 text-xs gap-1.5 rounded-full"
+                onClick={() => {
+                  if (timerRef.current) {
+                    clearInterval(timerRef.current);
+                    timerRef.current = null;
+                  }
+                  setCountdown(null);
+                }}
+              >
+                <Pause className="w-3 h-3" />
+                إيقاف مؤقت
+              </Button>
             </div>
           )}
 
