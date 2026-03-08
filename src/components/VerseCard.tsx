@@ -100,6 +100,40 @@ const VerseCard = ({
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tajweedPopupOpen, setTajweedPopupOpen] = useState(false);
   const [selectedTajweedRule, setSelectedTajweedRule] = useState<TajweedRuleInfo | null>(null);
+  const tajweedAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [tajweedAudioLoading, setTajweedAudioLoading] = useState(false);
+  const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
+
+  const playTajweedExample = useCallback(async (exampleRef: string) => {
+    if (tajweedAudioRef.current) {
+      tajweedAudioRef.current.pause();
+      tajweedAudioRef.current = null;
+    }
+    setTajweedAudioLoading(true);
+    setTajweedAudioPlaying(false);
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${exampleRef}/ar.alafasy`);
+      const data = await res.json();
+      if (data.code === 200 && data.data?.audio) {
+        const audio = new Audio(data.data.audio);
+        tajweedAudioRef.current = audio;
+        audio.onended = () => setTajweedAudioPlaying(false);
+        await audio.play();
+        setTajweedAudioPlaying(true);
+      }
+    } catch (e) {
+      console.error("Failed to play tajweed example:", e);
+    }
+    setTajweedAudioLoading(false);
+  }, []);
+
+  const stopTajweedExample = useCallback(() => {
+    if (tajweedAudioRef.current) {
+      tajweedAudioRef.current.pause();
+      tajweedAudioRef.current = null;
+      setTajweedAudioPlaying(false);
+    }
+  }, []);
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
@@ -318,7 +352,7 @@ const VerseCard = ({
         </Dialog>
 
         {/* Tajweed Rule Popup */}
-        <Dialog open={tajweedPopupOpen} onOpenChange={setTajweedPopupOpen}>
+        <Dialog open={tajweedPopupOpen} onOpenChange={(open) => { setTajweedPopupOpen(open); if (!open) stopTajweedExample(); }}>
           <DialogContent className="max-w-sm" dir="rtl">
             <DialogHeader>
               <DialogTitle className="font-arabic text-lg" style={{ color: selectedTajweedRule?.color }}>
@@ -339,6 +373,24 @@ const VerseCard = ({
                 <div>
                   <p className="text-xs text-muted-foreground font-semibold mb-1">مثال</p>
                   <p className="font-arabic text-base text-foreground" style={{ color: selectedTajweedRule.color }}>{selectedTajweedRule.example}</p>
+                </div>
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground font-semibold mb-2">🔊 استمع للمثال (آية {selectedTajweedRule.exampleRef})</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() => tajweedAudioPlaying ? stopTajweedExample() : playTajweedExample(selectedTajweedRule.exampleRef)}
+                    disabled={tajweedAudioLoading}
+                  >
+                    {tajweedAudioLoading ? (
+                      <><Volume2 className="w-4 h-4 animate-pulse" /> جاري التحميل...</>
+                    ) : tajweedAudioPlaying ? (
+                      <><Pause className="w-4 h-4" /> إيقاف</>
+                    ) : (
+                      <><Play className="w-4 h-4" /> تشغيل المثال</>
+                    )}
+                  </Button>
                 </div>
               </div>
             )}

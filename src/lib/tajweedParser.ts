@@ -13,6 +13,7 @@ export interface TajweedRuleInfo {
   description: string;
   howTo: string;
   example: string;
+  exampleRef: string; // surah:ayah for audio example
 }
 
 export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
@@ -23,6 +24,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "صوت أغنّ يخرج من الخيشوم (الأنف) مقدار حركتين",
     howTo: "أمسك النون أو الميم المشددة مع إخراج الصوت من الأنف لمدة حركتين",
     example: "إِنَّ ، ثُمَّ",
+    exampleRef: "4:11",
   },
   a: {
     label: "Ikhfa",
@@ -31,6 +33,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "إخفاء النون الساكنة أو التنوين عند أحد حروف الإخفاء الـ15",
     howTo: "انطق النون بصوت بين الإظهار والإدغام مع غنة حركتين",
     example: "مِنْ قَبْلُ ، يَنْصُرُ",
+    exampleRef: "2:25",
   },
   u: {
     label: "Idgham (no ghunnah)",
@@ -39,6 +42,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "إدغام النون الساكنة أو التنوين في اللام أو الراء بدون غنة",
     howTo: "أدغم النون في الحرف التالي (ل أو ر) مباشرة بدون غنة",
     example: "مِنْ رَبِّهِمْ ، مِنْ لَدُنْهُ",
+    exampleRef: "2:5",
   },
   m: {
     label: "Madd",
@@ -47,6 +51,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "مدّ الصوت بحرف من حروف المد (ا، و، ي) من 2 إلى 6 حركات",
     howTo: "مُدّ حرف المد بمقدار حركتين أو أكثر حسب نوع المد",
     example: "قَالُوا ، فِيهَا",
+    exampleRef: "2:14",
   },
   o: {
     label: "Madd Lazim",
@@ -55,6 +60,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "مدّ لازم يُمَدّ 6 حركات وجوباً عند وجود سكون أصلي بعد حرف المد",
     howTo: "مُدّ الحرف 6 حركات كاملة (أطول مدّ في التجويد)",
     example: "الْحَاقَّةُ ، الضَّالِّينَ",
+    exampleRef: "1:7",
   },
   l: {
     label: "Lam Shamsiyyah",
@@ -63,6 +69,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "اللام في (ال) التعريف لا تُنطق وتُدغم في الحرف الشمسي بعدها",
     howTo: "لا تنطق اللام، وشدّد الحرف الذي بعدها",
     example: "الشَّمْسُ ، النَّاسِ",
+    exampleRef: "91:1",
   },
   h: {
     label: "Hamzat Al-Wasl",
@@ -71,6 +78,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "همزة تُنطق في بداية الكلام وتسقط في الوصل (الدرج)",
     howTo: "انطقها عند البدء بالكلمة، واحذفها عند الوصل بما قبلها",
     example: "اسْتَغْفِرْ ، اذْهَبْ",
+    exampleRef: "63:5",
   },
   f: {
     label: "Ikhfa Shafawi",
@@ -79,6 +87,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "إخفاء الميم الساكنة عند حرف الباء مع غنة",
     howTo: "أخفِ الميم عند الباء مع إبقاء غنة خفيفة من الأنف",
     example: "تَرْمِيهِمْ بِحِجَارَةٍ",
+    exampleRef: "105:4",
   },
   p: {
     label: "Qalqalah",
@@ -87,6 +96,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "اضطراب الصوت عند نطق أحد حروف (ق ط ب ج د) الساكنة",
     howTo: "انطق الحرف الساكن بنبرة قوية مع اهتزاز خفيف (كأنه يرتد)",
     example: "يَخْلُقْ ، أَحَدْ ، لَمْ يَلِدْ",
+    exampleRef: "112:3",
   },
   i: {
     label: "Idgham with Ghunnah",
@@ -95,6 +105,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "إدغام النون الساكنة أو التنوين في (ي ن م و) مع غنة حركتين",
     howTo: "أدغم النون في الحرف التالي مع إخراج غنة من الأنف لمدة حركتين",
     example: "مِنْ يَعْمَلْ ، مِنْ وَلِيٍّ",
+    exampleRef: "4:85",
   },
   q: {
     label: "Iqlab",
@@ -103,6 +114,7 @@ export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
     description: "قلب النون الساكنة أو التنوين ميماً عند حرف الباء",
     howTo: "حوّل النون إلى ميم مع غنة حركتين قبل الباء",
     example: "أَنْبِئْهُمْ ، سَمِيعٌ بَصِيرٌ",
+    exampleRef: "2:33",
   },
 };
 
