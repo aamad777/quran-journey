@@ -100,6 +100,40 @@ const VerseCard = ({
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tajweedPopupOpen, setTajweedPopupOpen] = useState(false);
   const [selectedTajweedRule, setSelectedTajweedRule] = useState<TajweedRuleInfo | null>(null);
+  const tajweedAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [tajweedAudioLoading, setTajweedAudioLoading] = useState(false);
+  const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
+
+  const playTajweedExample = useCallback(async (exampleRef: string) => {
+    if (tajweedAudioRef.current) {
+      tajweedAudioRef.current.pause();
+      tajweedAudioRef.current = null;
+    }
+    setTajweedAudioLoading(true);
+    setTajweedAudioPlaying(false);
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${exampleRef}/ar.alafasy`);
+      const data = await res.json();
+      if (data.code === 200 && data.data?.audio) {
+        const audio = new Audio(data.data.audio);
+        tajweedAudioRef.current = audio;
+        audio.onended = () => setTajweedAudioPlaying(false);
+        await audio.play();
+        setTajweedAudioPlaying(true);
+      }
+    } catch (e) {
+      console.error("Failed to play tajweed example:", e);
+    }
+    setTajweedAudioLoading(false);
+  }, []);
+
+  const stopTajweedExample = useCallback(() => {
+    if (tajweedAudioRef.current) {
+      tajweedAudioRef.current.pause();
+      tajweedAudioRef.current = null;
+      setTajweedAudioPlaying(false);
+    }
+  }, []);
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
