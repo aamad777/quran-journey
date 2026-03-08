@@ -98,6 +98,7 @@ const Index = () => {
             <h1 className="font-arabic text-xl font-bold text-foreground tracking-wide">قارئ القرآن</h1>
           </button>
           <div className="flex items-center gap-2">
+            <BackgroundSelector background={background} setBackground={setBackground} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
