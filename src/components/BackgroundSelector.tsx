@@ -54,7 +54,7 @@ export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
     btnOutlineBorder: "hsl(38 50% 40% / 0.5)", btnOutlineText: "hsl(38 60% 80%)",
     activeWordColor: "hsl(38 80% 60%)", activeWordGlow: "0 0 14px hsl(38 80% 55% / 0.5)",
     textColor: "hsl(40 30% 92%)", mutedText: "hsl(38 40% 70%)",
-    cardBg: "hsl(220 30% 12% / 0.85)",
+    cardBg: "hsl(220 30% 12% / 0.93)",
   },
   mosque: {
     btnBg: "hsl(35 60% 45%)", btnText: "hsl(40 30% 97%)",
