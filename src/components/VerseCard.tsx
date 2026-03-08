@@ -117,6 +117,7 @@ const VerseCard = ({
   const [tajweedAudioLoading, setTajweedAudioLoading] = useState(false);
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
   const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
+  const [pulseDuration, setPulseDuration] = useState(1.5);
 
   // Vivid gradient colors for active word during recitation
   const RECITE_GRADIENTS = [
@@ -374,8 +375,8 @@ const VerseCard = ({
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
                           <span
-                          className={`inline transition-all duration-500 ease-in-out ${isActive && activeWordIndex === wi ? 'animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]' : ''}`}
-                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
+                          className="inline transition-all duration-500 ease-in-out"
+                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)`, animation: `pulse ${pulseDuration}s cubic-bezier(0.4,0,0.6,1) infinite` } : undefined}
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
@@ -404,8 +405,8 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                           <span
-                          className={`inline transition-all duration-500 ease-in-out ${isActive && activeWordIndex === wi ? 'animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]' : ''}`}
-                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
+                          className="inline transition-all duration-500 ease-in-out"
+                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)`, animation: `pulse ${pulseDuration}s cubic-bezier(0.4,0,0.6,1) infinite` } : undefined}
                         >
                           {word}
                         </span>
@@ -685,6 +686,9 @@ const VerseCard = ({
             if (!currentVerse) return;
             const words = currentVerse.arabic.trim().split(/\s+/);
             const totalChars = words.reduce((s, w) => s + w.length, 0);
+            const wordDurationSec = duration / words.length;
+            // Faster recitation = faster pulse (clamp between 0.4s and 2s)
+            setPulseDuration(Math.max(0.4, Math.min(2, wordDurationSec * 0.8)));
             let acc = 0;
             for (let i = 0; i < words.length; i++) {
               acc += words[i].length;
