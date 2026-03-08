@@ -351,7 +351,7 @@ const VerseCard = ({
                             return rule ? (
                               <span
                                 key={si}
-                                style={{ color: rule.color, cursor: 'pointer' }}
+                                style={{ color: isActive && activeWordIndex === wi ? 'inherit' : rule.color, cursor: 'pointer' }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedTajweedRule(rule);
@@ -359,7 +359,7 @@ const VerseCard = ({
                                 }}
                               >{seg.text}</span>
                             ) : (
-                              <span key={si} className="text-foreground">{seg.text}</span>
+                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : undefined }} className={isActive && activeWordIndex === wi ? '' : 'text-foreground'}>{seg.text}</span>
                             );
                           })}
                         </span>
