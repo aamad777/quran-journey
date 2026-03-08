@@ -374,8 +374,8 @@ const VerseCard = ({
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
                           <span
-                          className="inline transition-all duration-300"
-                          style={isActive && activeWordIndex === wi ? { color: getReciteColor(wi), textShadow: `0 0 12px ${getReciteColor(wi)}60` } : undefined}
+                          className="inline transition-all duration-500 ease-in-out"
+                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
