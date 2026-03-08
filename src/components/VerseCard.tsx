@@ -374,7 +374,7 @@ const VerseCard = ({
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
                           <span
-                          className="inline transition-all duration-500 ease-in-out"
+                          className={`inline transition-all duration-500 ease-in-out ${isActive && activeWordIndex === wi ? 'animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]' : ''}`}
                           style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
                         >
                           {wg.segments.map((seg, si) => {
@@ -404,7 +404,7 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                           <span
-                          className="inline transition-all duration-500 ease-in-out"
+                          className={`inline transition-all duration-500 ease-in-out ${isActive && activeWordIndex === wi ? 'animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]' : ''}`}
                           style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
                         >
                           {word}
