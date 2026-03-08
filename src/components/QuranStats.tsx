@@ -51,6 +51,8 @@ interface QuranStatsProps {
   versesRead: number;
   versesRemaining: number;
   progressPercent: number;
+  voiceCorrect: number;
+  drawCorrect: number;
 }
 
 export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent }: QuranStatsProps) {
