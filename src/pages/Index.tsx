@@ -141,22 +141,22 @@ const Index = () => {
             reciters={reciters}
             selectedReciter={selectedReciter}
             onReciterChange={setSelectedReciter}
-            onNext={goToNext}
-            onPrev={goToPrev}
+            onNext={() => goToNext(verseCount)}
+            onPrev={() => goToPrev(verseCount)}
             verseCount={verseCount}
             onVerseCountChange={setVerseCount}
           />
         ) : activeTab === "practice" ? (
           <PracticeMode
             verses={verses}
-            onNext={goToNext}
-            onPrev={goToPrev}
+            onNext={() => goToNext(verseCount)}
+            onPrev={() => goToPrev(verseCount)}
           />
         ) : (
           <DrawPracticeMode
             verses={verses}
-            onNext={goToNext}
-            onPrev={goToPrev}
+            onNext={() => goToNext(verseCount)}
+            onPrev={() => goToPrev(verseCount)}
           />
         )}
       </main>
