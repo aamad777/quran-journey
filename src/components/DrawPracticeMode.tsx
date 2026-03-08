@@ -164,6 +164,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
       if (data?.match) {
         setFeedback("correct");
+        onCorrectWord?.();
         const newCount = revealedCount + 1;
         setRevealedCount(newCount);
         if (newCount >= words.length) {

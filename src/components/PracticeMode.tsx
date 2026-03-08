@@ -106,15 +106,14 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
       // Check how many consecutive words from start match
       setRevealedCount((prev) => {
         let matched = prev;
-        // Try to match the next expected word(s)
         while (matched < normalizedWords.length) {
           const expected = normalizedWords[matched];
           const found = normalizedSpoken.some((sw) => {
-            // Fuzzy: check if spoken word contains or equals expected
             return sw === expected || expected.includes(sw) || sw.includes(expected);
           });
           if (found) {
             matched++;
+            onCorrectWord?.();
           } else {
             break;
           }
