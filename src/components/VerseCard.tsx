@@ -305,12 +305,12 @@ const VerseCard = ({
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
       {/* Surah Header */}
       <div className="text-center mb-6">
-        <div className="inline-block px-6 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <span className="font-arabic text-lg text-gold">{primaryVerse.surahNameArabic}</span>
-          <span className="mx-3 text-border">|</span>
-          <span className="font-display text-sm text-foreground">{primaryVerse.surahName}</span>
+        <div className="inline-block px-6 py-2 rounded-full border" style={{ backgroundColor: themeAccentColor ? `${themeAccentColor}15` : undefined, borderColor: themeAccentColor ? `${themeAccentColor}30` : undefined }}>
+          <span className="font-arabic text-lg" style={{ color: themeAccentColor || 'hsl(var(--gold))' }}>{primaryVerse.surahNameArabic}</span>
+          <span className="mx-3" style={{ color: themeMutedText ? `${themeMutedText}50` : undefined }}>|</span>
+          <span className="font-display text-sm" style={{ color: themeTextColor }}>{primaryVerse.surahName}</span>
         </div>
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="text-sm mt-2" style={{ color: themeMutedText }}>
           سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
           {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
