@@ -104,27 +104,27 @@ const Index = () => {
         <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: overlayOpacity }} />
       )}
       <div className="relative z-[1]">
-      {/* Header */}
-      <header className="border-b sticky top-0 z-10 backdrop-blur-sm" style={{ backgroundColor: bgTheme.cardBg, borderColor: `${bgTheme.mutedText}30` }}>
-        <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
-          <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center shadow-gold">
-              <span className="text-xl font-arabic font-bold text-primary-foreground">قـ</span>
+
+      {/* Compact Header */}
+      <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: `${bgTheme.cardBg}ee`, borderColor: `${bgTheme.mutedText}18` }}>
+        <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-4">
+          <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <div className="w-8 h-8 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
+              <span className="text-sm font-arabic font-bold text-primary-foreground">قـ</span>
             </div>
-            <h1 className="font-arabic text-xl font-bold tracking-wide" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
-              <Button variant="ghost" size="sm" onClick={signOut} style={{ color: bgTheme.mutedText }}>
-                <LogOut className="w-4 h-4 mr-2" />
-                خروج
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={signOut} style={{ color: bgTheme.mutedText }}>
+                <LogOut className="w-4 h-4" />
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
-                <LogIn className="w-4 h-4 mr-2" />
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
+                <LogIn className="w-3.5 h-3.5" />
                 دخول
               </Button>
             )}
@@ -132,91 +132,77 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Prayer Times Banner */}
-      <PrayerBanner textColor={bgTheme.textColor} mutedText={bgTheme.mutedText} accentColor={bgTheme.btnBg} cardBg={bgTheme.cardBg} />
-
-      {/* Guest Banner */}
-      {!user && (
-        <div className="border-b backdrop-blur-sm" style={{ backgroundColor: `${bgTheme.btnBg}15`, borderColor: `${bgTheme.mutedText}30` }}>
-          <div className="container max-w-4xl mx-auto px-4 py-2 text-center">
-            <p className="text-sm" style={{ color: bgTheme.mutedText }}>
-              تقرأ كضيف. <button onClick={() => navigate("/auth")} className="font-semibold hover:underline" style={{ color: bgTheme.btnBg }}>سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
-            </p>
-          </div>
+      {/* Unified Info Strip: Prayer + Guest */}
+      <div className="backdrop-blur-sm border-b" style={{ backgroundColor: `${bgTheme.cardBg}cc`, borderColor: `${bgTheme.mutedText}12` }}>
+        <div className="container max-w-4xl mx-auto px-4">
+          <PrayerBanner textColor={bgTheme.textColor} mutedText={bgTheme.mutedText} accentColor={bgTheme.btnBg} cardBg={bgTheme.cardBg} />
+          {!user && (
+            <div className="py-1.5 text-center border-t" style={{ borderColor: `${bgTheme.mutedText}10` }}>
+              <p className="text-[11px]" style={{ color: bgTheme.mutedText }}>
+                تقرأ كضيف. <button onClick={() => navigate("/auth")} className="font-semibold hover:underline" style={{ color: bgTheme.btnBg }}>سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
+              </p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Permission Prompt */}
-      <div className="container max-w-4xl mx-auto px-4 pt-4">
+      <div className="container max-w-4xl mx-auto px-4 pt-3">
         <PermissionPrompt />
       </div>
 
-      {/* Progress Banner */}
-      <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <div className="flex items-center gap-4 backdrop-blur-md rounded-2xl px-5 py-3.5" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}25`, boxShadow: `0 2px 16px ${bgTheme.btnBg}15` }}>
-          <div className="flex flex-col items-center min-w-[56px]">
-            <span className="text-2xl font-bold font-arabic leading-none" style={{ color: bgTheme.btnBg }}>{progressPercent}٪</span>
-            <span className="text-[10px] mt-0.5" style={{ color: bgTheme.mutedText }}>مكتمل</span>
-          </div>
-          <div className="flex-1 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>
-                {versesRead.toLocaleString("ar-EG")} آية مقروءة
-              </span>
-              <span className="text-sm font-bold font-arabic" style={{ color: bgTheme.textColor }}>
-                {versesRemaining.toLocaleString("ar-EG")} آية متبقية
-              </span>
+      {/* Progress + Tabs Combined Card */}
+      <div className="container max-w-4xl mx-auto px-4 pt-3 pb-2">
+        <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
+          {/* Progress Row */}
+          <div className="flex items-center gap-3 px-4 py-3">
+            {/* Percentage Circle */}
+            <div className="relative w-11 h-11 shrink-0">
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" style={{ stroke: `${bgTheme.btnBg}18` }} />
+                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold font-arabic" style={{ color: bgTheme.btnBg }}>{progressPercent}٪</span>
             </div>
-            {/* Islamic themed progress bar */}
-            <div className="relative h-4 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.btnBg}12`, border: `1px solid ${bgTheme.btnBg}30`, boxShadow: `inset 0 1px 3px ${bgTheme.mutedText}15` }}>
-              {/* Subtle gradient track */}
-              <div className="absolute inset-0 rounded-full" style={{ background: `linear-gradient(90deg, ${bgTheme.btnBg}08, ${bgTheme.activeWordColor}15, ${bgTheme.btnBg}08)` }} />
-              {/* Decorative Islamic pattern overlay */}
-              <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 8px, ${bgTheme.btnBg} 8px, ${bgTheme.btnBg} 9px)` }} />
-              {/* Fill bar */}
-              <div className="h-full transition-all duration-700 rounded-full relative" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})`, boxShadow: `0 0 10px ${bgTheme.btnBg}50, inset 0 1px 0 rgba(255,255,255,0.25)` }}>
-                {/* Inner shimmer */}
-                <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)' }} />
-                {/* Star end cap */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-5 h-5 flex items-center justify-center animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" style={{ color: bgTheme.btnBg, filter: `drop-shadow(0 0 4px ${bgTheme.btnBg})` }}>
-                  <span className="text-xs">✦</span>
-                </div>
+            {/* Stats */}
+            <div className="flex-1 min-w-0 flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} آية مقروءة</span>
+                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>مكتمل</span>
+              </div>
+              <div className="text-left">
+                <span className="text-sm font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-
-      <div className="container max-w-4xl mx-auto px-4 pt-6">
-        <div
-          className="flex items-center justify-center gap-2 rounded-full px-2 py-2 backdrop-blur-sm"
-          style={{ backgroundColor: `${bgTheme.cardBg}` }}
-        >
-          {([
-            { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
-            { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
-            { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
-            { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
-          ]).map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className="rounded-full gap-2 inline-flex items-center px-4 py-2 text-sm font-semibold transition-all duration-200"
-              style={
-                activeTab === tab.key
-                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 4px 14px ${bgTheme.btnBg}55` }
-                  : {
-                      border: `1px solid ${bgTheme.btnOutlineBorder}`,
-                      color: bgTheme.textColor,
-                      backgroundColor: `${bgTheme.cardBg}`,
-                    }
-              }
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
+          {/* Slim Progress Bar */}
+          <div className="px-4 pb-3">
+            <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: `${bgTheme.btnBg}12` }}>
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})` }} />
+            </div>
+          </div>
+          {/* Tab Bar */}
+          <div className="flex border-t" style={{ borderColor: `${bgTheme.mutedText}12` }}>
+            {([
+              { key: "read" as const, icon: <BookOpen className="w-3.5 h-3.5" />, label: "قراءة" },
+              { key: "practice" as const, icon: <Mic className="w-3.5 h-3.5" />, label: "صوت" },
+              { key: "draw" as const, icon: <PenTool className="w-3.5 h-3.5" />, label: "رسم" },
+              { key: "stats" as const, icon: <BarChart3 className="w-3.5 h-3.5" />, label: "إحصائيات" },
+            ]).map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-all duration-200 relative"
+                style={{ color: activeTab === tab.key ? bgTheme.btnBg : bgTheme.mutedText }}
+              >
+                {tab.icon}
+                {tab.label}
+                {activeTab === tab.key && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full" style={{ backgroundColor: bgTheme.btnBg }} />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
