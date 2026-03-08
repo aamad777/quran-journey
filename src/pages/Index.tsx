@@ -138,6 +138,7 @@ const Index = () => {
           <VerseCard
             verses={verses}
             audioUrl={audioUrl}
+            audioUrls={audioUrls}
             reciters={reciters}
             selectedReciter={selectedReciter}
             onReciterChange={setSelectedReciter}
