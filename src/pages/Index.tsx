@@ -99,8 +99,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background relative" style={bgStyle}>
       {bgPattern?.image && bgOpacity < 1 && (
-        <div className="fixed inset-0 z-0 bg-background" style={{ opacity: 1 - bgOpacity }} />
+        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: 1 - bgOpacity }} />
       )}
+      <div className="relative z-[1]">
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
