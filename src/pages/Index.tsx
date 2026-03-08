@@ -122,7 +122,7 @@ const Index = () => {
                 خروج
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
                 <LogIn className="w-4 h-4 mr-2" />
                 دخول
               </Button>
