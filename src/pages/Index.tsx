@@ -106,7 +106,16 @@ const Index = () => {
             className="rounded-full gap-2"
           >
             <Mic className="w-4 h-4" />
-            تدريب
+            صوت
+          </Button>
+          <Button
+            variant={activeTab === "draw" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("draw")}
+            className="rounded-full gap-2"
+          >
+            <PenTool className="w-4 h-4" />
+            رسم
           </Button>
         </div>
       </div>
