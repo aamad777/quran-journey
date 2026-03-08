@@ -118,12 +118,21 @@ const VerseCard = ({
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
   const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
 
-  // Vivid rotating colors for active word during recitation
-  const RECITE_COLORS = [
-    '#FF6B35', '#E91E63', '#9C27B0', '#2196F3', '#00BCD4',
-    '#4CAF50', '#FF9800', '#F44336', '#3F51B5', '#009688',
+  // Vivid gradient colors for active word during recitation
+  const RECITE_GRADIENTS = [
+    'linear-gradient(135deg, #FF6B35, #E91E63)',
+    'linear-gradient(135deg, #E91E63, #9C27B0)',
+    'linear-gradient(135deg, #9C27B0, #2196F3)',
+    'linear-gradient(135deg, #2196F3, #00BCD4)',
+    'linear-gradient(135deg, #00BCD4, #4CAF50)',
+    'linear-gradient(135deg, #4CAF50, #FF9800)',
+    'linear-gradient(135deg, #FF9800, #F44336)',
+    'linear-gradient(135deg, #F44336, #3F51B5)',
+    'linear-gradient(135deg, #3F51B5, #009688)',
+    'linear-gradient(135deg, #009688, #FF6B35)',
   ];
-  const getReciteColor = (wi: number) => RECITE_COLORS[wi % RECITE_COLORS.length];
+  const getReciteGradient = (wi: number) => RECITE_GRADIENTS[wi % RECITE_GRADIENTS.length];
+  const getReciteColor = (wi: number) => ['#FF6B35', '#E91E63', '#9C27B0', '#2196F3', '#00BCD4', '#4CAF50', '#FF9800', '#F44336', '#3F51B5', '#009688'][wi % 10];
 
   const playTajweedExample = useCallback(async (exampleRef: string) => {
     if (tajweedAudioRef.current) {
@@ -365,8 +374,8 @@ const VerseCard = ({
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
                           <span
-                          className="inline transition-all duration-300"
-                          style={isActive && activeWordIndex === wi ? { color: getReciteColor(wi), textShadow: `0 0 12px ${getReciteColor(wi)}60` } : undefined}
+                          className="inline transition-all duration-500 ease-in-out"
+                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
@@ -395,8 +404,8 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                           <span
-                          className="inline transition-all duration-300"
-                          style={isActive && activeWordIndex === wi ? { color: getReciteColor(wi), textShadow: `0 0 12px ${getReciteColor(wi)}60` } : undefined}
+                          className="inline transition-all duration-500 ease-in-out"
+                          style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)` } : undefined}
                         >
                           {word}
                         </span>
