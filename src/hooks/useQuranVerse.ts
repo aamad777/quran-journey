@@ -11,18 +11,24 @@ interface VerseData {
 }
 
 const RECITERS = [
-  { id: "ar.alafasy", name: "Mishary Rashid Alafasy" },
-  { id: "ar.abdurrahmaansudais", name: "Abdurrahman As-Sudais" },
-  { id: "ar.huthayfi", name: "Ali Al-Huthayfi" },
-  { id: "ar.minshawi", name: "Muhammad Al-Minshawi" },
-  { id: "ar.ahmedajamy", name: "Ahmed Al-Ajamy" },
-  { id: "ar.abdulsamad", name: "Abdul Samad" },
-  { id: "ar.shaatree", name: "Abu Bakr Ash-Shaatree" },
-  { id: "ar.husary", name: "Mahmoud Khalil Al-Husary" },
-  { id: "ar.husarymujawwad", name: "Al-Husary (Mujawwad)" },
-  { id: "ar.maaboralkurdi", name: "Maher Al-Muaiqly" },
-  { id: "ar.parhizgar", name: "Shahhat Muhammad" },
-  { id: "ar.ibrahimakhbar", name: "Ibrahim Al-Akhdar" },
+  { id: "ar.alafasy", name: "مشاري العفاسي" },
+  { id: "ar.abdurrahmaansudais", name: "عبدالرحمن السديس" },
+  { id: "ar.husary", name: "محمود خليل الحصري" },
+  { id: "ar.husarymujawwad", name: "الحصري (مجوّد)" },
+  { id: "ar.minshawi", name: "محمد صديق المنشاوي" },
+  { id: "ar.minshawimujawwad", name: "المنشاوي (مجوّد)" },
+  { id: "ar.abdulsamad", name: "عبدالباسط عبدالصمد" },
+  { id: "ar.abdulbasitmurattal", name: "عبدالباسط (مرتّل)" },
+  { id: "ar.shaatree", name: "أبو بكر الشاطري" },
+  { id: "ar.ahmedajamy", name: "أحمد العجمي" },
+  { id: "ar.hudhaify", name: "علي الحذيفي" },
+  { id: "ar.mahermuaiqly", name: "ماهر المعيقلي" },
+  { id: "ar.saoodshuraym", name: "سعود الشريم" },
+  { id: "ar.ibrahimakhbar", name: "إبراهيم الأخضر" },
+  { id: "ar.muhammadayyoub", name: "محمد أيوب" },
+  { id: "ar.muhammadjibreel", name: "محمد جبريل" },
+  { id: "ar.hanirifai", name: "هاني الرفاعي" },
+  { id: "ar.abdullahbasfar", name: "عبدالله بصفر" },
 ];
 
 // Surah ayah counts for boundary checking
