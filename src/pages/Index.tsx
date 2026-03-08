@@ -256,6 +256,7 @@ const Index = () => {
           />
         )}
       </main>
+      </div>
     </div>
   );
 };
