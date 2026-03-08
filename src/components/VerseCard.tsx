@@ -372,9 +372,9 @@ const VerseCard = ({
                     const words = v.arabic.trim().split(/\s+/);
                     return words.map((word, wi) => (
                       <span key={wi}>
-                        <span
-                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-105' : ''}`}
-                          style={isActive && activeWordIndex === wi ? { color: activeWordColor, textShadow: activeWordGlow, backgroundColor: `${activeWordColor}15`, borderRadius: '4px', padding: '1px 3px' } : undefined}
+                         <span
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-110' : ''}`}
+                          style={isActive && activeWordIndex === wi ? { color: getReciteColor(wi), textShadow: `0 0 16px ${getReciteColor(wi)}80`, backgroundColor: `${getReciteColor(wi)}20`, borderRadius: '6px', padding: '2px 5px' } : undefined}
                         >
                           {word}
                         </span>
