@@ -165,7 +165,10 @@ const Index = () => {
 
 
       <div className="container max-w-4xl mx-auto px-4 pt-6">
-        <div className="flex items-center justify-center gap-2">
+        <div
+          className="flex items-center justify-center gap-2 rounded-full px-2 py-2 backdrop-blur-sm"
+          style={{ backgroundColor: `${bgTheme.cardBg}` }}
+        >
           {([
             { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
             { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
@@ -175,11 +178,15 @@ const Index = () => {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className="rounded-full gap-2 inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-200"
+              className="rounded-full gap-2 inline-flex items-center px-4 py-2 text-sm font-semibold transition-all duration-200"
               style={
                 activeTab === tab.key
-                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }
-                  : { border: `1px solid ${bgTheme.btnOutlineBorder}`, color: bgTheme.btnOutlineText, backgroundColor: "transparent" }
+                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 4px 14px ${bgTheme.btnBg}55` }
+                  : {
+                      border: `1px solid ${bgTheme.btnOutlineBorder}`,
+                      color: bgTheme.textColor,
+                      backgroundColor: `${bgTheme.cardBg}`,
+                    }
               }
             >
               {tab.icon}
