@@ -33,11 +33,15 @@ export const useTheme = () => {
 
   useEffect(() => {
     const root = document.documentElement;
-    // Remove all theme classes
-    THEMES.forEach((t) => root.classList.remove(`theme-${t.id}`));
-    // Add current theme class (emerald is default, no class needed)
+    // Remove all theme classes from both html and body
+    THEMES.forEach((t) => {
+      root.classList.remove(`theme-${t.id}`);
+      document.body.classList.remove(`theme-${t.id}`);
+    });
+    // Add current theme class
     if (theme !== "emerald") {
       root.classList.add(`theme-${theme}`);
+      document.body.classList.add(`theme-${theme}`);
     }
   }, [theme]);
 
