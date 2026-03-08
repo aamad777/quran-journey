@@ -70,6 +70,7 @@ interface VerseCardProps {
   themeMutedText?: string;
   themeCardBg?: string;
   themeAccentColor?: string;
+  isSurahLevel?: boolean;
 }
 
 const VerseCard = ({
