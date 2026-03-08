@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { imageBase64, expectedWord } = await req.json();
+    const { imageBase64, expectedWord, checkMode } = await req.json();
 
     if (!imageBase64 || !expectedWord) {
       return new Response(JSON.stringify({ error: "Missing imageBase64 or expectedWord" }), {
@@ -26,6 +26,16 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
+    const modeHint = checkMode === "word"
+      ? "a single Arabic word"
+      : checkMode === "2words"
+      ? "two Arabic words written together"
+      : checkMode === "half"
+      ? "multiple Arabic words (half a verse)"
+      : checkMode === "full"
+      ? "a full Arabic verse (multiple words)"
+      : "Arabic text";
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -37,14 +47,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an Arabic handwriting recognition expert. The user will draw an Arabic word on a canvas. You must determine if the drawn word matches the expected Arabic word. Be VERY lenient and forgiving with handwriting quality - the user is practicing and learning. Accept the drawing if you can recognize even a rough resemblance to the expected word's letter shapes. Focus on whether the general shape and flow matches, not perfection. Even if messy or incomplete, if it roughly looks like the word, mark it as a match. Respond with ONLY a JSON object: {"match": true/false, "recognized": "the word you think was drawn"}. No other text.`,
+            content: `You are an Arabic handwriting recognition expert. The user will draw ${modeHint} on a canvas. You must determine if the drawn text matches the expected Arabic text. Be VERY lenient and forgiving with handwriting quality - the user is practicing and learning. Accept the drawing if you can recognize even a rough resemblance to the expected text's letter shapes. Focus on whether the general shape and flow matches, not perfection. For multi-word checks, the words may be written across the canvas in any arrangement - they don't have to be in a single line. Even if messy or incomplete, if it roughly looks like the text, mark it as a match. Respond with ONLY a JSON object: {"match": true/false, "recognized": "the text you think was drawn"}. No other text.`,
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `The expected Arabic word is: "${expectedWord}". Does the handwritten image match this word?`,
+                text: `The expected Arabic text is: "${expectedWord}". Does the handwritten image match this text?`,
               },
               {
                 type: "image_url",
@@ -54,14 +64,13 @@ serve(async (req) => {
           },
         ],
         temperature: 0.1,
-        max_tokens: 100,
+        max_tokens: 150,
       }),
     });
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
     
-    // Parse the JSON response
     let result = { match: false, recognized: "" };
     try {
       const jsonMatch = content.match(/\{[\s\S]*\}/);

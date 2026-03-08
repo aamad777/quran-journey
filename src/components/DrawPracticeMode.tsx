@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eraser, Send, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 
 interface VerseData {
@@ -19,6 +20,15 @@ interface DrawPracticeModeProps {
   onCorrectWord?: () => void;
 }
 
+type CheckMode = "word" | "2words" | "half" | "full";
+
+const CHECK_MODE_LABELS: Record<CheckMode, string> = {
+  word: "كلمة",
+  "2words": "كلمتين",
+  half: "نصف آية",
+  full: "آية كاملة",
+};
+
 const splitWords = (text: string): string[] => {
   return text.split(/\s+/).filter(Boolean);
 };
@@ -31,7 +41,9 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showVerse, setShowVerse] = useState(false);
-  const [brushSize, setBrushSize] = useState(8);
+  const [brushSize, setBrushSize] = useState(6);
+  const [autoCheck, setAutoCheck] = useState(true);
+  const [checkMode, setCheckMode] = useState<CheckMode>("word");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -40,6 +52,36 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
   const currentVerse = verses[currentVerseIndex] || verses[0];
   const words = currentVerse ? splitWords(currentVerse.arabic) : [];
   const currentWord = words[revealedCount] || "";
+
+  // Get expected text based on check mode
+  const getExpectedText = (): string => {
+    switch (checkMode) {
+      case "word":
+        return currentWord;
+      case "2words":
+        return words.slice(revealedCount, revealedCount + 2).join(" ");
+      case "half": {
+        const halfLen = Math.ceil(words.length / 2);
+        const start = revealedCount;
+        const end = Math.min(start + halfLen, words.length);
+        return words.slice(start, end).join(" ");
+      }
+      case "full":
+        return words.slice(revealedCount).join(" ");
+      default:
+        return currentWord;
+    }
+  };
+
+  const getWordsToReveal = (): number => {
+    switch (checkMode) {
+      case "word": return 1;
+      case "2words": return Math.min(2, words.length - revealedCount);
+      case "half": return Math.min(Math.ceil(words.length / 2), words.length - revealedCount);
+      case "full": return words.length - revealedCount;
+      default: return 1;
+    }
+  };
 
   // Reset state when verse changes
   useEffect(() => {
@@ -127,8 +169,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
   const endDraw = () => {
     setIsDrawing(false);
-    // Auto-check after user stops drawing for 1.5s
-    if (hasDrawn.current && !verseComplete) {
+    if (autoCheck && hasDrawn.current && !verseComplete) {
       if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
       autoCheckTimer.current = setTimeout(() => {
         checkDrawing();
@@ -147,7 +188,10 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
   const checkDrawing = async () => {
     const canvas = canvasRef.current;
-    if (!canvas || !currentWord || isChecking) return;
+    if (!canvas || isChecking) return;
+
+    const expectedText = getExpectedText();
+    if (!expectedText) return;
 
     setIsChecking(true);
     setFeedback(null);
@@ -158,15 +202,16 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
       const base64 = dataUrl.split(",")[1];
 
       const { data, error } = await supabase.functions.invoke("recognize-handwriting", {
-        body: { imageBase64: base64, expectedWord: currentWord },
+        body: { imageBase64: base64, expectedWord: expectedText, checkMode },
       });
 
       if (error) throw error;
 
       if (data?.match) {
         setFeedback("correct");
-        onCorrectWord?.();
-        const newCount = revealedCount + 1;
+        const wordsToReveal = getWordsToReveal();
+        for (let i = 0; i < wordsToReveal; i++) onCorrectWord?.();
+        const newCount = revealedCount + wordsToReveal;
         setRevealedCount(newCount);
         if (newCount >= words.length) {
           setVerseComplete(true);
@@ -178,7 +223,6 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         }
       } else {
         setFeedback("incorrect");
-        // Auto-clear after showing incorrect feedback
         setTimeout(() => {
           clearCanvas();
           setFeedback(null);
@@ -236,11 +280,39 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-1.5 rounded-full bg-muted mb-6 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-muted mb-4 overflow-hidden">
           <div
             className="h-full rounded-full bg-primary transition-all duration-300"
             style={{ width: `${words.length > 0 ? (revealedCount / words.length) * 100 : 0}%` }}
           />
+        </div>
+
+        {/* Settings Row */}
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-4 text-xs">
+          {/* Check mode */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">وضع التحقق:</span>
+            <div className="flex gap-1">
+              {(Object.keys(CHECK_MODE_LABELS) as CheckMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setCheckMode(mode)}
+                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                    checkMode === mode
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  {CHECK_MODE_LABELS[mode]}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Auto-check toggle */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">تحقق تلقائي</span>
+            <Switch checked={autoCheck} onCheckedChange={setAutoCheck} className="scale-75" />
+          </div>
         </div>
 
         {/* Show/Hide toggle */}
@@ -256,34 +328,45 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
           </Button>
         </div>
 
-        {/* Words display - revealed words always show, unrevealed depend on toggle */}
+        {/* Words display */}
         <div className="text-center mb-4 select-none" dir="rtl">
           <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
-            {words.map((word, i) => (
-              <span
-                key={i}
-                className={`inline-block mx-1 transition-all duration-300 ${
-                  i < revealedCount
-                    ? "text-foreground"
-                    : showVerse
-                    ? i === revealedCount
-                      ? "text-primary font-bold border-b-2 border-primary pb-1"
-                      : "text-muted-foreground/30"
-                    : "text-transparent"
-                }`}
-                style={{ filter: !showVerse && i >= revealedCount ? "blur(0px)" : i > revealedCount ? "blur(2px)" : "none" }}
-              >
-                {i < revealedCount ? word : showVerse ? word : "ـــ"}
-              </span>
-            ))}
+            {words.map((word, i) => {
+              const isInCurrentChunk = i >= revealedCount && i < revealedCount + getWordsToReveal();
+              return (
+                <span
+                  key={i}
+                  className={`inline-block mx-1 transition-all duration-300 ${
+                    i < revealedCount
+                      ? "text-foreground"
+                      : showVerse
+                      ? isInCurrentChunk
+                        ? "text-primary font-bold border-b-2 border-primary pb-1"
+                        : "text-muted-foreground/30"
+                      : "text-transparent"
+                  }`}
+                  style={{ filter: !showVerse && i >= revealedCount ? "blur(0px)" : i > revealedCount + getWordsToReveal() - 1 ? "blur(2px)" : "none" }}
+                >
+                  {i < revealedCount ? word : showVerse ? word : "ـــ"}
+                </span>
+              );
+            })}
           </p>
         </div>
 
         {/* Current word hint */}
         {!verseComplete && (
           <div className="text-center mb-4">
-            <p className="text-xs text-muted-foreground">ارسم الكلمة التالية</p>
-            <p className="text-xs text-muted-foreground">كلمة {revealedCount + 1} من {words.length}</p>
+            <p className="text-xs text-muted-foreground">
+              {checkMode === "word" ? "ارسم الكلمة التالية" :
+               checkMode === "2words" ? "ارسم الكلمتين التاليتين" :
+               checkMode === "half" ? "ارسم نصف الآية" : "ارسم الآية كاملة"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {checkMode === "word"
+                ? `كلمة ${revealedCount + 1} من ${words.length}`
+                : `${getWordsToReveal()} كلمات متبقية`}
+            </p>
           </div>
         )}
 
@@ -291,20 +374,19 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         {!verseComplete && (
           <div className="mb-4">
             {/* Brush size control */}
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <span className="text-xs text-muted-foreground">حجم القلم</span>
-              <div className="flex items-center gap-2">
-                {[4, 8, 14, 22].map((size) => (
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="text-[10px] text-muted-foreground">القلم</span>
+              <div className="flex items-center gap-1.5">
+                {[3, 6, 10, 16].map((size) => (
                   <button
                     key={size}
                     onClick={() => setBrushSize(size)}
-                    className={`rounded-full transition-all duration-150 ${brushSize === size ? 'ring-2 ring-primary ring-offset-2 ring-offset-card' : 'opacity-50 hover:opacity-80'}`}
+                    className={`rounded-full transition-all duration-150 ${brushSize === size ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'opacity-40 hover:opacity-70'}`}
                     style={{
-                      width: Math.max(12, size + 8),
-                      height: Math.max(12, size + 8),
+                      width: Math.max(8, size * 1.2 + 4),
+                      height: Math.max(8, size * 1.2 + 4),
                       backgroundColor: 'hsl(var(--foreground))',
                     }}
-                    title={`${size}px`}
                   />
                 ))}
               </div>
@@ -378,8 +460,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                 variant="outline"
                 size="icon"
                 onClick={() => {
-                  // Skip current word
-                  const newCount = revealedCount + 1;
+                  const skip = getWordsToReveal();
+                  const newCount = revealedCount + skip;
                   setRevealedCount(newCount);
                   clearCanvas();
                   if (newCount >= words.length) {
@@ -387,7 +469,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                   }
                 }}
                 className="rounded-full border-border hover:bg-primary/10"
-                title="تخطي الكلمة"
+                title="تخطي"
               >
                 <SkipForward className="w-4 h-4" />
               </Button>
@@ -410,7 +492,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
         {!verseComplete && !isChecking && (
           <p className="text-center text-xs text-muted-foreground mt-4">
-            ارسم الكلمة ثم اضغط زر الإرسال للتحقق
+            {autoCheck ? "ارسم وسيتم التحقق تلقائياً" : "ارسم ثم اضغط زر الإرسال للتحقق"}
           </p>
         )}
         {isChecking && (
