@@ -22,13 +22,20 @@ const Index = () => {
   const [background, setBackgroundState] = useState<BackgroundPattern>(() => {
     try { return (localStorage.getItem("quran_bg_pattern") as BackgroundPattern) || "geometric"; } catch { return "geometric"; }
   });
+  const [bgOpacity, setBgOpacityState] = useState(() => {
+    try { return parseFloat(localStorage.getItem("quran_bg_opacity") || "1"); } catch { return 1; }
+  });
   const setBackground = (bg: BackgroundPattern) => {
     setBackgroundState(bg);
     localStorage.setItem("quran_bg_pattern", bg);
   };
+  const setBgOpacity = (val: number) => {
+    setBgOpacityState(val);
+    localStorage.setItem("quran_bg_opacity", String(val));
+  };
   const bgPattern = PATTERNS.find(p => p.id === background);
   const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" as const }
+    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
     : {};
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
