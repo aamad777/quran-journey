@@ -290,8 +290,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           <div className="relative mb-4">
             <canvas
               ref={canvasRef}
-              width={500}
-              height={200}
+              width={600}
+              height={250}
               className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
                 feedback === "correct"
                   ? "border-primary bg-primary/5"
