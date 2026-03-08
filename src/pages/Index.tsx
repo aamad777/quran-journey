@@ -15,9 +15,18 @@ import PermissionPrompt from "@/components/PermissionPrompt";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import BackgroundSelector, { PATTERNS, type BackgroundPattern } from "@/components/BackgroundSelector";
 
 const Index = () => {
   const { theme, setTheme, mode, toggleMode } = useTheme();
+  const [background, setBackgroundState] = useState<BackgroundPattern>(() => {
+    try { return (localStorage.getItem("quran_bg_pattern") as BackgroundPattern) || "geometric"; } catch { return "geometric"; }
+  });
+  const setBackground = (bg: BackgroundPattern) => {
+    setBackgroundState(bg);
+    localStorage.setItem("quran_bg_pattern", bg);
+  };
+  const bgPattern = PATTERNS.find(p => p.id === background);
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
   const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
@@ -58,7 +67,7 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background islamic-pattern">
+      <div className="min-h-screen flex items-center justify-center bg-background" style={{ backgroundImage: bgPattern?.svg || "none" }}>
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
             <BookOpen className="w-8 h-8 text-gold" />
@@ -78,7 +87,7 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background islamic-pattern">
+    <div className="min-h-screen bg-background" style={{ backgroundImage: bgPattern?.svg || "none" }}>
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
@@ -89,6 +98,7 @@ const Index = () => {
             <h1 className="font-arabic text-xl font-bold text-foreground tracking-wide">قارئ القرآن</h1>
           </button>
           <div className="flex items-center gap-2">
+            <BackgroundSelector background={background} setBackground={setBackground} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
