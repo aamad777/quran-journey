@@ -90,24 +90,29 @@ export const useQuranVerse = (surahNumber: number, ayahNumber: number, verseCoun
     fetchVerses();
   }, [surahNumber, ayahNumber, verseCount]);
 
-  // Audio for first verse
+  // Audio for all verses
   useEffect(() => {
-    const fetchAudio = async () => {
+    const fetchAllAudio = async () => {
       try {
-        const res = await fetch(
-          `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/${selectedReciter}`
+        const refs = getVerseRefs(surahNumber, ayahNumber, verseCount);
+        const urls = await Promise.all(
+          refs.map(async (ref) => {
+            const res = await fetch(
+              `https://api.alquran.cloud/v1/ayah/${ref.surah}:${ref.ayah}/${selectedReciter}`
+            );
+            const data = await res.json();
+            return data.code === 200 && data.data?.audio ? data.data.audio : "";
+          })
         );
-        const data = await res.json();
-        if (data.code === 200 && data.data?.audio) {
-          setAudioUrl(data.data.audio);
-        }
+        setAudioUrls(urls.filter(Boolean));
+        setAudioUrl(urls[0] || "");
       } catch (err) {
         console.error("Failed to fetch audio:", err);
       }
     };
 
-    fetchAudio();
-  }, [surahNumber, ayahNumber, selectedReciter]);
+    fetchAllAudio();
+  }, [surahNumber, ayahNumber, selectedReciter, verseCount]);
 
   // Back-compat: expose first verse as `verse`
   const verse = verses.length > 0 ? verses[0] : null;
