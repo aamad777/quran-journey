@@ -352,7 +352,7 @@ const VerseCard = ({
         </Dialog>
 
         {/* Tajweed Rule Popup */}
-        <Dialog open={tajweedPopupOpen} onOpenChange={setTajweedPopupOpen}>
+        <Dialog open={tajweedPopupOpen} onOpenChange={(open) => { setTajweedPopupOpen(open); if (!open) stopTajweedExample(); }}>
           <DialogContent className="max-w-sm" dir="rtl">
             <DialogHeader>
               <DialogTitle className="font-arabic text-lg" style={{ color: selectedTajweedRule?.color }}>
@@ -373,6 +373,24 @@ const VerseCard = ({
                 <div>
                   <p className="text-xs text-muted-foreground font-semibold mb-1">مثال</p>
                   <p className="font-arabic text-base text-foreground" style={{ color: selectedTajweedRule.color }}>{selectedTajweedRule.example}</p>
+                </div>
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground font-semibold mb-2">🔊 استمع للمثال (آية {selectedTajweedRule.exampleRef})</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() => tajweedAudioPlaying ? stopTajweedExample() : playTajweedExample(selectedTajweedRule.exampleRef)}
+                    disabled={tajweedAudioLoading}
+                  >
+                    {tajweedAudioLoading ? (
+                      <><Volume2 className="w-4 h-4 animate-pulse" /> جاري التحميل...</>
+                    ) : tajweedAudioPlaying ? (
+                      <><Pause className="w-4 h-4" /> إيقاف</>
+                    ) : (
+                      <><Play className="w-4 h-4" /> تشغيل المثال</>
+                    )}
+                  </Button>
                 </div>
               </div>
             )}
