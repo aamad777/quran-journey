@@ -147,7 +147,7 @@ export const usePrayerTimes = () => {
     };
 
     compute();
-    const interval = setInterval(compute, 30000);
+    const interval = setInterval(compute, 1000);
     return () => clearInterval(interval);
   }, [prayerTimes]);
 
