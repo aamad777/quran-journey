@@ -459,6 +459,29 @@ const VerseCard = ({
             <Button variant="outline" size="icon" onClick={onNext} className="rounded-full border-border hover:bg-primary/10">
               <SkipForward className="w-4 h-4" />
             </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full border-border hover:bg-primary/10"
+              onClick={async () => {
+                for (let i = 0; i < audioUrls.length; i++) {
+                  const url = audioUrls[i];
+                  const v = verses[i] || verses[0];
+                  try {
+                    const res = await fetch(url);
+                    const blob = await res.blob();
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `${v.surahNumber}_${v.ayahNumber}_${selectedReciter}.mp3`;
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                  } catch {}
+                }
+              }}
+              title="تحميل الصوت"
+            >
+              <Download className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
