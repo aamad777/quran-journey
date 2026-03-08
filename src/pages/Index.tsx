@@ -157,6 +157,15 @@ const Index = () => {
             <PenTool className="w-4 h-4" />
             رسم
           </Button>
+          <Button
+            variant={activeTab === "stats" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("stats")}
+            className="rounded-full gap-2"
+          >
+            <BarChart3 className="w-4 h-4" />
+            إحصائيات
+          </Button>
         </div>
       </div>
 
