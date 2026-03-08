@@ -103,6 +103,7 @@ const VerseCard = ({
   const tajweedAudioRef = useRef<HTMLAudioElement | null>(null);
   const [tajweedAudioLoading, setTajweedAudioLoading] = useState(false);
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
+  const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
 
   const playTajweedExample = useCallback(async (exampleRef: string) => {
     if (tajweedAudioRef.current) {
