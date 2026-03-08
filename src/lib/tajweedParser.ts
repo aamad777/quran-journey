@@ -6,16 +6,16 @@ export interface TajweedSegment {
   rule: string | null; // null = plain text
 }
 
-export const TAJWEED_RULES: Record<string, { label: string; labelAr: string; color: string }> = {
-  n: { label: "Ghunnah", labelAr: "غُنَّة", color: "hsl(var(--tajweed-ghunnah))" },
-  a: { label: "Ikhfa", labelAr: "إخفاء", color: "hsl(var(--tajweed-ikhfa))" },
-  u: { label: "Idgham (no ghunnah)", labelAr: "إدغام بلا غنة", color: "hsl(var(--tajweed-idgham-no-ghunnah))" },
-  m: { label: "Madd", labelAr: "مَدّ", color: "hsl(var(--tajweed-madd))" },
-  o: { label: "Madd Lazim", labelAr: "مَدّ لازم", color: "hsl(var(--tajweed-madd-lazim))" },
-  l: { label: "Lam Shamsiyyah", labelAr: "لام شمسية", color: "hsl(var(--tajweed-lam-shamsiyyah))" },
-  h: { label: "Hamzat Al-Wasl", labelAr: "همزة الوصل", color: "hsl(var(--tajweed-hamzat-wasl))" },
-  f: { label: "Ikhfa Shafawi", labelAr: "إخفاء شفوي", color: "hsl(var(--tajweed-ikhfa-shafawi))" },
-  p: { label: "Qalqalah", labelAr: "قلقلة", color: "hsl(var(--tajweed-qalqalah))" },
+export const TAJWEED_RULES: Record<string, { label: string; labelAr: string; color: string; bg: string }> = {
+  n: { label: "Ghunnah", labelAr: "غُنَّة", color: "#2d8a4e", bg: "rgba(45,138,78,0.12)" },
+  a: { label: "Ikhfa", labelAr: "إخفاء", color: "#c97c1a", bg: "rgba(201,124,26,0.12)" },
+  u: { label: "Idgham (no ghunnah)", labelAr: "إدغام بلا غنة", color: "#7c3aed", bg: "rgba(124,58,237,0.12)" },
+  m: { label: "Madd", labelAr: "مَدّ", color: "#2563eb", bg: "rgba(37,99,235,0.12)" },
+  o: { label: "Madd Lazim", labelAr: "مَدّ لازم", color: "#dc2626", bg: "rgba(220,38,38,0.12)" },
+  l: { label: "Lam Shamsiyyah", labelAr: "لام شمسية", color: "#0d9488", bg: "rgba(13,148,136,0.12)" },
+  h: { label: "Hamzat Al-Wasl", labelAr: "همزة الوصل", color: "#a855f7", bg: "rgba(168,85,247,0.12)" },
+  f: { label: "Ikhfa Shafawi", labelAr: "إخفاء شفوي", color: "#db2777", bg: "rgba(219,39,119,0.12)" },
+  p: { label: "Qalqalah", labelAr: "قلقلة", color: "#e11d48", bg: "rgba(225,29,72,0.12)" },
 };
 
 export function parseTajweed(text: string): TajweedSegment[] {
