@@ -163,8 +163,8 @@ const Index = () => {
               <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>
                 {versesRead.toLocaleString("ar-EG")} آية مقروءة
               </span>
-              <span className="text-xs" style={{ color: bgTheme.mutedText }}>
-                {versesRemaining.toLocaleString("ar-EG")} متبقية
+              <span className="text-sm font-bold font-arabic" style={{ color: bgTheme.textColor }}>
+                {versesRemaining.toLocaleString("ar-EG")} آية متبقية
               </span>
             </div>
             <div className="h-2.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}25` }}>
