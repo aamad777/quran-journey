@@ -345,6 +345,25 @@ const VerseCard = ({
             </div>
           )}
 
+          {/* Repeat count */}
+          <div className="flex items-center justify-center gap-2">
+            <Repeat className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">تكرار</span>
+            <Select value={String(repeatCount)} onValueChange={(v) => setRepeatCount(parseInt(v))}>
+              <SelectTrigger className="w-16 h-8 bg-background text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">١</SelectItem>
+                <SelectItem value="2">٢</SelectItem>
+                <SelectItem value="3">٣</SelectItem>
+                <SelectItem value="5">٥</SelectItem>
+                <SelectItem value="7">٧</SelectItem>
+                <SelectItem value="10">١٠</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Auto-play toggle + delay */}
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
