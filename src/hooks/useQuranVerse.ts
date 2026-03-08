@@ -117,5 +117,5 @@ export const useQuranVerse = (surahNumber: number, ayahNumber: number, verseCoun
   // Back-compat: expose first verse as `verse`
   const verse = verses.length > 0 ? verses[0] : null;
 
-  return { verse, verses, audioUrl, loading, selectedReciter, setSelectedReciter, reciters: RECITERS };
+  return { verse, verses, audioUrl, audioUrls, loading, selectedReciter, setSelectedReciter, reciters: RECITERS };
 };
