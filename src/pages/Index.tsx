@@ -136,10 +136,10 @@ const Index = () => {
 
       {/* Guest Banner */}
       {!user && (
-        <div className="bg-accent/20 border-b border-border">
+        <div className="border-b backdrop-blur-sm" style={{ backgroundColor: `${bgTheme.btnBg}15`, borderColor: `${bgTheme.mutedText}30` }}>
           <div className="container max-w-4xl mx-auto px-4 py-2 text-center">
-            <p className="text-sm text-muted-foreground">
-              تقرأ كضيف. <button onClick={() => navigate("/auth")} className="text-gold font-semibold hover:underline">سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
+            <p className="text-sm" style={{ color: bgTheme.mutedText }}>
+              تقرأ كضيف. <button onClick={() => navigate("/auth")} className="font-semibold hover:underline" style={{ color: bgTheme.btnBg }}>سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
             </p>
           </div>
         </div>
