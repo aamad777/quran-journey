@@ -37,7 +37,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an Arabic handwriting recognition expert. The user will draw an Arabic word on a canvas. You must determine if the drawn word matches the expected Arabic word. Be lenient with handwriting quality - focus on whether the basic letter shapes and sequence are recognizable as the expected word. Respond with ONLY a JSON object: {"match": true/false, "recognized": "the word you think was drawn"}. No other text.`,
+            content: `You are an Arabic handwriting recognition expert. The user will draw an Arabic word on a canvas. You must determine if the drawn word matches the expected Arabic word. Be VERY lenient and forgiving with handwriting quality - the user is practicing and learning. Accept the drawing if you can recognize even a rough resemblance to the expected word's letter shapes. Focus on whether the general shape and flow matches, not perfection. Even if messy or incomplete, if it roughly looks like the word, mark it as a match. Respond with ONLY a JSON object: {"match": true/false, "recognized": "the word you think was drawn"}. No other text.`,
           },
           {
             role: "user",

@@ -113,7 +113,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
     const ctx = getCtx();
     if (!ctx) return;
     const pos = getPos(e);
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 8;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--foreground")
@@ -276,11 +276,12 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           </p>
         </div>
 
-        {/* Current word hint */}
+        {/* Current word hint - show the word to copy */}
         {!verseComplete && (
           <div className="text-center mb-4">
-            <p className="text-xs text-muted-foreground">ارسم الكلمة التالية</p>
-            <span className="text-sm text-muted-foreground">كلمة {revealedCount + 1} من {words.length}</span>
+            <p className="text-xs text-muted-foreground mb-2">انسخ هذه الكلمة</p>
+            <span className="font-arabic text-4xl text-primary font-bold">{currentWord}</span>
+            <p className="text-xs text-muted-foreground mt-2">كلمة {revealedCount + 1} من {words.length}</p>
           </div>
         )}
 
@@ -289,8 +290,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           <div className="relative mb-4">
             <canvas
               ref={canvasRef}
-              width={500}
-              height={200}
+              width={600}
+              height={250}
               className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
                 feedback === "correct"
                   ? "border-primary bg-primary/5"
@@ -346,6 +347,24 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
             <>
               <Button variant="outline" size="icon" onClick={clearCanvas} className="rounded-full border-border hover:bg-primary/10">
                 <Eraser className="w-4 h-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  // Skip current word
+                  const newCount = revealedCount + 1;
+                  setRevealedCount(newCount);
+                  clearCanvas();
+                  if (newCount >= words.length) {
+                    setVerseComplete(true);
+                  }
+                }}
+                className="rounded-full border-border hover:bg-primary/10"
+                title="تخطي الكلمة"
+              >
+                <SkipForward className="w-4 h-4" />
               </Button>
 
               <Button
