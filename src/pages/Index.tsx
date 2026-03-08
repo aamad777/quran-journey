@@ -146,8 +146,14 @@ const Index = () => {
             verseCount={verseCount}
             onVerseCountChange={setVerseCount}
           />
-        ) : (
+        ) : activeTab === "practice" ? (
           <PracticeMode
+            verses={verses}
+            onNext={goToNext}
+            onPrev={goToPrev}
+          />
+        ) : (
+          <DrawPracticeMode
             verses={verses}
             onNext={goToNext}
             onPrev={goToPrev}
