@@ -125,8 +125,16 @@ const VerseCard = ({
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    if (isPlaying) audioRef.current.pause();
-    else audioRef.current.play();
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      // Ensure we're playing the right verse audio
+      const url = audioUrls[currentAudioIndex] || audioUrl;
+      if (audioRef.current.src !== url) {
+        audioRef.current.src = url;
+      }
+      audioRef.current.play();
+    }
     setIsPlaying(!isPlaying);
   };
 
