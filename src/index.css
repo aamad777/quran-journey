@@ -221,7 +221,7 @@ audio::-webkit-media-controls-panel {
   background-color: hsl(var(--card));
 }
 
-/* Override text colors inside themed verse card */
+/* Override colors inside themed verse card */
 .verse-card-themed .text-muted-foreground {
   color: var(--themed-muted, hsl(var(--muted-foreground))) !important;
 }
@@ -235,4 +235,22 @@ audio::-webkit-media-controls-panel {
 .verse-card-themed .h-px.bg-border {
   background-color: var(--themed-muted, hsl(var(--border))) !important;
   opacity: 0.3;
+}
+.verse-card-themed .bg-background {
+  background-color: var(--themed-card-bg, hsl(var(--background))) !important;
+}
+.verse-card-themed .border-border {
+  border-color: var(--themed-muted, hsl(var(--border))) !important;
+  opacity: 0.7;
+}
+.verse-card-themed [data-slot="select-trigger"] {
+  color: var(--themed-text, hsl(var(--foreground))) !important;
+  border-color: var(--themed-muted, hsl(var(--border))) !important;
+  background-color: var(--themed-card-bg, hsl(var(--background))) !important;
+}
+.verse-card-themed button {
+  color: var(--themed-text, hsl(var(--foreground)));
+}
+.verse-card-themed .gradient-islamic {
+  color: hsl(var(--gold)) !important;
 }
