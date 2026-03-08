@@ -152,11 +152,11 @@ const Index = () => {
 
       {/* Progress counter only */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <div className="flex items-center gap-3 bg-card/60 backdrop-blur-sm rounded-full border border-border px-4 py-2">
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+        <div className="flex items-center gap-3 backdrop-blur-sm rounded-full px-4 py-2" style={{ backgroundColor: `${bgTheme.cardBg}`, border: `1px solid ${bgTheme.mutedText}30` }}>
+          <div className="h-2 flex-1 overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}30` }}>
             <div className="h-full transition-all duration-700 rounded-full" style={{ width: `${progressPercent}%`, backgroundColor: bgTheme.btnBg }} />
           </div>
-          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+          <span className="text-xs font-semibold whitespace-nowrap" style={{ color: bgTheme.mutedText }}>
             {versesRemaining.toLocaleString("ar-EG")} آية متبقية ({progressPercent}٪)
           </span>
         </div>
