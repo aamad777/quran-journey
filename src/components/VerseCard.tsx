@@ -328,6 +328,9 @@ const VerseCard = ({
                 ) : (
                   <span className="text-foreground">{v.arabic}</span>
                 )}
+                <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
+                  ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
+                </span>
               </p>
               <p className="text-xs text-muted-foreground mt-2">اضغط مطوّلاً للتفسير</p>
             </div>
