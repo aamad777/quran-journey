@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eraser, Send, Loader2 } from "lucide-react";
+import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eraser, Send, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,6 +29,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
   const [isChecking, setIsChecking] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [showVerse, setShowVerse] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -220,25 +221,43 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           />
         </div>
 
-        {/* Words display - only show revealed words */}
-        <div className="text-center mb-4 select-none" dir="rtl">
-          <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
-            {words.map((word, i) => (
-              <span
-                key={i}
-                className={`inline-block mx-1 transition-all duration-300 ${
-                  i < revealedCount
-                    ? "text-foreground"
-                    : "text-transparent"
-                }`}
-              >
-                {i < revealedCount ? word : "ـــ"}
-              </span>
-            ))}
-          </p>
+        {/* Show/Hide toggle */}
+        <div className="flex justify-center mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowVerse(!showVerse)}
+            className="gap-2 text-muted-foreground"
+          >
+            {showVerse ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showVerse ? "إخفاء الآية" : "إظهار الآية"}
+          </Button>
         </div>
 
-        {/* Current word hint - hidden */}
+        {/* Words display */}
+        {showVerse && (
+          <div className="text-center mb-4 select-none" dir="rtl">
+            <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
+              {words.map((word, i) => (
+                <span
+                  key={i}
+                  className={`inline-block mx-1 transition-all duration-300 ${
+                    i < revealedCount
+                      ? "text-foreground"
+                      : i === revealedCount
+                      ? "text-primary font-bold border-b-2 border-primary pb-1"
+                      : "text-muted-foreground/30"
+                  }`}
+                  style={{ filter: i > revealedCount ? "blur(2px)" : "none" }}
+                >
+                  {word}
+                </span>
+              ))}
+            </p>
+          </div>
+        )}
+
+        {/* Current word hint */}
         {!verseComplete && (
           <div className="text-center mb-4">
             <p className="text-xs text-muted-foreground">ارسم الكلمة التالية</p>
