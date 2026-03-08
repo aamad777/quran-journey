@@ -145,13 +145,13 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
 
   const checkDrawing = async () => {
     const canvas = canvasRef.current;
-    if (!canvas || !currentWord) return;
+    if (!canvas || !currentWord || isChecking) return;
 
     setIsChecking(true);
     setFeedback(null);
+    hasDrawn.current = false;
 
     try {
-      // Convert canvas to base64
       const dataUrl = canvas.toDataURL("image/png");
       const base64 = dataUrl.split(",")[1];
 
@@ -168,7 +168,6 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
         if (newCount >= words.length) {
           setVerseComplete(true);
         } else {
-          // Clear canvas for next word after a brief delay
           setTimeout(() => {
             clearCanvas();
             setFeedback(null);
@@ -176,10 +175,19 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
         }
       } else {
         setFeedback("incorrect");
+        // Auto-clear after showing incorrect feedback
+        setTimeout(() => {
+          clearCanvas();
+          setFeedback(null);
+        }, 1200);
       }
     } catch (err) {
       console.error("Recognition error:", err);
       setFeedback("incorrect");
+      setTimeout(() => {
+        clearCanvas();
+        setFeedback(null);
+      }, 1200);
     } finally {
       setIsChecking(false);
     }
