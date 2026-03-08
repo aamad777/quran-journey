@@ -58,6 +58,8 @@ interface VerseCardProps {
   onPrev: () => void;
   verseCount: number;
   onVerseCountChange: (count: number) => void;
+  activeWordColor?: string;
+  activeWordGlow?: string;
 }
 
 const VerseCard = ({
@@ -71,6 +73,8 @@ const VerseCard = ({
   onPrev,
   verseCount,
   onVerseCountChange,
+  activeWordColor = "hsl(38 65% 50%)",
+  activeWordGlow = "0 0 12px hsl(38 65% 50% / 0.4)",
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -332,7 +336,8 @@ const VerseCard = ({
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
                         <span
-                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'text-primary scale-110 inline-block' : ''}`}
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-105' : ''}`}
+                          style={isActive && activeWordIndex === wi ? { color: activeWordColor, textShadow: activeWordGlow, backgroundColor: `${activeWordColor}15`, borderRadius: '4px', padding: '1px 3px' } : undefined}
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
@@ -361,7 +366,8 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                         <span
-                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'text-primary scale-110 inline-block' : ''}`}
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-105' : ''}`}
+                          style={isActive && activeWordIndex === wi ? { color: activeWordColor, textShadow: activeWordGlow, backgroundColor: `${activeWordColor}15`, borderRadius: '4px', padding: '1px 3px' } : undefined}
                         >
                           {word}
                         </span>
