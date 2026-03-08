@@ -207,7 +207,7 @@ const Index = () => {
       </div>
 
       {/* Main Content */}
-      <main className="container max-w-4xl mx-auto px-4 py-8 md:py-12">
+      <main className="container max-w-4xl mx-auto px-4 py-6 md:py-10">
         {activeTab === "stats" ? (
           <QuranStats
             surahNumber={progress.surah_number}
