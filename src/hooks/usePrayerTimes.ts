@@ -36,11 +36,13 @@ function parseTime(timeStr: string): Date {
 
 function formatRemaining(ms: number): string {
   if (ms < 0) return "";
-  const totalMin = Math.floor(ms / 60000);
-  const h = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  if (h > 0) return `${h} س ${m} د`;
-  return `${m} دقيقة`;
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  if (h > 0) return `${h}:${pad(m)}:${pad(s)}`;
+  return `${pad(m)}:${pad(s)}`;
 }
 
 export const usePrayerTimes = () => {
@@ -110,7 +112,7 @@ export const usePrayerTimes = () => {
     }
   }, [fetchPrayerTimes, requestLocation]);
 
-  // Update next prayer every 30s
+  // Update next prayer every second (live countdown)
   useEffect(() => {
     if (!prayerTimes) return;
 
@@ -145,7 +147,7 @@ export const usePrayerTimes = () => {
     };
 
     compute();
-    const interval = setInterval(compute, 30000);
+    const interval = setInterval(compute, 1000);
     return () => clearInterval(interval);
   }, [prayerTimes]);
 
