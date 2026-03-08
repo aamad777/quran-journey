@@ -10,6 +10,8 @@ import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn, Mic, PenTool, BarChart3 } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import PrayerBanner from "@/components/PrayerBanner";
+import PermissionPrompt from "@/components/PermissionPrompt";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -104,6 +106,9 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Prayer Times Banner */}
+      <PrayerBanner />
+
       {/* Guest Banner */}
       {!user && (
         <div className="bg-accent/20 border-b border-border">
@@ -114,6 +119,11 @@ const Index = () => {
           </div>
         </div>
       )}
+
+      {/* Permission Prompt */}
+      <div className="container max-w-4xl mx-auto px-4 pt-4">
+        <PermissionPrompt />
+      </div>
 
       {/* Progress counter only */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
