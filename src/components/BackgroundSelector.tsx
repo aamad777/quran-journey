@@ -5,6 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 import bgGeometric from "@/assets/bg-geometric.jpg";
 import bgMosque from "@/assets/bg-mosque.jpg";
@@ -41,9 +42,11 @@ const PATTERNS: PatternInfo[] = [
 interface BackgroundSelectorProps {
   background: BackgroundPattern;
   setBackground: (bg: BackgroundPattern) => void;
+  opacity: number;
+  setOpacity: (val: number) => void;
 }
 
-const BackgroundSelector = ({ background, setBackground }: BackgroundSelectorProps) => {
+const BackgroundSelector = ({ background, setBackground, opacity, setOpacity }: BackgroundSelectorProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -51,7 +54,7 @@ const BackgroundSelector = ({ background, setBackground }: BackgroundSelectorPro
           <Wallpaper className="w-4 h-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-52 p-3" align="end">
+      <PopoverContent className="w-56 p-3" align="end">
         <p className="text-xs text-muted-foreground mb-2 font-arabic text-right">خلفية الصفحة</p>
         <div className="grid grid-cols-3 gap-2">
           {PATTERNS.map((p) => (
@@ -86,6 +89,22 @@ const BackgroundSelector = ({ background, setBackground }: BackgroundSelectorPro
             </button>
           ))}
         </div>
+        {background !== "none" && (
+          <div className="mt-3 pt-3 border-t border-border">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-muted-foreground">{Math.round(opacity * 100)}٪</span>
+              <p className="text-xs text-muted-foreground font-arabic">شدة الخلفية</p>
+            </div>
+            <Slider
+              value={[opacity * 100]}
+              onValueChange={([val]) => setOpacity(val / 100)}
+              min={10}
+              max={100}
+              step={5}
+              className="w-full"
+            />
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );
