@@ -53,7 +53,7 @@ export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
     btnBg: "hsl(38 70% 55%)", btnText: "hsl(220 30% 10%)",
     btnOutlineBorder: "hsl(38 50% 40% / 0.5)", btnOutlineText: "hsl(38 60% 80%)",
     activeWordColor: "hsl(38 80% 60%)", activeWordGlow: "0 0 14px hsl(38 80% 55% / 0.5)",
-    textColor: "hsl(40 30% 92%)", mutedText: "hsl(38 40% 70%)",
+    textColor: "hsl(40 35% 96%)", mutedText: "hsl(38 45% 84%)",
     cardBg: "hsl(220 30% 12% / 0.93)",
   },
   mosque: {
@@ -67,21 +67,21 @@ export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
     btnBg: "hsl(152 45% 35%)", btnText: "hsl(40 30% 97%)",
     btnOutlineBorder: "hsl(152 30% 40% / 0.5)", btnOutlineText: "hsl(152 40% 80%)",
     activeWordColor: "hsl(152 55% 50%)", activeWordGlow: "0 0 14px hsl(152 55% 45% / 0.5)",
-    textColor: "hsl(40 30% 90%)", mutedText: "hsl(152 20% 65%)",
+    textColor: "hsl(40 34% 95%)", mutedText: "hsl(152 24% 80%)",
     cardBg: "hsl(150 30% 10% / 0.93)",
   },
   night: {
     btnBg: "hsl(270 50% 50%)", btnText: "hsl(0 0% 100%)",
     btnOutlineBorder: "hsl(270 40% 50% / 0.5)", btnOutlineText: "hsl(270 40% 85%)",
     activeWordColor: "hsl(280 60% 70%)", activeWordGlow: "0 0 14px hsl(280 60% 65% / 0.5)",
-    textColor: "hsl(0 0% 95%)", mutedText: "hsl(270 30% 75%)",
+    textColor: "hsl(0 0% 98%)", mutedText: "hsl(270 36% 86%)",
     cardBg: "hsl(260 40% 12% / 0.93)",
   },
   calligraphy: {
     btnBg: "hsl(350 45% 35%)", btnText: "hsl(38 60% 80%)",
     btnOutlineBorder: "hsl(38 50% 45% / 0.5)", btnOutlineText: "hsl(38 60% 75%)",
     activeWordColor: "hsl(38 75% 60%)", activeWordGlow: "0 0 14px hsl(38 75% 55% / 0.5)",
-    textColor: "hsl(38 50% 85%)", mutedText: "hsl(38 30% 65%)",
+    textColor: "hsl(38 56% 90%)", mutedText: "hsl(38 38% 78%)",
     cardBg: "hsl(350 30% 12% / 0.93)",
   },
   tiles: {
