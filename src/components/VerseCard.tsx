@@ -90,6 +90,7 @@ const VerseCard = ({
   themeMutedText,
   themeCardBg,
   themeAccentColor,
+  isSurahLevel = false,
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
