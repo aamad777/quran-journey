@@ -632,9 +632,27 @@ const VerseCard = ({
         <audio
           ref={audioRef}
           src={audioUrls[0] || audioUrl}
-          onEnded={handleEnded}
-          onPause={() => setIsPlaying(false)}
+          onEnded={() => { handleEnded(); setActiveWordIndex(null); }}
+          onPause={() => { setIsPlaying(false); setActiveWordIndex(null); }}
           onPlay={() => setIsPlaying(true)}
+          onTimeUpdate={() => {
+            if (!audioRef.current || !isPlaying) return;
+            const { currentTime, duration } = audioRef.current;
+            if (!duration || isNaN(duration)) return;
+            const currentVerse = verses[currentAudioIndex];
+            if (!currentVerse) return;
+            const words = currentVerse.arabic.trim().split(/\s+/);
+            const totalChars = words.reduce((s, w) => s + w.length, 0);
+            let acc = 0;
+            for (let i = 0; i < words.length; i++) {
+              acc += words[i].length;
+              if (currentTime / duration <= acc / totalChars) {
+                setActiveWordIndex(i);
+                return;
+              }
+            }
+            setActiveWordIndex(words.length - 1);
+          }}
         />
       </div>
     </div>
