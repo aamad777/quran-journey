@@ -16,7 +16,6 @@ import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import BackgroundSelector, { PATTERNS, BG_THEMES, type BackgroundPattern } from "@/components/BackgroundSelector";
-import { useState as useTabHover } from "react";
 
 const Index = () => {
   const { theme, setTheme, mode, toggleMode } = useTheme();
