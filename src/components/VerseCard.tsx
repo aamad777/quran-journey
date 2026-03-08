@@ -324,6 +324,7 @@ const VerseCard = ({
           borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
           boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
           color: themeTextColor,
+          opacity: 1,
           '--themed-muted': themeMutedText,
           '--themed-text': themeTextColor,
           '--themed-accent': themeAccentColor,
