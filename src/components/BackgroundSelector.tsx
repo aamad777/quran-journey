@@ -97,10 +97,8 @@ const PATTERNS: PatternInfo[] = [
   { id: "none", labelAr: "بدون", image: null },
   { id: "geometric", labelAr: "هندسي", image: bgGeometric },
   { id: "mosque", labelAr: "مسجد", image: bgMosque },
-  { id: "arabesque", labelAr: "أرابيسك", image: bgArabesque },
   { id: "night", labelAr: "ليلي", image: bgNight },
   { id: "calligraphy", labelAr: "خط عربي", image: bgCalligraphy },
-  { id: "tiles", labelAr: "بلاط", image: bgTiles },
 ];
 
 interface BackgroundSelectorProps {
