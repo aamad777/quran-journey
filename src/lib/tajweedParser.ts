@@ -13,6 +13,7 @@ export interface TajweedRuleInfo {
   description: string;
   howTo: string;
   example: string;
+  exampleRef: string; // surah:ayah for audio example
 }
 
 export const TAJWEED_RULES: Record<string, TajweedRuleInfo> = {
