@@ -332,8 +332,7 @@ const VerseCard = ({
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
                         <span
-                          className={`inline rounded-md transition-colors duration-200 ${isActive && activeWordIndex === wi ? 'bg-primary/20 ring-1 ring-primary/30' : ''}`}
-                          style={{ padding: isActive && activeWordIndex === wi ? '2px 4px' : undefined }}
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'text-primary scale-110 inline-block' : ''}`}
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
@@ -362,8 +361,7 @@ const VerseCard = ({
                     return words.map((word, wi) => (
                       <span key={wi}>
                         <span
-                          className={`inline rounded-md transition-colors duration-200 ${isActive && activeWordIndex === wi ? 'bg-primary/20 ring-1 ring-primary/30' : ''}`}
-                          style={{ padding: isActive && activeWordIndex === wi ? '2px 4px' : undefined }}
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'text-primary scale-110 inline-block' : ''}`}
                         >
                           {word}
                         </span>
