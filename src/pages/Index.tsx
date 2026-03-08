@@ -5,16 +5,17 @@ import { useQuranVerse } from "@/hooks/useQuranVerse";
 import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
 import PracticeMode from "@/components/PracticeMode";
+import DrawPracticeMode from "@/components/DrawPracticeMode";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, Mic } from "lucide-react";
+import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
-  const [activeTab, setActiveTab] = useState<"read" | "practice">(() => {
-    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice") || "read"; } catch { return "read"; }
+  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw") || "read"; } catch { return "read"; }
   });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
@@ -105,7 +106,16 @@ const Index = () => {
             className="rounded-full gap-2"
           >
             <Mic className="w-4 h-4" />
-            تدريب
+            صوت
+          </Button>
+          <Button
+            variant={activeTab === "draw" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("draw")}
+            className="rounded-full gap-2"
+          >
+            <PenTool className="w-4 h-4" />
+            رسم
           </Button>
         </div>
       </div>
@@ -136,8 +146,14 @@ const Index = () => {
             verseCount={verseCount}
             onVerseCountChange={setVerseCount}
           />
-        ) : (
+        ) : activeTab === "practice" ? (
           <PracticeMode
+            verses={verses}
+            onNext={goToNext}
+            onPrev={goToPrev}
+          />
+        ) : (
+          <DrawPracticeMode
             verses={verses}
             onNext={goToNext}
             onPrev={goToPrev}
