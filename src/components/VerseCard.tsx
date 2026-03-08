@@ -317,7 +317,17 @@ const VerseCard = ({
       </div>
 
       {/* Verse Card */}
-      <div className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm" style={{ backgroundColor: themeCardBg, borderColor: themeMutedText ? `${themeMutedText}30` : undefined, boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined }}>
+      <div
+        className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm"
+        style={{
+          backgroundColor: themeCardBg,
+          borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
+          boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
+          // Override muted-foreground and foreground for all children
+          '--muted-foreground': undefined,
+          color: themeTextColor,
+        } as React.CSSProperties}
+      >
         {/* Verses */}
         {verses.map((v, i) => {
           const isActive = isPlaying && i === currentAudioIndex;
