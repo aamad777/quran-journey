@@ -109,6 +109,13 @@ const VerseCard = ({
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
   const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
 
+  // Vivid rotating colors for active word during recitation
+  const RECITE_COLORS = [
+    '#FF6B35', '#E91E63', '#9C27B0', '#2196F3', '#00BCD4',
+    '#4CAF50', '#FF9800', '#F44336', '#3F51B5', '#009688',
+  ];
+  const getReciteColor = (wi: number) => RECITE_COLORS[wi % RECITE_COLORS.length];
+
   const playTajweedExample = useCallback(async (exampleRef: string) => {
     if (tajweedAudioRef.current) {
       tajweedAudioRef.current.pause();
