@@ -167,8 +167,19 @@ const Index = () => {
                 {versesRemaining.toLocaleString("ar-EG")} آية متبقية
               </span>
             </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}25` }}>
-              <div className="h-full transition-all duration-700 rounded-full" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})`, boxShadow: `0 0 8px ${bgTheme.btnBg}60` }} />
+            {/* Islamic themed progress bar */}
+            <div className="relative h-4 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}20`, border: `1px solid ${bgTheme.btnBg}30` }}>
+              {/* Decorative Islamic pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 8px, ${bgTheme.btnBg} 8px, ${bgTheme.btnBg} 9px)` }} />
+              {/* Fill bar */}
+              <div className="h-full transition-all duration-700 rounded-full relative" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})`, boxShadow: `0 0 10px ${bgTheme.btnBg}50, inset 0 1px 0 rgba(255,255,255,0.25)` }}>
+                {/* Inner shimmer */}
+                <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)' }} />
+                {/* Star end cap */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-5 h-5 flex items-center justify-center" style={{ color: bgTheme.btnBg, filter: `drop-shadow(0 0 4px ${bgTheme.btnBg})` }}>
+                  <span className="text-xs">✦</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
