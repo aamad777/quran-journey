@@ -98,6 +98,8 @@ const VerseCard = ({
   const [tafseerLoading, setTafseerLoading] = useState(false);
   const [tafseerVerse, setTafseerVerse] = useState("");
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tajweedPopupOpen, setTajweedPopupOpen] = useState(false);
+  const [selectedTajweedRule, setSelectedTajweedRule] = useState<TajweedRuleInfo | null>(null);
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
