@@ -100,6 +100,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
     if (!ctx) return;
     setIsDrawing(true);
     setFeedback(null);
+    hasDrawn.current = true;
+    if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
     const pos = getPos(e);
     ctx.beginPath();
     ctx.moveTo(pos.x, pos.y);
@@ -123,6 +125,13 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
 
   const endDraw = () => {
     setIsDrawing(false);
+    // Auto-check after user stops drawing for 1.5s
+    if (hasDrawn.current && !verseComplete) {
+      if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
+      autoCheckTimer.current = setTimeout(() => {
+        checkDrawing();
+      }, 1500);
+    }
   };
 
   const clearCanvas = () => {
