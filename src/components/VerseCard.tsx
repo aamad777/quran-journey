@@ -85,6 +85,10 @@ const VerseCard = ({
     try { return localStorage.getItem("quran_tajweed") === "true"; } catch { return false; }
   });
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [repeatCount, setRepeatCount] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_repeat_count") || "1"); } catch { return 1; }
+  });
+  const currentRepeatRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [tafseerOpen, setTafseerOpen] = useState(false);
   const [tafseerText, setTafseerText] = useState("");
