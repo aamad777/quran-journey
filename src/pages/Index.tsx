@@ -8,7 +8,7 @@ import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, Mic, PenTool, BarChart3, Heart } from "lucide-react";
+import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, BarChart3, Heart } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
 import PermissionPrompt from "@/components/PermissionPrompt";
@@ -123,10 +123,16 @@ const Index = () => {
                 <LogOut className="w-4 h-4" />
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
-                <LogIn className="w-3.5 h-3.5" />
-                دخول
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
+                  <LogIn className="w-3.5 h-3.5" />
+                  دخول
+                </Button>
+                <Button size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
+                  <UserPlus className="w-3.5 h-3.5" />
+                  تسجيل
+                </Button>
+              </>
             )}
           </div>
         </div>
