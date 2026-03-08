@@ -11,7 +11,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { parseTajweed, TAJWEED_RULES } from "@/lib/tajweedParser";
+import { parseTajweed, TAJWEED_RULES, type TajweedRuleInfo } from "@/lib/tajweedParser";
 import {
   Tooltip,
   TooltipContent,
@@ -98,6 +98,8 @@ const VerseCard = ({
   const [tafseerLoading, setTafseerLoading] = useState(false);
   const [tafseerVerse, setTafseerVerse] = useState("");
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tajweedPopupOpen, setTajweedPopupOpen] = useState(false);
+  const [selectedTajweedRule, setSelectedTajweedRule] = useState<TajweedRuleInfo | null>(null);
 
   useEffect(() => { localStorage.setItem("quran_autoplay", String(autoPlay)); }, [autoPlay]);
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
@@ -276,18 +278,15 @@ const VerseCard = ({
                   parseTajweed(v.tajweedText).map((seg, si) => {
                     const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
                     return rule ? (
-                      <TooltipProvider key={si} delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span style={{ color: rule.color, backgroundColor: rule.bg, borderRadius: '2px', padding: '0 1px', fontWeight: 700 }}>{seg.text}</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            <span className="font-arabic text-sm">{rule.labelAr}</span>
-                            <span className="mx-1">–</span>
-                            <span>{rule.label}</span>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <span
+                        key={si}
+                        style={{ color: rule.color, cursor: 'pointer' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTajweedRule(rule);
+                          setTajweedPopupOpen(true);
+                        }}
+                      >{seg.text}</span>
                     ) : (
                       <span key={si} className="text-foreground">{seg.text}</span>
                     );
@@ -314,6 +313,34 @@ const VerseCard = ({
               <p className="text-muted-foreground text-center py-8 animate-pulse">جاري تحميل التفسير...</p>
             ) : (
               <p className="font-arabic text-base leading-[2] text-foreground">{tafseerText}</p>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Tajweed Rule Popup */}
+        <Dialog open={tajweedPopupOpen} onOpenChange={setTajweedPopupOpen}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="font-arabic text-lg" style={{ color: selectedTajweedRule?.color }}>
+                {selectedTajweedRule?.labelAr}
+                <span className="text-muted-foreground text-sm mr-2">({selectedTajweedRule?.label})</span>
+              </DialogTitle>
+            </DialogHeader>
+            {selectedTajweedRule && (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground font-semibold mb-1">ما هو؟</p>
+                  <p className="font-arabic text-sm leading-relaxed text-foreground">{selectedTajweedRule.description}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground font-semibold mb-1">كيف تنطقه؟</p>
+                  <p className="font-arabic text-sm leading-relaxed text-foreground">{selectedTajweedRule.howTo}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground font-semibold mb-1">مثال</p>
+                  <p className="font-arabic text-base text-foreground" style={{ color: selectedTajweedRule.color }}>{selectedTajweedRule.example}</p>
+                </div>
+              </div>
             )}
           </DialogContent>
         </Dialog>
