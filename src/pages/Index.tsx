@@ -160,17 +160,17 @@ const Index = () => {
       {/* Progress + Tabs Combined Card */}
       <div className="container max-w-4xl mx-auto px-4 pt-3 pb-2">
         <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
-          {/* Progress Row */}
-          <div className="flex items-center gap-3 px-4 py-3">
-            {/* Heart inside progress circle */}
-            <div className="relative w-14 h-14 shrink-0">
+          {/* Progress Row — Heart centered */}
+          <div className="flex flex-col items-center gap-2 px-4 py-4">
+            {/* Heart inside progress circle — centered */}
+            <div className="relative w-16 h-16 shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" style={{ stroke: `${bgTheme.btnBg}18` }} />
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
                 <Heart
-                  className="w-5 h-5 fill-current"
+                  className="w-6 h-6 fill-current"
                   style={{
                     color: bgTheme.btnBg,
                     filter: `drop-shadow(0 0 ${3 + progressPercent * 0.08}px ${bgTheme.btnBg})`,
@@ -179,14 +179,15 @@ const Index = () => {
                 />
               </div>
             </div>
-            {/* Stats */}
-            <div className="flex-1 min-w-0 flex items-center justify-between">
-              <div className="flex flex-col">
+            {/* Stats row */}
+            <div className="flex items-center justify-center gap-4 w-full">
+              <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} آية مقروءة</span>
                 <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪ مكتمل</span>
               </div>
-              <div className="text-left">
-                <span className="text-sm font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
+              <div className="w-px h-6" style={{ backgroundColor: `${bgTheme.mutedText}20` }} />
+              <div className="flex flex-col items-center">
+                <span className="text-xs font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
               </div>
             </div>
           </div>
