@@ -327,6 +327,7 @@ const VerseCard = ({
           '--themed-muted': themeMutedText,
           '--themed-text': themeTextColor,
           '--themed-accent': themeAccentColor,
+          '--themed-card-bg': themeCardBg,
         } as React.CSSProperties}
       >
         {/* Verses */}
