@@ -168,7 +168,7 @@ const Index = () => {
               </span>
             </div>
             {/* Islamic themed progress bar */}
-            <div className="relative h-4 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}20`, border: `1px solid ${bgTheme.btnBg}30` }}>
+            <div className="relative h-4 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}30`, border: `1px solid ${bgTheme.btnBg}40` }}>
               {/* Decorative Islamic pattern overlay */}
               <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 8px, ${bgTheme.btnBg} 8px, ${bgTheme.btnBg} 9px)` }} />
               {/* Fill bar */}
