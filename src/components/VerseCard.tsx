@@ -50,6 +50,7 @@ const DELAY_OPTIONS = [
 interface VerseCardProps {
   verses: VerseData[];
   audioUrl: string;
+  audioUrls: string[];
   reciters: Reciter[];
   selectedReciter: string;
   onReciterChange: (id: string) => void;
