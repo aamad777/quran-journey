@@ -241,15 +241,11 @@ audio::-webkit-media-controls-panel {
 }
 .verse-card-themed .border-border {
   border-color: var(--themed-muted, hsl(var(--border))) !important;
-  opacity: 0.7;
 }
 .verse-card-themed [data-slot="select-trigger"] {
   color: var(--themed-text, hsl(var(--foreground))) !important;
   border-color: var(--themed-muted, hsl(var(--border))) !important;
-  background-color: var(--themed-card-bg, hsl(var(--background))) !important;
-}
-.verse-card-themed button {
-  color: var(--themed-text, hsl(var(--foreground)));
+  background-color: hsl(var(--background) / 0.78) !important;
 }
 .verse-card-themed .gradient-islamic {
   color: hsl(var(--gold)) !important;
