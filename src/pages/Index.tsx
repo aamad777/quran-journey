@@ -8,7 +8,7 @@ import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
+import { BookOpen, LogOut, LogIn, Mic, PenTool, BarChart3 } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,8 @@ const Index = () => {
   const { theme, setTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
-  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw">(() => {
-    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw") || "read"; } catch { return "read"; }
+  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw" | "stats") || "read"; } catch { return "read"; }
   });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
@@ -115,17 +115,16 @@ const Index = () => {
         </div>
       )}
 
-      {/* Quran Stats */}
+      {/* Progress counter only */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <QuranStats
-          surahNumber={progress.surah_number}
-          ayahNumber={progress.ayah_number}
-          versesRead={versesRead}
-          versesRemaining={versesRemaining}
-          progressPercent={progressPercent}
-          voiceCorrect={voiceCorrect}
-          drawCorrect={drawCorrect}
-        />
+        <div className="flex items-center gap-3 bg-card/60 backdrop-blur-sm rounded-full border border-border px-4 py-2">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+            <div className="h-full bg-primary transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+          </div>
+          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+            {versesRemaining.toLocaleString("ar-EG")} آية متبقية ({progressPercent}٪)
+          </span>
+        </div>
       </div>
 
 
@@ -158,12 +157,31 @@ const Index = () => {
             <PenTool className="w-4 h-4" />
             رسم
           </Button>
+          <Button
+            variant={activeTab === "stats" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab("stats")}
+            className="rounded-full gap-2"
+          >
+            <BarChart3 className="w-4 h-4" />
+            إحصائيات
+          </Button>
         </div>
       </div>
 
       {/* Main Content */}
       <main className="container max-w-4xl mx-auto px-4 py-8 md:py-12">
-        {isLoading || verses.length === 0 ? (
+        {activeTab === "stats" ? (
+          <QuranStats
+            surahNumber={progress.surah_number}
+            ayahNumber={progress.ayah_number}
+            versesRead={versesRead}
+            versesRemaining={versesRemaining}
+            progressPercent={progressPercent}
+            voiceCorrect={voiceCorrect}
+            drawCorrect={drawCorrect}
+          />
+        ) : isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
               <Skeleton className="h-10 w-48 mx-auto rounded-full" />
