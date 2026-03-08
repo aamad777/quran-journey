@@ -27,6 +27,9 @@ const Index = () => {
     localStorage.setItem("quran_bg_pattern", bg);
   };
   const bgPattern = PATTERNS.find(p => p.id === background);
+  const bgStyle = bgPattern?.image
+    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" as const }
+    : {};
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
   const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
