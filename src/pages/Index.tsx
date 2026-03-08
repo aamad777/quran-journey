@@ -15,6 +15,7 @@ import PermissionPrompt from "@/components/PermissionPrompt";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import BackgroundSelector, { PATTERNS, type BackgroundPattern } from "@/components/BackgroundSelector";
 
 const Index = () => {
   const { theme, setTheme, mode, toggleMode } = useTheme();
