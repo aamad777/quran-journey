@@ -32,17 +32,14 @@ export const useTheme = () => {
   }, []);
 
   useEffect(() => {
-    const root = document.documentElement;
-    // Remove all theme classes from both html and body
-    THEMES.forEach((t) => {
-      root.classList.remove(`theme-${t.id}`);
-      document.body.classList.remove(`theme-${t.id}`);
+    // Apply to multiple targets for maximum compatibility
+    const targets = [document.documentElement, document.body, document.getElementById("root")].filter(Boolean) as HTMLElement[];
+    targets.forEach((el) => {
+      THEMES.forEach((t) => el.classList.remove(`theme-${t.id}`));
+      if (theme !== "emerald") {
+        el.classList.add(`theme-${theme}`);
+      }
     });
-    // Add current theme class
-    if (theme !== "emerald") {
-      root.classList.add(`theme-${theme}`);
-      document.body.classList.add(`theme-${theme}`);
-    }
   }, [theme]);
 
   return { theme, setTheme, themes: THEMES };
