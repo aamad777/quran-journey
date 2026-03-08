@@ -165,42 +165,26 @@ const Index = () => {
 
       <div className="container max-w-4xl mx-auto px-4 pt-6">
         <div className="flex items-center justify-center gap-2">
-          <Button
-            variant={activeTab === "read" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("read")}
-            className="rounded-full gap-2"
-          >
-            <BookOpen className="w-4 h-4" />
-            قراءة
-          </Button>
-          <Button
-            variant={activeTab === "practice" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("practice")}
-            className="rounded-full gap-2"
-          >
-            <Mic className="w-4 h-4" />
-            صوت
-          </Button>
-          <Button
-            variant={activeTab === "draw" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("draw")}
-            className="rounded-full gap-2"
-          >
-            <PenTool className="w-4 h-4" />
-            رسم
-          </Button>
-          <Button
-            variant={activeTab === "stats" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("stats")}
-            className="rounded-full gap-2"
-          >
-            <BarChart3 className="w-4 h-4" />
-            إحصائيات
-          </Button>
+          {([
+            { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
+            { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
+            { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
+            { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className="rounded-full gap-2 inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-200"
+              style={
+                activeTab === tab.key
+                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }
+                  : { border: `1px solid ${bgTheme.btnOutlineBorder}`, color: bgTheme.btnOutlineText, backgroundColor: "transparent" }
+              }
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
