@@ -30,6 +30,7 @@ const SURAH_AYAH_COUNTS = [
 
 export const useQuranVerse = (surahNumber: number, ayahNumber: number, verseCount: number = 1) => {
   const [verses, setVerses] = useState<VerseData[]>([]);
+  const [audioUrls, setAudioUrls] = useState<string[]>([]);
   const [audioUrl, setAudioUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [selectedReciter, setSelectedReciter] = useState(RECITERS[0].id);
