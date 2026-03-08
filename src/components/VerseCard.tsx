@@ -262,6 +262,23 @@ const VerseCard = ({
     }
   }, []);
 
+  // Helper: group tajweed segments by word boundaries
+  const getWordsFromTajweed = (tajweedText: string) => {
+    const segments = parseTajweed(tajweedText);
+    const wordGroups: { segments: { text: string; rule?: string }[] }[] = [{ segments: [] }];
+    segments.forEach(seg => {
+      const parts = seg.text.split(/( +)/);
+      parts.forEach(part => {
+        if (/^ +$/.test(part)) {
+          wordGroups.push({ segments: [] });
+        } else if (part.length > 0) {
+          wordGroups[wordGroups.length - 1].segments.push({ text: part, rule: seg.rule });
+        }
+      });
+    });
+    return wordGroups.filter(wg => wg.segments.length > 0);
+  };
+
   const primaryVerse = verses[0];
   if (!primaryVerse) return null;
 
