@@ -103,6 +103,7 @@ const VerseCard = ({
   const tajweedAudioRef = useRef<HTMLAudioElement | null>(null);
   const [tajweedAudioLoading, setTajweedAudioLoading] = useState(false);
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
+  const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
 
   const playTajweedExample = useCallback(async (exampleRef: string) => {
     if (tajweedAudioRef.current) {
@@ -261,6 +262,23 @@ const VerseCard = ({
     }
   }, []);
 
+  // Helper: group tajweed segments by word boundaries
+  const getWordsFromTajweed = (tajweedText: string) => {
+    const segments = parseTajweed(tajweedText);
+    const wordGroups: { segments: { text: string; rule?: string }[] }[] = [{ segments: [] }];
+    segments.forEach(seg => {
+      const parts = seg.text.split(/( +)/);
+      parts.forEach(part => {
+        if (/^ +$/.test(part)) {
+          wordGroups.push({ segments: [] });
+        } else if (part.length > 0) {
+          wordGroups[wordGroups.length - 1].segments.push({ text: part, rule: seg.rule });
+        }
+      });
+    });
+    return wordGroups.filter(wg => wg.segments.length > 0);
+  };
+
   const primaryVerse = verses[0];
   if (!primaryVerse) return null;
 
@@ -295,7 +313,7 @@ const VerseCard = ({
             )}
             {/* Arabic Text - long press for tafseer */}
             <div
-              className={`text-center mb-4 select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3 ${isActive ? 'bg-primary/10 ring-2 ring-primary/30' : ''}`}
+              className={`text-center mb-4 select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3`}
               dir="rtl"
               onMouseDown={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
               onMouseUp={handleLongPressEnd}
@@ -309,24 +327,50 @@ const VerseCard = ({
                 style={{ fontSize: `${fontSize}px` }}
               >
                 {tajweedMode && v.tajweedText ? (
-                  parseTajweed(v.tajweedText).map((seg, si) => {
-                    const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
-                    return rule ? (
-                      <span
-                        key={si}
-                        style={{ color: rule.color, cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedTajweedRule(rule);
-                          setTajweedPopupOpen(true);
-                        }}
-                      >{seg.text}</span>
-                    ) : (
-                      <span key={si} className="text-foreground">{seg.text}</span>
-                    );
-                  })
+                  (() => {
+                    const wordGroups = getWordsFromTajweed(v.tajweedText);
+                    return wordGroups.map((wg, wi) => (
+                      <span key={wi}>
+                        <span
+                          className={`inline rounded-md transition-colors duration-200 ${isActive && activeWordIndex === wi ? 'bg-primary/20 ring-1 ring-primary/30' : ''}`}
+                          style={{ padding: isActive && activeWordIndex === wi ? '2px 4px' : undefined }}
+                        >
+                          {wg.segments.map((seg, si) => {
+                            const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
+                            return rule ? (
+                              <span
+                                key={si}
+                                style={{ color: rule.color, cursor: 'pointer' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTajweedRule(rule);
+                                  setTajweedPopupOpen(true);
+                                }}
+                              >{seg.text}</span>
+                            ) : (
+                              <span key={si} className="text-foreground">{seg.text}</span>
+                            );
+                          })}
+                        </span>
+                        {wi < wordGroups.length - 1 && ' '}
+                      </span>
+                    ));
+                  })()
                 ) : (
-                  <span className="text-foreground">{v.arabic}</span>
+                  (() => {
+                    const words = v.arabic.trim().split(/\s+/);
+                    return words.map((word, wi) => (
+                      <span key={wi}>
+                        <span
+                          className={`inline rounded-md transition-colors duration-200 ${isActive && activeWordIndex === wi ? 'bg-primary/20 ring-1 ring-primary/30' : ''}`}
+                          style={{ padding: isActive && activeWordIndex === wi ? '2px 4px' : undefined }}
+                        >
+                          {word}
+                        </span>
+                        {wi < words.length - 1 && ' '}
+                      </span>
+                    ));
+                  })()
                 )}
                 <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
                   ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
@@ -588,9 +632,27 @@ const VerseCard = ({
         <audio
           ref={audioRef}
           src={audioUrls[0] || audioUrl}
-          onEnded={handleEnded}
-          onPause={() => setIsPlaying(false)}
+          onEnded={() => { handleEnded(); setActiveWordIndex(null); }}
+          onPause={() => { setIsPlaying(false); setActiveWordIndex(null); }}
           onPlay={() => setIsPlaying(true)}
+          onTimeUpdate={() => {
+            if (!audioRef.current || !isPlaying) return;
+            const { currentTime, duration } = audioRef.current;
+            if (!duration || isNaN(duration)) return;
+            const currentVerse = verses[currentAudioIndex];
+            if (!currentVerse) return;
+            const words = currentVerse.arabic.trim().split(/\s+/);
+            const totalChars = words.reduce((s, w) => s + w.length, 0);
+            let acc = 0;
+            for (let i = 0; i < words.length; i++) {
+              acc += words[i].length;
+              if (currentTime / duration <= acc / totalChars) {
+                setActiveWordIndex(i);
+                return;
+              }
+            }
+            setActiveWordIndex(words.length - 1);
+          }}
         />
       </div>
     </div>
