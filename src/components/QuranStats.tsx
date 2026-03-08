@@ -94,6 +94,20 @@ export default function QuranStats({ surahNumber, ayahNumber, versesRead, verses
       percent: surahPercent,
       detail: `السورة الحالية: ${surahNumber.toLocaleString("ar-EG")}`,
     },
+    {
+      icon: Mic,
+      label: "صوت صحيح",
+      value: voiceCorrect.toLocaleString("ar-EG"),
+      percent: null,
+      detail: "كلمات نُطقت بدون تخطي",
+    },
+    {
+      icon: PenTool,
+      label: "رسم صحيح",
+      value: drawCorrect.toLocaleString("ar-EG"),
+      percent: null,
+      detail: "كلمات رُسمت بدون تخطي",
+    },
   ];
 
   return (
