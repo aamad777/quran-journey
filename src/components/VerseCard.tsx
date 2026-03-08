@@ -109,6 +109,13 @@ const VerseCard = ({
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
   const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
 
+  // Vivid rotating colors for active word during recitation
+  const RECITE_COLORS = [
+    '#FF6B35', '#E91E63', '#9C27B0', '#2196F3', '#00BCD4',
+    '#4CAF50', '#FF9800', '#F44336', '#3F51B5', '#009688',
+  ];
+  const getReciteColor = (wi: number) => RECITE_COLORS[wi % RECITE_COLORS.length];
+
   const playTajweedExample = useCallback(async (exampleRef: string) => {
     if (tajweedAudioRef.current) {
       tajweedAudioRef.current.pause();
@@ -335,16 +342,16 @@ const VerseCard = ({
                     const wordGroups = getWordsFromTajweed(v.tajweedText);
                     return wordGroups.map((wg, wi) => (
                       <span key={wi}>
-                        <span
-                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-105' : ''}`}
-                          style={isActive && activeWordIndex === wi ? { color: activeWordColor, textShadow: activeWordGlow, backgroundColor: `${activeWordColor}15`, borderRadius: '4px', padding: '1px 3px' } : undefined}
+                         <span
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-110' : ''}`}
+                          style={isActive && activeWordIndex === wi ? { color: getReciteColor(wi), textShadow: `0 0 16px ${getReciteColor(wi)}80`, backgroundColor: `${getReciteColor(wi)}20`, borderRadius: '6px', padding: '2px 5px' } : undefined}
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
                             return rule ? (
                               <span
                                 key={si}
-                                style={{ color: rule.color, cursor: 'pointer' }}
+                                style={{ color: isActive && activeWordIndex === wi ? 'inherit' : rule.color, cursor: 'pointer' }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedTajweedRule(rule);
@@ -352,7 +359,7 @@ const VerseCard = ({
                                 }}
                               >{seg.text}</span>
                             ) : (
-                              <span key={si} className="text-foreground">{seg.text}</span>
+                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : undefined }} className={isActive && activeWordIndex === wi ? '' : 'text-foreground'}>{seg.text}</span>
                             );
                           })}
                         </span>
@@ -365,9 +372,9 @@ const VerseCard = ({
                     const words = v.arabic.trim().split(/\s+/);
                     return words.map((word, wi) => (
                       <span key={wi}>
-                        <span
-                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-105' : ''}`}
-                          style={isActive && activeWordIndex === wi ? { color: activeWordColor, textShadow: activeWordGlow, backgroundColor: `${activeWordColor}15`, borderRadius: '4px', padding: '1px 3px' } : undefined}
+                         <span
+                          className={`inline transition-all duration-300 ${isActive && activeWordIndex === wi ? 'inline-block scale-110' : ''}`}
+                          style={isActive && activeWordIndex === wi ? { color: getReciteColor(wi), textShadow: `0 0 16px ${getReciteColor(wi)}80`, backgroundColor: `${getReciteColor(wi)}20`, borderRadius: '6px', padding: '2px 5px' } : undefined}
                         >
                           {word}
                         </span>
