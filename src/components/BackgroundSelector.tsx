@@ -82,7 +82,7 @@ export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
     btnOutlineBorder: "hsl(38 50% 45% / 0.5)", btnOutlineText: "hsl(38 60% 75%)",
     activeWordColor: "hsl(38 75% 60%)", activeWordGlow: "0 0 14px hsl(38 75% 55% / 0.5)",
     textColor: "hsl(38 50% 85%)", mutedText: "hsl(38 30% 65%)",
-    cardBg: "hsl(350 30% 12% / 0.85)",
+    cardBg: "hsl(350 30% 12% / 0.93)",
   },
   tiles: {
     btnBg: "hsl(185 60% 40%)", btnText: "hsl(0 0% 100%)",
