@@ -287,33 +287,56 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
           </div>
         )}
 
-        {/* Canvas */}
+        {/* Canvas + Brush Size */}
         {!verseComplete && (
-          <div className="relative mb-4">
-            <canvas
-              ref={canvasRef}
-              width={600}
-              height={250}
-              className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
-                feedback === "correct"
-                  ? "border-primary bg-primary/5"
-                  : feedback === "incorrect"
-                  ? "border-destructive bg-destructive/5"
-                  : "border-border bg-muted/30"
-              }`}
-              onMouseDown={startDraw}
-              onMouseMove={draw}
-              onMouseUp={endDraw}
-              onMouseLeave={endDraw}
-              onTouchStart={startDraw}
-              onTouchMove={draw}
-              onTouchEnd={endDraw}
-            />
-            {feedback === "correct" && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <CheckCircle2 className="w-12 h-12 text-primary animate-pulse" />
+          <div className="mb-4">
+            {/* Brush size control */}
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <span className="text-xs text-muted-foreground">حجم القلم</span>
+              <div className="flex items-center gap-2">
+                {[4, 8, 14, 22].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setBrushSize(size)}
+                    className={`rounded-full transition-all duration-150 ${brushSize === size ? 'ring-2 ring-primary ring-offset-2 ring-offset-card' : 'opacity-50 hover:opacity-80'}`}
+                    style={{
+                      width: Math.max(12, size + 8),
+                      height: Math.max(12, size + 8),
+                      backgroundColor: 'hsl(var(--foreground))',
+                    }}
+                    title={`${size}px`}
+                  />
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Canvas */}
+            <div className="relative">
+              <canvas
+                ref={canvasRef}
+                width={600}
+                height={350}
+                className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
+                  feedback === "correct"
+                    ? "border-primary bg-primary/5"
+                    : feedback === "incorrect"
+                    ? "border-destructive bg-destructive/5"
+                    : "border-border bg-muted/30"
+                }`}
+                onMouseDown={startDraw}
+                onMouseMove={draw}
+                onMouseUp={endDraw}
+                onMouseLeave={endDraw}
+                onTouchStart={startDraw}
+                onTouchMove={draw}
+                onTouchEnd={endDraw}
+              />
+              {feedback === "correct" && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <CheckCircle2 className="w-12 h-12 text-primary animate-pulse" />
+                </div>
+              )}
+            </div>
           </div>
         )}
 
