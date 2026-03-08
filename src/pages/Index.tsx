@@ -8,10 +8,13 @@ import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
 import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
+  const { theme, setTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
   const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw">(() => {
@@ -60,6 +63,7 @@ const Index = () => {
             <h1 className="font-display text-xl font-bold text-foreground">قارئ القرآن</h1>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeSwitcher theme={theme} setTheme={setTheme} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
               <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-foreground">
