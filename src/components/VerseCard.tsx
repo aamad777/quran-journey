@@ -50,6 +50,7 @@ const DELAY_OPTIONS = [
 interface VerseCardProps {
   verses: VerseData[];
   audioUrl: string;
+  audioUrls: string[];
   reciters: Reciter[];
   selectedReciter: string;
   onReciterChange: (id: string) => void;
@@ -62,6 +63,7 @@ interface VerseCardProps {
 const VerseCard = ({
   verses,
   audioUrl,
+  audioUrls,
   reciters,
   selectedReciter,
   onReciterChange,
@@ -72,6 +74,7 @@ const VerseCard = ({
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(() => {
     try { return localStorage.getItem("quran_autoplay") === "true"; } catch { return false; }
   });
@@ -102,14 +105,19 @@ const VerseCard = ({
   useEffect(() => { localStorage.setItem("quran_tajweed", String(tajweedMode)); }, [tajweedMode]);
   useEffect(() => { localStorage.setItem("quran_repeat_count", String(repeatCount)); }, [repeatCount]);
 
-  // Reset repeat counter when verse changes
-  useEffect(() => { currentRepeatRef.current = 0; }, [audioUrl]);
+  // Reset when verses change
+  useEffect(() => {
+    currentRepeatRef.current = 0;
+    setCurrentAudioIndex(0);
+  }, [audioUrl]);
 
   useEffect(() => {
-    if (autoPlay && audioRef.current && audioUrl) {
+    if (autoPlay && audioRef.current && audioUrls.length > 0) {
+      setCurrentAudioIndex(0);
+      audioRef.current.src = audioUrls[0];
       audioRef.current.play().catch(() => {});
     }
-  }, [audioUrl, autoPlay]);
+  }, [audioUrls, autoPlay]);
 
   useEffect(() => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
@@ -117,8 +125,16 @@ const VerseCard = ({
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    if (isPlaying) audioRef.current.pause();
-    else audioRef.current.play();
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      // Ensure we're playing the right verse audio
+      const url = audioUrls[currentAudioIndex] || audioUrl;
+      if (audioRef.current.src !== url) {
+        audioRef.current.src = url;
+      }
+      audioRef.current.play();
+    }
     setIsPlaying(!isPlaying);
   };
 
@@ -126,7 +142,7 @@ const VerseCard = ({
     setIsPlaying(false);
     currentRepeatRef.current += 1;
 
-    // If we haven't reached the repeat count, replay
+    // If we haven't reached the repeat count for this verse, replay
     if (currentRepeatRef.current < repeatCount) {
       setTimeout(() => {
         if (audioRef.current) {
@@ -137,8 +153,24 @@ const VerseCard = ({
       return;
     }
 
-    // All repeats done, reset counter
+    // All repeats done for current verse, move to next verse audio
     currentRepeatRef.current = 0;
+    const nextIndex = currentAudioIndex + 1;
+
+    if (nextIndex < audioUrls.length) {
+      // Play next verse's audio
+      setCurrentAudioIndex(nextIndex);
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.src = audioUrls[nextIndex];
+          audioRef.current.play().catch(() => {});
+        }
+      }, 500);
+      return;
+    }
+
+    // All verses done, reset
+    setCurrentAudioIndex(0);
 
     if (autoPlay) {
       const delay = parseInt(advanceDelay) * 1000;
@@ -432,7 +464,7 @@ const VerseCard = ({
 
         <audio
           ref={audioRef}
-          src={audioUrl}
+          src={audioUrls[0] || audioUrl}
           onEnded={handleEnded}
           onPause={() => setIsPlaying(false)}
           onPlay={() => setIsPlaying(true)}
