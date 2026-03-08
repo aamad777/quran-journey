@@ -168,9 +168,11 @@ const Index = () => {
               </span>
             </div>
             {/* Islamic themed progress bar */}
-            <div className="relative h-4 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.mutedText}30`, border: `1px solid ${bgTheme.btnBg}40` }}>
+            <div className="relative h-4 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${bgTheme.btnBg}12`, border: `1px solid ${bgTheme.btnBg}30`, boxShadow: `inset 0 1px 3px ${bgTheme.mutedText}15` }}>
+              {/* Subtle gradient track */}
+              <div className="absolute inset-0 rounded-full" style={{ background: `linear-gradient(90deg, ${bgTheme.btnBg}08, ${bgTheme.activeWordColor}15, ${bgTheme.btnBg}08)` }} />
               {/* Decorative Islamic pattern overlay */}
-              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 8px, ${bgTheme.btnBg} 8px, ${bgTheme.btnBg} 9px)` }} />
+              <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 8px, ${bgTheme.btnBg} 8px, ${bgTheme.btnBg} 9px)` }} />
               {/* Fill bar */}
               <div className="h-full transition-all duration-700 rounded-full relative" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})`, boxShadow: `0 0 10px ${bgTheme.btnBg}50, inset 0 1px 0 rgba(255,255,255,0.25)` }}>
                 {/* Inner shimmer */}
