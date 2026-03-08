@@ -9,7 +9,6 @@ import DrawPracticeMode from "@/components/DrawPracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
-import { Progress as ProgressBar } from "@/components/ui/progress";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
