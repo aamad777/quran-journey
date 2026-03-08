@@ -86,6 +86,7 @@ const VerseCard = ({
 }: VerseCardProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const isPlayingRef = useRef(false);
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(() => {
     try { return localStorage.getItem("quran_autoplay") === "true"; } catch { return false; }
