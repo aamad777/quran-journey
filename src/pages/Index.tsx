@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
 import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
+import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
 import { BookOpen, LogOut, LogIn, Mic, PenTool } from "lucide-react";
-import { Progress as ProgressBar } from "@/components/ui/progress";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
@@ -98,14 +98,15 @@ const Index = () => {
         </div>
       )}
 
-      {/* Quran Progress Counter */}
+      {/* Quran Stats */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <div className="flex items-center gap-3 bg-card/60 backdrop-blur-sm rounded-full border border-border px-4 py-2">
-          <ProgressBar value={progressPercent} className="h-2 flex-1" />
-          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
-            {versesRemaining.toLocaleString("ar-EG")} آية متبقية ({progressPercent}٪)
-          </span>
-        </div>
+        <QuranStats
+          surahNumber={progress.surah_number}
+          ayahNumber={progress.ayah_number}
+          versesRead={versesRead}
+          versesRemaining={versesRemaining}
+          progressPercent={progressPercent}
+        />
       </div>
 
 
