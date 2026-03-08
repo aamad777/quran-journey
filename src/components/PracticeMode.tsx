@@ -17,6 +17,7 @@ interface PracticeModeProps {
   verses: VerseData[];
   onNext: () => void;
   onPrev: () => void;
+  onCorrectWord?: () => void;
 }
 
 // Normalize Arabic text: remove diacritics/tashkeel for comparison
