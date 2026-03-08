@@ -262,6 +262,7 @@ const Index = () => {
             themeMutedText={bgTheme.mutedText}
             themeCardBg={bgTheme.cardBg}
             themeAccentColor={bgTheme.btnBg}
+            isSurahLevel={isSurahLevel}
           />
         ) : activeTab === "practice" ? (
           <PracticeMode
