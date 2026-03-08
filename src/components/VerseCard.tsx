@@ -246,7 +246,9 @@ const VerseCard = ({
       {/* Verse Card */}
       <div className="bg-card rounded-2xl border border-border p-8 md:p-12 shadow-gold">
         {/* Verses */}
-        {verses.map((v, i) => (
+        {verses.map((v, i) => {
+          const isActive = isPlaying && i === currentAudioIndex;
+          return (
           <div key={`${v.surahNumber}:${v.ayahNumber}`}>
             {i > 0 && (
               <div className="flex items-center gap-4 my-6">
@@ -257,7 +259,7 @@ const VerseCard = ({
             )}
             {/* Arabic Text - long press for tafseer */}
             <div
-              className="text-center mb-4 select-none cursor-pointer"
+              className={`text-center mb-4 select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3 ${isActive ? 'bg-primary/10 ring-2 ring-primary/30' : ''}`}
               dir="rtl"
               onMouseDown={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
               onMouseUp={handleLongPressEnd}
@@ -297,7 +299,8 @@ const VerseCard = ({
               <p className="text-xs text-muted-foreground mt-2">اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {/* Tafseer Dialog */}
         <Dialog open={tafseerOpen} onOpenChange={setTafseerOpen}>
