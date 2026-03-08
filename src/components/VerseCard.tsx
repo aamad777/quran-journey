@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -85,6 +85,10 @@ const VerseCard = ({
     try { return localStorage.getItem("quran_tajweed") === "true"; } catch { return false; }
   });
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [repeatCount, setRepeatCount] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_repeat_count") || "1"); } catch { return 1; }
+  });
+  const currentRepeatRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [tafseerOpen, setTafseerOpen] = useState(false);
   const [tafseerText, setTafseerText] = useState("");
@@ -96,6 +100,10 @@ const VerseCard = ({
   useEffect(() => { localStorage.setItem("quran_advance_delay", advanceDelay); }, [advanceDelay]);
   useEffect(() => { localStorage.setItem("quran_font_size", String(fontSize)); }, [fontSize]);
   useEffect(() => { localStorage.setItem("quran_tajweed", String(tajweedMode)); }, [tajweedMode]);
+  useEffect(() => { localStorage.setItem("quran_repeat_count", String(repeatCount)); }, [repeatCount]);
+
+  // Reset repeat counter when verse changes
+  useEffect(() => { currentRepeatRef.current = 0; }, [audioUrl]);
 
   useEffect(() => {
     if (autoPlay && audioRef.current && audioUrl) {
@@ -116,6 +124,22 @@ const VerseCard = ({
 
   const handleEnded = () => {
     setIsPlaying(false);
+    currentRepeatRef.current += 1;
+
+    // If we haven't reached the repeat count, replay
+    if (currentRepeatRef.current < repeatCount) {
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play().catch(() => {});
+        }
+      }, 500);
+      return;
+    }
+
+    // All repeats done, reset counter
+    currentRepeatRef.current = 0;
+
     if (autoPlay) {
       const delay = parseInt(advanceDelay) * 1000;
       if (delay === 0) {
@@ -320,6 +344,25 @@ const VerseCard = ({
               ))}
             </div>
           )}
+
+          {/* Repeat count */}
+          <div className="flex items-center justify-center gap-2">
+            <Repeat className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">تكرار</span>
+            <Select value={String(repeatCount)} onValueChange={(v) => setRepeatCount(parseInt(v))}>
+              <SelectTrigger className="w-16 h-8 bg-background text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">١</SelectItem>
+                <SelectItem value="2">٢</SelectItem>
+                <SelectItem value="3">٣</SelectItem>
+                <SelectItem value="5">٥</SelectItem>
+                <SelectItem value="7">٧</SelectItem>
+                <SelectItem value="10">١٠</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Auto-play toggle + delay */}
           <div className="flex items-center justify-center gap-3 flex-wrap">
