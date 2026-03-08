@@ -318,14 +318,15 @@ const VerseCard = ({
 
       {/* Verse Card */}
       <div
-        className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm [&_.text-muted-foreground]:![color:var(--verse-muted)] [&_.text-foreground]:![color:var(--verse-text)]"
+        className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed"
         style={{
           backgroundColor: themeCardBg,
           borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
           boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
           color: themeTextColor,
-          '--verse-muted': themeMutedText || 'hsl(var(--muted-foreground))',
-          '--verse-text': themeTextColor || 'hsl(var(--foreground))',
+          '--themed-muted': themeMutedText,
+          '--themed-text': themeTextColor,
+          '--themed-accent': themeAccentColor,
         } as React.CSSProperties}
       >
         {/* Verses */}
