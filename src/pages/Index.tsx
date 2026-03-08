@@ -27,6 +27,9 @@ const Index = () => {
     localStorage.setItem("quran_bg_pattern", bg);
   };
   const bgPattern = PATTERNS.find(p => p.id === background);
+  const bgStyle = bgPattern?.image
+    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" as const }
+    : {};
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
   const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
@@ -67,7 +70,7 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" style={{ backgroundImage: bgPattern?.svg || "none" }}>
+      <div className="min-h-screen flex items-center justify-center bg-background" style={bgStyle}>
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
             <BookOpen className="w-8 h-8 text-gold" />
@@ -87,7 +90,7 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background" style={{ backgroundImage: bgPattern?.svg || "none" }}>
+    <div className="min-h-screen bg-background" style={bgStyle}>
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
