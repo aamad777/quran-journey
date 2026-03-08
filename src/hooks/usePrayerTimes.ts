@@ -112,7 +112,7 @@ export const usePrayerTimes = () => {
     }
   }, [fetchPrayerTimes, requestLocation]);
 
-  // Update next prayer every 30s
+  // Update next prayer every second (live countdown)
   useEffect(() => {
     if (!prayerTimes) return;
 
