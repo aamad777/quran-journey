@@ -317,6 +317,34 @@ const VerseCard = ({
           </DialogContent>
         </Dialog>
 
+        {/* Tajweed Rule Popup */}
+        <Dialog open={tajweedPopupOpen} onOpenChange={setTajweedPopupOpen}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="font-arabic text-lg" style={{ color: selectedTajweedRule?.color }}>
+                {selectedTajweedRule?.labelAr}
+                <span className="text-muted-foreground text-sm mr-2">({selectedTajweedRule?.label})</span>
+              </DialogTitle>
+            </DialogHeader>
+            {selectedTajweedRule && (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground font-semibold mb-1">ما هو؟</p>
+                  <p className="font-arabic text-sm leading-relaxed text-foreground">{selectedTajweedRule.description}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground font-semibold mb-1">كيف تنطقه؟</p>
+                  <p className="font-arabic text-sm leading-relaxed text-foreground">{selectedTajweedRule.howTo}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground font-semibold mb-1">مثال</p>
+                  <p className="font-arabic text-base text-foreground" style={{ color: selectedTajweedRule.color }}>{selectedTajweedRule.example}</p>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* Divider before controls */}
         <div className="flex items-center gap-4 my-6">
           <div className="flex-1 h-px bg-border" />
