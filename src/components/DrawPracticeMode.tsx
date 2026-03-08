@@ -115,7 +115,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     const ctx = getCtx();
     if (!ctx) return;
     const pos = getPos(e);
-    ctx.lineWidth = 8;
+    ctx.lineWidth = brushSize;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--foreground")
