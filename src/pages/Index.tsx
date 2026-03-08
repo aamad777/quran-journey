@@ -156,30 +156,28 @@ const Index = () => {
         <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
           {/* Progress Row */}
           <div className="flex items-center gap-3 px-4 py-3">
-            {/* Beating Heart */}
-            <div className="relative shrink-0">
-              <Heart
-                className="w-7 h-7 fill-current"
-                style={{
-                  color: bgTheme.btnBg,
-                  filter: `drop-shadow(0 0 ${4 + progressPercent * 0.1}px ${bgTheme.btnBg})`,
-                  animation: `heartbeat ${Math.max(0.3, 1.5 - (progressPercent * 0.012))}s ease-in-out infinite`,
-                }}
-              />
-            </div>
-            {/* Percentage Circle */}
-            <div className="relative w-11 h-11 shrink-0">
+            {/* Heart inside progress circle */}
+            <div className="relative w-14 h-14 shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" style={{ stroke: `${bgTheme.btnBg}18` }} />
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
               </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold font-arabic" style={{ color: bgTheme.btnBg }}>{progressPercent}٪</span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Heart
+                  className="w-5 h-5 fill-current"
+                  style={{
+                    color: bgTheme.btnBg,
+                    filter: `drop-shadow(0 0 ${3 + progressPercent * 0.08}px ${bgTheme.btnBg})`,
+                    animation: `heartbeat ${Math.max(0.3, 1.5 - (progressPercent * 0.012))}s ease-in-out infinite`,
+                  }}
+                />
+              </div>
             </div>
             {/* Stats */}
             <div className="flex-1 min-w-0 flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} آية مقروءة</span>
-                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>مكتمل</span>
+                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪ مكتمل</span>
               </div>
               <div className="text-left">
                 <span className="text-sm font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
