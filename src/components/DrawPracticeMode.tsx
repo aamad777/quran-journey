@@ -234,28 +234,28 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           </Button>
         </div>
 
-        {/* Words display */}
-        {showVerse && (
-          <div className="text-center mb-4 select-none" dir="rtl">
-            <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
-              {words.map((word, i) => (
-                <span
-                  key={i}
-                  className={`inline-block mx-1 transition-all duration-300 ${
-                    i < revealedCount
-                      ? "text-foreground"
-                      : i === revealedCount
+        {/* Words display - revealed words always show, unrevealed depend on toggle */}
+        <div className="text-center mb-4 select-none" dir="rtl">
+          <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
+            {words.map((word, i) => (
+              <span
+                key={i}
+                className={`inline-block mx-1 transition-all duration-300 ${
+                  i < revealedCount
+                    ? "text-foreground"
+                    : showVerse
+                    ? i === revealedCount
                       ? "text-primary font-bold border-b-2 border-primary pb-1"
                       : "text-muted-foreground/30"
-                  }`}
-                  style={{ filter: i > revealedCount ? "blur(2px)" : "none" }}
-                >
-                  {word}
-                </span>
-              ))}
-            </p>
-          </div>
-        )}
+                    : "text-transparent"
+                }`}
+                style={{ filter: !showVerse && i >= revealedCount ? "blur(0px)" : i > revealedCount ? "blur(2px)" : "none" }}
+              >
+                {i < revealedCount ? word : showVerse ? word : "ـــ"}
+              </span>
+            ))}
+          </p>
+        </div>
 
         {/* Current word hint */}
         {!verseComplete && (
