@@ -192,11 +192,11 @@ const Index = () => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-200"
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-200 ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
                 style={
                   activeTab === tab.key
                     ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40` }
-                    : { backgroundColor: `${bgTheme.mutedText}10`, color: bgTheme.mutedText }
+                    : { backgroundColor: `${bgTheme.mutedText}15`, color: bgTheme.mutedText }
                 }
               >
                 {tab.icon}
