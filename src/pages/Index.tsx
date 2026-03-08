@@ -117,7 +117,7 @@ const Index = () => {
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
             {user ? (
-              <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={signOut} style={{ color: bgTheme.mutedText }}>
                 <LogOut className="w-4 h-4 mr-2" />
                 خروج
               </Button>
