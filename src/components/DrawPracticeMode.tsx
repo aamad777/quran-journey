@@ -32,6 +32,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
   const [showVerse, setShowVerse] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasDrawn = useRef(false);
 
   const currentVerse = verses[currentVerseIndex] || verses[0];
   const words = currentVerse ? splitWords(currentVerse.arabic) : [];
@@ -98,6 +100,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
     if (!ctx) return;
     setIsDrawing(true);
     setFeedback(null);
+    hasDrawn.current = true;
+    if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
     const pos = getPos(e);
     ctx.beginPath();
     ctx.moveTo(pos.x, pos.y);
@@ -121,6 +125,13 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
 
   const endDraw = () => {
     setIsDrawing(false);
+    // Auto-check after user stops drawing for 1.5s
+    if (hasDrawn.current && !verseComplete) {
+      if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
+      autoCheckTimer.current = setTimeout(() => {
+        checkDrawing();
+      }, 1500);
+    }
   };
 
   const clearCanvas = () => {
@@ -134,13 +145,13 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
 
   const checkDrawing = async () => {
     const canvas = canvasRef.current;
-    if (!canvas || !currentWord) return;
+    if (!canvas || !currentWord || isChecking) return;
 
     setIsChecking(true);
     setFeedback(null);
+    hasDrawn.current = false;
 
     try {
-      // Convert canvas to base64
       const dataUrl = canvas.toDataURL("image/png");
       const base64 = dataUrl.split(",")[1];
 
@@ -157,7 +168,6 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
         if (newCount >= words.length) {
           setVerseComplete(true);
         } else {
-          // Clear canvas for next word after a brief delay
           setTimeout(() => {
             clearCanvas();
             setFeedback(null);
@@ -165,10 +175,19 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
         }
       } else {
         setFeedback("incorrect");
+        // Auto-clear after showing incorrect feedback
+        setTimeout(() => {
+          clearCanvas();
+          setFeedback(null);
+        }, 1200);
       }
     } catch (err) {
       console.error("Recognition error:", err);
       setFeedback("incorrect");
+      setTimeout(() => {
+        clearCanvas();
+        setFeedback(null);
+      }, 1200);
     } finally {
       setIsChecking(false);
     }
