@@ -276,12 +276,11 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
           </p>
         </div>
 
-        {/* Current word hint - show the word to copy */}
+        {/* Current word hint */}
         {!verseComplete && (
           <div className="text-center mb-4">
-            <p className="text-xs text-muted-foreground mb-2">انسخ هذه الكلمة</p>
-            <span className="font-arabic text-4xl text-primary font-bold">{currentWord}</span>
-            <p className="text-xs text-muted-foreground mt-2">كلمة {revealedCount + 1} من {words.length}</p>
+            <p className="text-xs text-muted-foreground">ارسم الكلمة التالية</p>
+            <p className="text-xs text-muted-foreground">كلمة {revealedCount + 1} من {words.length}</p>
           </div>
         )}
 
