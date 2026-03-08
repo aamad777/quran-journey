@@ -106,6 +106,9 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Prayer Times Banner */}
+      <PrayerBanner />
+
       {/* Guest Banner */}
       {!user && (
         <div className="bg-accent/20 border-b border-border">
@@ -116,6 +119,11 @@ const Index = () => {
           </div>
         </div>
       )}
+
+      {/* Permission Prompt */}
+      <div className="container max-w-4xl mx-auto px-4 pt-4">
+        <PermissionPrompt />
+      </div>
 
       {/* Progress counter only */}
       <div className="container max-w-4xl mx-auto px-4 pt-4">
