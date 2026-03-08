@@ -1,4 +1,4 @@
-import { BookOpen, Layers, Grid3X3, FileText } from "lucide-react";
+import { BookOpen, Layers, Grid3X3, FileText, Mic, PenTool } from "lucide-react";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 
 // Juz boundaries: [surah, ayah] for the start of each juz (1-30)
@@ -51,9 +51,11 @@ interface QuranStatsProps {
   versesRead: number;
   versesRemaining: number;
   progressPercent: number;
+  voiceCorrect: number;
+  drawCorrect: number;
 }
 
-export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent }: QuranStatsProps) {
+export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent, voiceCorrect, drawCorrect }: QuranStatsProps) {
   const currentJuz = getCurrentPart(surahNumber, ayahNumber, JUZ_STARTS);
   const currentHizb = getCurrentPart(surahNumber, ayahNumber, HIZB_STARTS);
   const completedJuz = currentJuz - 1;
@@ -92,11 +94,25 @@ export default function QuranStats({ surahNumber, ayahNumber, versesRead, verses
       percent: surahPercent,
       detail: `السورة الحالية: ${surahNumber.toLocaleString("ar-EG")}`,
     },
+    {
+      icon: Mic,
+      label: "صوت صحيح",
+      value: voiceCorrect.toLocaleString("ar-EG"),
+      percent: null,
+      detail: "كلمات نُطقت بدون تخطي",
+    },
+    {
+      icon: PenTool,
+      label: "رسم صحيح",
+      value: drawCorrect.toLocaleString("ar-EG"),
+      percent: null,
+      detail: "كلمات رُسمت بدون تخطي",
+    },
   ];
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {stats.map((stat) => (
           <div
             key={stat.label}
@@ -106,8 +122,8 @@ export default function QuranStats({ surahNumber, ayahNumber, versesRead, verses
               <stat.icon className="w-4 h-4 text-primary" />
               <span className="text-xs font-bold text-foreground">{stat.label}</span>
             </div>
-            <span className="text-lg font-bold text-primary">{stat.value}</span>
-            <ProgressBar value={stat.percent} className="h-1.5" />
+          <span className="text-lg font-bold text-primary">{stat.value}</span>
+          {stat.percent !== null && <ProgressBar value={stat.percent} className="h-1.5" />}
             <span className="text-[10px] text-muted-foreground">{stat.detail}</span>
           </div>
         ))}

@@ -24,6 +24,12 @@ const Index = () => {
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
   });
+  const [voiceCorrect, setVoiceCorrect] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_voice_correct") || "0"); } catch { return 0; }
+  });
+  const [drawCorrect, setDrawCorrect] = useState(() => {
+    try { return parseInt(localStorage.getItem("quran_draw_correct") || "0"); } catch { return 0; }
+  });
 
   useEffect(() => {
     localStorage.setItem("quran_verse_count", String(verseCount));
@@ -36,6 +42,17 @@ const Index = () => {
   const { verses, audioUrl, audioUrls, loading: verseLoading, selectedReciter, setSelectedReciter, reciters } =
     useQuranVerse(progress.surah_number, progress.ayah_number, verseCount);
   const navigate = useNavigate();
+
+  const onVoiceCorrect = () => setVoiceCorrect(prev => {
+    const n = prev + 1;
+    localStorage.setItem("quran_voice_correct", String(n));
+    return n;
+  });
+  const onDrawCorrect = () => setDrawCorrect(prev => {
+    const n = prev + 1;
+    localStorage.setItem("quran_draw_correct", String(n));
+    return n;
+  });
 
   if (authLoading) {
     return (
@@ -54,7 +71,7 @@ const Index = () => {
   const TOTAL_VERSES = 6236;
   const versesRead = SURAH_AYAH_COUNT.slice(0, progress.surah_number - 1).reduce((a, b) => a + b, 0) + progress.ayah_number;
   const versesRemaining = TOTAL_VERSES - versesRead;
-  const progressPercent = Math.round((versesRead / TOTAL_VERSES) * 100);
+  const progressPercent = Math.min(100, Math.ceil((versesRead / TOTAL_VERSES) * 100));
   const isLoading = progressLoading || verseLoading;
 
 
@@ -106,6 +123,8 @@ const Index = () => {
           versesRead={versesRead}
           versesRemaining={versesRemaining}
           progressPercent={progressPercent}
+          voiceCorrect={voiceCorrect}
+          drawCorrect={drawCorrect}
         />
       </div>
 
@@ -174,12 +193,14 @@ const Index = () => {
             verses={verses}
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}
+            onCorrectWord={onVoiceCorrect}
           />
         ) : (
           <DrawPracticeMode
             verses={verses}
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}
+            onCorrectWord={onDrawCorrect}
           />
         )}
       </main>

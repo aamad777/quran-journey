@@ -17,6 +17,7 @@ interface PracticeModeProps {
   verses: VerseData[];
   onNext: () => void;
   onPrev: () => void;
+  onCorrectWord?: () => void;
 }
 
 // Normalize Arabic text: remove diacritics/tashkeel for comparison
@@ -34,7 +35,7 @@ const splitWords = (text: string): string[] => {
   return text.split(/\s+/).filter(Boolean);
 };
 
-const PracticeMode = ({ verses, onNext, onPrev }: PracticeModeProps) => {
+const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModeProps) => {
   const [fontSize, setFontSize] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
   });
@@ -105,15 +106,14 @@ const PracticeMode = ({ verses, onNext, onPrev }: PracticeModeProps) => {
       // Check how many consecutive words from start match
       setRevealedCount((prev) => {
         let matched = prev;
-        // Try to match the next expected word(s)
         while (matched < normalizedWords.length) {
           const expected = normalizedWords[matched];
           const found = normalizedSpoken.some((sw) => {
-            // Fuzzy: check if spoken word contains or equals expected
             return sw === expected || expected.includes(sw) || sw.includes(expected);
           });
           if (found) {
             matched++;
+            onCorrectWord?.();
           } else {
             break;
           }

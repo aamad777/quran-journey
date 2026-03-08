@@ -16,13 +16,14 @@ interface DrawPracticeModeProps {
   verses: VerseData[];
   onNext: () => void;
   onPrev: () => void;
+  onCorrectWord?: () => void;
 }
 
 const splitWords = (text: string): string[] => {
   return text.split(/\s+/).filter(Boolean);
 };
 
-const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => {
+const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPracticeModeProps) => {
   const [revealedCount, setRevealedCount] = useState(0);
   const [verseComplete, setVerseComplete] = useState(false);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
@@ -163,6 +164,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev }: DrawPracticeModeProps) => 
 
       if (data?.match) {
         setFeedback("correct");
+        onCorrectWord?.();
         const newCount = revealedCount + 1;
         setRevealedCount(newCount);
         if (newCount >= words.length) {
