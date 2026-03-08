@@ -182,24 +182,25 @@ const Index = () => {
             </div>
           </div>
           {/* Tab Bar */}
-          <div className="flex border-t" style={{ borderColor: `${bgTheme.mutedText}12` }}>
+          <div className="flex gap-2 px-3 py-2.5 border-t" style={{ borderColor: `${bgTheme.mutedText}12` }}>
             {([
-              { key: "read" as const, icon: <BookOpen className="w-3.5 h-3.5" />, label: "قراءة" },
-              { key: "practice" as const, icon: <Mic className="w-3.5 h-3.5" />, label: "صوت" },
-              { key: "draw" as const, icon: <PenTool className="w-3.5 h-3.5" />, label: "رسم" },
-              { key: "stats" as const, icon: <BarChart3 className="w-3.5 h-3.5" />, label: "إحصائيات" },
+              { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
+              { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
+              { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
+              { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
             ]).map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-all duration-200 relative"
-                style={{ color: activeTab === tab.key ? bgTheme.btnBg : bgTheme.mutedText }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-200"
+                style={
+                  activeTab === tab.key
+                    ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40` }
+                    : { backgroundColor: `${bgTheme.mutedText}10`, color: bgTheme.mutedText }
+                }
               >
                 {tab.icon}
                 {tab.label}
-                {activeTab === tab.key && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full" style={{ backgroundColor: bgTheme.btnBg }} />
-                )}
               </button>
             ))}
           </div>

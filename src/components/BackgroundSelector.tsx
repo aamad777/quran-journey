@@ -45,9 +45,9 @@ export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
   none: {
     btnBg: "hsl(var(--primary))", btnText: "hsl(var(--primary-foreground))",
     btnOutlineBorder: "hsl(var(--border))", btnOutlineText: "hsl(var(--foreground))",
-    activeWordColor: "hsl(38 65% 50%)", activeWordGlow: "0 0 12px hsl(38 65% 50% / 0.4)",
+    activeWordColor: "hsl(var(--accent))", activeWordGlow: "0 0 12px hsl(var(--accent) / 0.4)",
     textColor: "hsl(var(--foreground))", mutedText: "hsl(var(--muted-foreground))",
-    cardBg: "hsl(var(--card) / 0.8)",
+    cardBg: "hsl(var(--card))",
   },
   geometric: {
     btnBg: "hsl(38 70% 55%)", btnText: "hsl(220 30% 10%)",
