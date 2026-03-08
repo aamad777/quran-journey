@@ -82,12 +82,12 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between py-4 px-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full gradient-islamic flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-gold" />
+          <button onClick={() => navigate("/")} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center shadow-gold">
+              <span className="text-xl font-arabic font-bold text-primary-foreground">قـ</span>
             </div>
-            <h1 className="font-display text-xl font-bold text-foreground">قارئ القرآن</h1>
-          </div>
+            <h1 className="font-arabic text-xl font-bold text-foreground tracking-wide">قارئ القرآن</h1>
+          </button>
           <div className="flex items-center gap-2">
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
