@@ -42,7 +42,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
   const [isDrawing, setIsDrawing] = useState(false);
   const [showVerse, setShowVerse] = useState(false);
   const [brushSize, setBrushSize] = useState(6);
-  const [autoCheck, setAutoCheck] = useState(true);
+  const [autoCheck, setAutoCheck] = useState(false);
+  const [canvasSize, setCanvasSize] = useState<"small" | "medium" | "large">("medium");
   const [checkMode, setCheckMode] = useState<CheckMode>("word");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -138,6 +139,12 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     };
   };
 
+  const canvasDimensions = {
+    small: { width: 400, height: 250 },
+    medium: { width: 600, height: 350 },
+    large: { width: 800, height: 500 },
+  };
+
   const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     const ctx = getCtx();
@@ -151,6 +158,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     ctx.moveTo(pos.x, pos.y);
   };
 
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+
   const draw = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     if (!isDrawing) return;
@@ -163,12 +172,24 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--foreground")
       ? `hsl(${getComputedStyle(document.documentElement).getPropertyValue("--foreground").trim()})`
       : "#fff";
-    ctx.lineTo(pos.x, pos.y);
+
+    // Interpolate between last position for smoother strokes (helps with stylus/pen)
+    if (lastPos.current) {
+      const midX = (lastPos.current.x + pos.x) / 2;
+      const midY = (lastPos.current.y + pos.y) / 2;
+      ctx.quadraticCurveTo(lastPos.current.x, lastPos.current.y, midX, midY);
+    } else {
+      ctx.lineTo(pos.x, pos.y);
+    }
     ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastPos.current = pos;
   };
 
   const endDraw = () => {
     setIsDrawing(false);
+    lastPos.current = null;
     if (autoCheck && hasDrawn.current && !verseComplete) {
       if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
       autoCheckTimer.current = setTimeout(() => {
@@ -176,6 +197,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
       }, 1500);
     }
   };
+
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -392,12 +414,32 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
               </div>
             </div>
 
+            {/* Canvas size control */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="text-[10px] text-muted-foreground">الحجم</span>
+              <div className="flex gap-1">
+                {(["small", "medium", "large"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { setCanvasSize(s); clearCanvas(); }}
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+                      canvasSize === s
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
+                  >
+                    {s === "small" ? "صغير" : s === "medium" ? "متوسط" : "كبير"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Canvas */}
             <div className="relative">
               <canvas
                 ref={canvasRef}
-                width={600}
-                height={350}
+                width={canvasDimensions[canvasSize].width}
+                height={canvasDimensions[canvasSize].height}
                 className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
                   feedback === "correct"
                     ? "border-primary bg-primary/5"
