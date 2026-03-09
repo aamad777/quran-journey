@@ -165,13 +165,27 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     const ctx = getCtx();
     if (!ctx) return;
     const pos = getPos(e);
-    ctx.lineWidth = brushSize;
+    const effectiveSize = Math.max(1, brushSize);
+    ctx.lineWidth = effectiveSize;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = brushColor;
 
-    // Interpolate between last position for smoother strokes (helps with stylus/pen)
+    // Interpolate between points for ultra-smooth stylus strokes
     if (lastPos.current) {
+      const dx = pos.x - lastPos.current.x;
+      const dy = pos.y - lastPos.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Add intermediate points for large gaps (common with fast stylus movement)
+      if (dist > 2) {
+        const steps = Math.max(1, Math.floor(dist / 2));
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          const ix = lastPos.current.x + dx * t;
+          const iy = lastPos.current.y + dy * t;
+          ctx.lineTo(ix, iy);
+        }
+      }
       const midX = (lastPos.current.x + pos.x) / 2;
       const midY = (lastPos.current.y + pos.y) / 2;
       ctx.quadraticCurveTo(lastPos.current.x, lastPos.current.y, midX, midY);
