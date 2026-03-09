@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eraser, Send, Loader2, Eye, EyeOff } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,10 +42,10 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showVerse, setShowVerse] = useState(false);
-  const [brushSize, setBrushSize] = useState(6);
+  const [brushSize, setBrushSize] = useState(4);
   const [brushColor, setBrushColor] = useState("#ffffff");
   const [autoCheck, setAutoCheck] = useState(false);
-  const [canvasSize, setCanvasSize] = useState<"small" | "medium" | "large">("medium");
+  const [canvasScale, setCanvasScale] = useState(70); // 30-100 percent
   const [checkMode, setCheckMode] = useState<CheckMode>("word");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -140,11 +141,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     };
   };
 
-  const canvasDimensions = {
-    small: { width: 400, height: 250 },
-    medium: { width: 600, height: 350 },
-    large: { width: 800, height: 500 },
-  };
+  const canvasWidth = Math.round(300 + (canvasScale / 100) * 500); // 300-800
+  const canvasHeight = Math.round(200 + (canvasScale / 100) * 300); // 200-500
 
   const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
@@ -167,13 +165,27 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     const ctx = getCtx();
     if (!ctx) return;
     const pos = getPos(e);
-    ctx.lineWidth = brushSize;
+    const effectiveSize = Math.max(1, brushSize);
+    ctx.lineWidth = effectiveSize;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = brushColor;
 
-    // Interpolate between last position for smoother strokes (helps with stylus/pen)
+    // Interpolate between points for ultra-smooth stylus strokes
     if (lastPos.current) {
+      const dx = pos.x - lastPos.current.x;
+      const dy = pos.y - lastPos.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Add intermediate points for large gaps (common with fast stylus movement)
+      if (dist > 2) {
+        const steps = Math.max(1, Math.floor(dist / 2));
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          const ix = lastPos.current.x + dx * t;
+          const iy = lastPos.current.y + dy * t;
+          ctx.lineTo(ix, iy);
+        }
+      }
       const midX = (lastPos.current.x + pos.x) / 2;
       const midY = (lastPos.current.y + pos.y) / 2;
       ctx.quadraticCurveTo(lastPos.current.x, lastPos.current.y, midX, midY);
@@ -399,7 +411,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
               <div className="flex items-center gap-2">
                 <span className="text-[10px] text-muted-foreground">القلم</span>
                 <div className="flex items-center gap-1.5">
-                  {[3, 6, 10].map((size) => (
+                  {[1.5, 4, 8].map((size) => (
                     <button
                       key={size}
                       onClick={() => setBrushSize(size)}
@@ -428,32 +440,26 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
               </div>
             </div>
 
-            {/* Canvas size control */}
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <span className="text-[10px] text-muted-foreground">الحجم</span>
-              <div className="flex gap-1">
-                {(["small", "medium", "large"] as const).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => { setCanvasSize(s); clearCanvas(); }}
-                    className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
-                      canvasSize === s
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    {s === "small" ? "صغير" : s === "medium" ? "متوسط" : "كبير"}
-                  </button>
-                ))}
-              </div>
+            {/* Canvas size slider */}
+            <div className="flex items-center justify-center gap-3 mb-3 px-4">
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap">الحجم</span>
+              <Slider
+                value={[canvasScale]}
+                onValueChange={(v) => { setCanvasScale(v[0]); clearCanvas(); }}
+                min={30}
+                max={100}
+                step={5}
+                className="w-32"
+              />
+              <span className="text-[10px] text-muted-foreground w-8">{canvasScale}%</span>
             </div>
 
             {/* Canvas */}
-            <div className={`relative mx-auto ${canvasSize === "small" ? "max-w-[320px]" : canvasSize === "medium" ? "max-w-[480px]" : "max-w-full"}`}>
+            <div className="relative mx-auto" style={{ maxWidth: `${canvasWidth}px` }}>
               <canvas
                 ref={canvasRef}
-                width={canvasDimensions[canvasSize].width}
-                height={canvasDimensions[canvasSize].height}
+                width={canvasWidth}
+                height={canvasHeight}
                 className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
                   feedback === "correct"
                     ? "border-primary bg-primary/5"
