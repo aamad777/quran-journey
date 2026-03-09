@@ -435,7 +435,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
             </div>
 
             {/* Canvas */}
-            <div className="relative">
+            <div className={`relative mx-auto ${canvasSize === "small" ? "max-w-[320px]" : canvasSize === "medium" ? "max-w-[480px]" : "max-w-full"}`}>
               <canvas
                 ref={canvasRef}
                 width={canvasDimensions[canvasSize].width}
