@@ -152,6 +152,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     ctx.moveTo(pos.x, pos.y);
   };
 
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+
   const draw = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     if (!isDrawing) return;
@@ -164,8 +166,30 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--foreground")
       ? `hsl(${getComputedStyle(document.documentElement).getPropertyValue("--foreground").trim()})`
       : "#fff";
-    ctx.lineTo(pos.x, pos.y);
+
+    // Interpolate between last position for smoother strokes (helps with stylus/pen)
+    if (lastPos.current) {
+      const midX = (lastPos.current.x + pos.x) / 2;
+      const midY = (lastPos.current.y + pos.y) / 2;
+      ctx.quadraticCurveTo(lastPos.current.x, lastPos.current.y, midX, midY);
+    } else {
+      ctx.lineTo(pos.x, pos.y);
+    }
     ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastPos.current = pos;
+  };
+
+  const endDraw = () => {
+    setIsDrawing(false);
+    lastPos.current = null;
+    if (autoCheck && hasDrawn.current && !verseComplete) {
+      if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
+      autoCheckTimer.current = setTimeout(() => {
+        checkDrawing();
+      }, 1500);
+    }
   };
 
   const endDraw = () => {
