@@ -394,22 +394,37 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         {/* Canvas + Brush Size */}
         {!verseComplete && (
           <div className="mb-4">
-            {/* Brush size control */}
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <span className="text-[10px] text-muted-foreground">القلم</span>
+            {/* Brush size & color control */}
+            <div className="flex items-center justify-center gap-4 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">القلم</span>
+                <div className="flex items-center gap-1.5">
+                  {[3, 6, 10].map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setBrushSize(size)}
+                      className={`rounded-full transition-all duration-150 ${brushSize === size ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'opacity-40 hover:opacity-70'}`}
+                      style={{
+                        width: Math.max(8, size * 1.2 + 4),
+                        height: Math.max(8, size * 1.2 + 4),
+                        backgroundColor: brushColor,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
               <div className="flex items-center gap-1.5">
-                {[3, 6, 10, 16].map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setBrushSize(size)}
-                    className={`rounded-full transition-all duration-150 ${brushSize === size ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'opacity-40 hover:opacity-70'}`}
-                    style={{
-                      width: Math.max(8, size * 1.2 + 4),
-                      height: Math.max(8, size * 1.2 + 4),
-                      backgroundColor: 'hsl(var(--foreground))',
-                    }}
-                  />
-                ))}
+                <span className="text-[10px] text-muted-foreground">اللون</span>
+                <div className="flex gap-1">
+                  {["#ffffff", "#f59e0b", "#22c55e", "#3b82f6", "#ef4444"].map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setBrushColor(color)}
+                      className={`w-5 h-5 rounded-full border transition-all ${brushColor === color ? 'ring-2 ring-primary ring-offset-1 ring-offset-card scale-110' : 'opacity-60 hover:opacity-100'}`}
+                      style={{ backgroundColor: color, borderColor: color === "#ffffff" ? "hsl(var(--border))" : color }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
