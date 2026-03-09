@@ -411,7 +411,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
               <div className="flex items-center gap-2">
                 <span className="text-[10px] text-muted-foreground">القلم</span>
                 <div className="flex items-center gap-1.5">
-                  {[3, 6, 10].map((size) => (
+                  {[1.5, 4, 8].map((size) => (
                     <button
                       key={size}
                       onClick={() => setBrushSize(size)}
