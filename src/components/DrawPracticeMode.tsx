@@ -170,9 +170,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     ctx.lineWidth = brushSize;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--foreground")
-      ? `hsl(${getComputedStyle(document.documentElement).getPropertyValue("--foreground").trim()})`
-      : "#fff";
+    ctx.strokeStyle = brushColor;
 
     // Interpolate between last position for smoother strokes (helps with stylus/pen)
     if (lastPos.current) {
