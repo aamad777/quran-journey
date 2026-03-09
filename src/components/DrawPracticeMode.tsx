@@ -198,15 +198,6 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     }
   };
 
-  const endDraw = () => {
-    setIsDrawing(false);
-    if (autoCheck && hasDrawn.current && !verseComplete) {
-      if (autoCheckTimer.current) clearTimeout(autoCheckTimer.current);
-      autoCheckTimer.current = setTimeout(() => {
-        checkDrawing();
-      }, 1500);
-    }
-  };
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
