@@ -423,12 +423,32 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
               </div>
             </div>
 
+            {/* Canvas size control */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="text-[10px] text-muted-foreground">الحجم</span>
+              <div className="flex gap-1">
+                {(["small", "medium", "large"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { setCanvasSize(s); clearCanvas(); }}
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+                      canvasSize === s
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
+                  >
+                    {s === "small" ? "صغير" : s === "medium" ? "متوسط" : "كبير"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Canvas */}
             <div className="relative">
               <canvas
                 ref={canvasRef}
-                width={600}
-                height={350}
+                width={canvasDimensions[canvasSize].width}
+                height={canvasDimensions[canvasSize].height}
                 className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
                   feedback === "correct"
                     ? "border-primary bg-primary/5"
