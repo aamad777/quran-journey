@@ -42,6 +42,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
   const [isDrawing, setIsDrawing] = useState(false);
   const [showVerse, setShowVerse] = useState(false);
   const [brushSize, setBrushSize] = useState(6);
+  const [brushColor, setBrushColor] = useState("#ffffff");
   const [autoCheck, setAutoCheck] = useState(false);
   const [canvasSize, setCanvasSize] = useState<"small" | "medium" | "large">("medium");
   const [checkMode, setCheckMode] = useState<CheckMode>("word");
