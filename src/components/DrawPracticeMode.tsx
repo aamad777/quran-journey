@@ -141,11 +141,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     };
   };
 
-  const canvasDimensions = {
-    small: { width: 400, height: 250 },
-    medium: { width: 600, height: 350 },
-    large: { width: 800, height: 500 },
-  };
+  const canvasWidth = Math.round(300 + (canvasScale / 100) * 500); // 300-800
+  const canvasHeight = Math.round(200 + (canvasScale / 100) * 300); // 200-500
 
   const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
