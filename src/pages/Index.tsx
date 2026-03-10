@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 import VerseCard from "@/components/VerseCard";
 import PracticeMode from "@/components/PracticeMode";
 import DrawPracticeMode from "@/components/DrawPracticeMode";
+import TypePracticeMode from "@/components/TypePracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, BarChart3, Heart } from "lucide-react";
+import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, Keyboard, BarChart3, Heart } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
 import PermissionPrompt from "@/components/PermissionPrompt";
@@ -41,8 +42,8 @@ const Index = () => {
   const overlayOpacity = bgPattern?.image ? Math.min(0.75, (1 - bgOpacity) + 0.22) : 0;
   const { user, loading: authLoading, signOut } = useAuth();
   const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
-  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "stats">(() => {
-    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw" | "stats") || "read"; } catch { return "read"; }
+  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "type" | "stats">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw" | "type" | "stats") || "read"; } catch { return "read"; }
   });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
@@ -203,6 +204,7 @@ const Index = () => {
               { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
               { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
               { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
+              { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
               { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
             ]).map((tab) => (
               <button
@@ -273,6 +275,13 @@ const Index = () => {
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}
             onCorrectWord={onVoiceCorrect}
+          />
+        ) : activeTab === "type" ? (
+          <TypePracticeMode
+            verses={verses}
+            onNext={() => goToNext(verseCount)}
+            onPrev={() => goToPrev(verseCount)}
+            onCorrectWord={onDrawCorrect}
           />
         ) : (
           <DrawPracticeMode
