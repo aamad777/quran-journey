@@ -203,6 +203,7 @@ const Index = () => {
               { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
               { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
               { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
+              { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
               { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
             ]).map((tab) => (
               <button
