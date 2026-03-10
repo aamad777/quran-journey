@@ -275,6 +275,13 @@ const Index = () => {
             onPrev={() => goToPrev(verseCount)}
             onCorrectWord={onVoiceCorrect}
           />
+        ) : activeTab === "type" ? (
+          <TypePracticeMode
+            verses={verses}
+            onNext={() => goToNext(verseCount)}
+            onPrev={() => goToPrev(verseCount)}
+            onCorrectWord={onDrawCorrect}
+          />
         ) : (
           <DrawPracticeMode
             verses={verses}
