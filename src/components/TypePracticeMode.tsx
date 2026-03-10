@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eye, EyeOff, Eraser, Loader2, PenTool, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VerseData {
   arabic: string;
@@ -40,7 +41,15 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [showVerse, setShowVerse] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [inputMode, setInputMode] = useState<"keyboard" | "draw">("draw");
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [isRecognizing, setIsRecognizing] = useState(false);
+  const [recognizedText, setRecognizedText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const hasDrawn = useRef(false);
+  const autoRecognizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentVerse = verses[currentVerseIndex] || verses[0];
@@ -59,6 +68,8 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     setFeedback(null);
     setInputValue("");
     setSuggestions([]);
+    setRecognizedText("");
+    clearCanvas();
   }, [currentVerseIndex]);
 
   useEffect(() => {
@@ -84,12 +95,10 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     }
     const normalizedInput = normalizeArabic(input);
     const remaining = words.slice(revealedCount);
-    // Filter words that start with the normalized input
     const matches = remaining.filter((w) => {
       const nw = normalizeArabic(w);
-      return nw.startsWith(normalizedInput) && nw !== normalizedInput;
+      return nw.startsWith(normalizedInput) || normalizedInput.startsWith(nw) || nw.includes(normalizedInput);
     });
-    // Deduplicate and limit
     const unique = [...new Set(matches)].slice(0, 5);
     setSuggestions(unique);
   }, [words, revealedCount]);
@@ -100,7 +109,7 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     updateSuggestions(val);
   };
 
-  const checkWord = (text?: string) => {
+  const checkWord = useCallback((text?: string) => {
     const toCheck = text || inputValue;
     if (!toCheck.trim() || !currentWord) return;
 
@@ -114,21 +123,23 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
       setRevealedCount(newCount);
       setInputValue("");
       setSuggestions([]);
+      setRecognizedText("");
+      clearCanvas();
       if (newCount >= words.length) {
         setVerseComplete(true);
       } else {
         setTimeout(() => setFeedback(null), 600);
-        setTimeout(() => inputRef.current?.focus(), 100);
+        if (inputMode === "keyboard") setTimeout(() => inputRef.current?.focus(), 100);
       }
     } else {
       setFeedback("incorrect");
+      // Show suggestions from verse for the recognized text
+      updateSuggestions(toCheck);
       setTimeout(() => {
         setFeedback(null);
-        setInputValue("");
-        inputRef.current?.focus();
-      }, 800);
+      }, 1200);
     }
-  };
+  }, [inputValue, currentWord, revealedCount, words.length, onCorrectWord, inputMode, updateSuggestions]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -140,6 +151,8 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
   const selectSuggestion = (word: string) => {
     setInputValue(word);
     setSuggestions([]);
+    setRecognizedText("");
+    clearCanvas();
     setTimeout(() => checkWord(word), 50);
   };
 
@@ -148,11 +161,13 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     setRevealedCount(newCount);
     setInputValue("");
     setSuggestions([]);
+    setRecognizedText("");
     setFeedback(null);
+    clearCanvas();
     if (newCount >= words.length) {
       setVerseComplete(true);
     }
-    inputRef.current?.focus();
+    if (inputMode === "keyboard") inputRef.current?.focus();
   };
 
   const resetPractice = () => {
@@ -161,7 +176,139 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     setFeedback(null);
     setInputValue("");
     setSuggestions([]);
-    inputRef.current?.focus();
+    setRecognizedText("");
+    clearCanvas();
+    if (inputMode === "keyboard") inputRef.current?.focus();
+  };
+
+  // --- Canvas drawing logic ---
+  const getCtx = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    return canvas.getContext("2d");
+  }, []);
+
+  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if ("touches" in e) {
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY,
+      };
+    }
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
+  };
+
+  const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const ctx = getCtx();
+    if (!ctx) return;
+    setIsDrawing(true);
+    setFeedback(null);
+    hasDrawn.current = true;
+    if (autoRecognizeTimer.current) clearTimeout(autoRecognizeTimer.current);
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastPos.current = pos;
+  };
+
+  const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    const pos = getPos(e);
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#ffffff";
+
+    if (lastPos.current) {
+      const dx = pos.x - lastPos.current.x;
+      const dy = pos.y - lastPos.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 2) {
+        const steps = Math.max(1, Math.floor(dist / 2));
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          ctx.lineTo(lastPos.current.x + dx * t, lastPos.current.y + dy * t);
+        }
+      }
+      const midX = (lastPos.current.x + pos.x) / 2;
+      const midY = (lastPos.current.y + pos.y) / 2;
+      ctx.quadraticCurveTo(lastPos.current.x, lastPos.current.y, midX, midY);
+    } else {
+      ctx.lineTo(pos.x, pos.y);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastPos.current = pos;
+  };
+
+  const endDraw = () => {
+    setIsDrawing(false);
+    lastPos.current = null;
+    // Auto-recognize after 1.5s of no drawing
+    if (hasDrawn.current && !verseComplete) {
+      if (autoRecognizeTimer.current) clearTimeout(autoRecognizeTimer.current);
+      autoRecognizeTimer.current = setTimeout(() => {
+        recognizeDrawing();
+      }, 1500);
+    }
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasDrawn.current = false;
+    setRecognizedText("");
+  };
+
+  const recognizeDrawing = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || isRecognizing) return;
+    setIsRecognizing(true);
+
+    try {
+      const dataUrl = canvas.toDataURL("image/png");
+      const base64 = dataUrl.split(",")[1];
+
+      const { data, error } = await supabase.functions.invoke("recognize-handwriting", {
+        body: { imageBase64: base64, expectedWord: currentWord, checkMode: "word" },
+      });
+
+      if (error) throw error;
+
+      const recognized = data?.recognized || "";
+      if (recognized) {
+        setRecognizedText(recognized);
+        setInputValue(recognized);
+        updateSuggestions(recognized);
+
+        // Auto-check: if recognized text matches, mark correct
+        const normalizedRecognized = normalizeArabic(recognized);
+        const normalizedExpected = normalizeArabic(currentWord);
+        if (normalizedRecognized === normalizedExpected || data?.match) {
+          setTimeout(() => checkWord(recognized), 200);
+        }
+      }
+    } catch (err) {
+      console.error("Recognition error:", err);
+    } finally {
+      setIsRecognizing(false);
+    }
   };
 
   const primaryVerse = verses[0];
@@ -202,6 +349,28 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
             className="h-full rounded-full bg-primary transition-all duration-300"
             style={{ width: `${words.length > 0 ? (revealedCount / words.length) * 100 : 0}%` }}
           />
+        </div>
+
+        {/* Input mode toggle */}
+        <div className="flex justify-center gap-2 mb-4">
+          <Button
+            variant={inputMode === "draw" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setInputMode("draw")}
+            className="gap-1.5 text-xs"
+          >
+            <PenTool className="w-3.5 h-3.5" />
+            رسم
+          </Button>
+          <Button
+            variant={inputMode === "keyboard" ? "default" : "outline"}
+            size="sm"
+            onClick={() => { setInputMode("keyboard"); setTimeout(() => inputRef.current?.focus(), 100); }}
+            className="gap-1.5 text-xs"
+          >
+            <Keyboard className="w-3.5 h-3.5" />
+            لوحة مفاتيح
+          </Button>
         </div>
 
         {/* Show/Hide toggle */}
@@ -247,35 +416,89 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
         {!verseComplete && (
           <div className="text-center mb-4">
             <p className="text-xs text-muted-foreground">
-              اكتب الكلمة التالية • كلمة {revealedCount + 1} من {words.length}
+              {inputMode === "draw" ? "ارسم الكلمة وسيتم تحويلها لنص" : "اكتب الكلمة التالية"} • كلمة {revealedCount + 1} من {words.length}
             </p>
           </div>
         )}
 
         {/* Input area */}
         {!verseComplete && (
-          <div className="mb-4 relative">
-            <div className="flex gap-2 items-center justify-center">
-              <input
-                ref={inputRef}
-                type="text"
-                dir="rtl"
-                value={inputValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="اكتب الكلمة هنا..."
-                className={`w-full max-w-sm px-4 py-3 rounded-xl border-2 bg-muted/30 font-arabic text-xl text-center outline-none transition-all ${
-                  feedback === "correct"
-                    ? "border-primary bg-primary/5"
-                    : feedback === "incorrect"
-                    ? "border-destructive bg-destructive/5"
-                    : "border-border focus:border-primary/50"
-                }`}
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-              />
-            </div>
+          <div className="mb-4">
+            {inputMode === "draw" ? (
+              <>
+                {/* Drawing canvas */}
+                <div className="relative mx-auto max-w-[400px]">
+                  <canvas
+                    ref={canvasRef}
+                    width={400}
+                    height={150}
+                    className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
+                      feedback === "correct"
+                        ? "border-primary bg-primary/5"
+                        : feedback === "incorrect"
+                        ? "border-destructive bg-destructive/5"
+                        : "border-border bg-muted/30"
+                    }`}
+                    onMouseDown={startDraw}
+                    onMouseMove={draw}
+                    onMouseUp={endDraw}
+                    onMouseLeave={endDraw}
+                    onTouchStart={startDraw}
+                    onTouchMove={draw}
+                    onTouchEnd={endDraw}
+                  />
+                  {feedback === "correct" && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <CheckCircle2 className="w-10 h-10 text-primary animate-pulse" />
+                    </div>
+                  )}
+                  {isRecognizing && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-background/30 rounded-xl">
+                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Canvas controls */}
+                <div className="flex justify-center gap-2 mt-2">
+                  <Button variant="ghost" size="sm" onClick={clearCanvas} className="gap-1 text-xs text-muted-foreground">
+                    <Eraser className="w-3.5 h-3.5" />
+                    مسح
+                  </Button>
+                </div>
+
+                {/* Recognized text display */}
+                {recognizedText && (
+                  <div className="text-center mt-3">
+                    <p className="text-xs text-muted-foreground mb-1">النص المتعرف عليه:</p>
+                    <p className="font-arabic text-lg text-foreground" dir="rtl">{recognizedText}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Keyboard input */
+              <div className="flex gap-2 items-center justify-center">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  dir="rtl"
+                  value={inputValue}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="اكتب الكلمة هنا..."
+                  className={`w-full max-w-sm px-4 py-3 rounded-xl border-2 bg-muted/30 font-arabic text-xl text-center outline-none transition-all ${
+                    feedback === "correct"
+                      ? "border-primary bg-primary/5"
+                      : feedback === "incorrect"
+                      ? "border-destructive bg-destructive/5"
+                      : "border-border focus:border-primary/50"
+                  }`}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+              </div>
+            )}
 
             {/* Suggestions from verse */}
             {suggestions.length > 0 && (
@@ -341,7 +564,9 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
 
         {!verseComplete && (
           <p className="text-center text-xs text-muted-foreground mt-4">
-            اكتب الكلمة ثم اضغط Enter للتحقق
+            {inputMode === "draw"
+              ? "ارسم الكلمة وسيتم التعرف عليها تلقائياً ومطابقتها مع الآية"
+              : "اكتب الكلمة ثم اضغط Enter للتحقق"}
           </p>
         )}
       </div>
