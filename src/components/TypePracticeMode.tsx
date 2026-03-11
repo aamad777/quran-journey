@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eye, EyeOff, Eraser, Loader2, PenTool, Keyboard } from "lucide-react";
+import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eye, EyeOff, Eraser, Loader2, PenTool, Keyboard, Delete } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeArabic } from "@/lib/arabicUtils";
 
 interface VerseData {
   arabic: string;
@@ -19,14 +21,13 @@ interface TypePracticeModeProps {
   onCorrectWord?: () => void;
 }
 
-const normalizeArabic = (text: string): string => {
-  return text
-    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/g, "")
-    .replace(/\u0671/g, "\u0627")
-    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
-    .replace(/\u0649/g, "\u064A")
-    .replace(/\u0629/g, "\u0647")
-    .trim();
+type CheckMode = "word" | "2words" | "half" | "full";
+
+const CHECK_MODE_LABELS: Record<CheckMode, string> = {
+  word: "كلمة",
+  "2words": "كلمتين",
+  half: "نصف آية",
+  full: "آية كاملة",
 };
 
 const splitWords = (text: string): string[] => {
@@ -40,12 +41,13 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
   const [inputValue, setInputValue] = useState("");
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [showVerse, setShowVerse] = useState(false);
+  const [checkMode, setCheckMode] = useState<CheckMode>("word");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [inputMode, setInputMode] = useState<"keyboard" | "draw">("draw");
   const [isDrawing, setIsDrawing] = useState(false);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const [recognizedText, setRecognizedText] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const hasDrawn = useRef(false);
@@ -55,6 +57,36 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
   const currentVerse = verses[currentVerseIndex] || verses[0];
   const words = currentVerse ? splitWords(currentVerse.arabic) : [];
   const currentWord = words[revealedCount] || "";
+
+  // Get expected text based on check mode
+  const getExpectedText = (): string => {
+    switch (checkMode) {
+      case "word":
+        return currentWord;
+      case "2words":
+        return words.slice(revealedCount, revealedCount + 2).join(" ");
+      case "half": {
+        const halfLen = Math.ceil(words.length / 2);
+        const start = revealedCount;
+        const end = Math.min(start + halfLen, words.length);
+        return words.slice(start, end).join(" ");
+      }
+      case "full":
+        return words.slice(revealedCount).join(" ");
+      default:
+        return currentWord;
+    }
+  };
+
+  const getWordsToReveal = (): number => {
+    switch (checkMode) {
+      case "word": return 1;
+      case "2words": return Math.min(2, words.length - revealedCount);
+      case "half": return Math.min(Math.ceil(words.length / 2), words.length - revealedCount);
+      case "full": return words.length - revealedCount;
+      default: return 1;
+    }
+  };
 
   useEffect(() => {
     setRevealedCount(0);
@@ -94,10 +126,20 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
       return;
     }
     const normalizedInput = normalizeArabic(input);
+    const inputWords = splitWords(input);
+    const wordCount = inputWords.length;
+
     const remaining = words.slice(revealedCount);
-    const matches = remaining.filter((w) => {
-      const nw = normalizeArabic(w);
-      return nw.startsWith(normalizedInput) || normalizedInput.startsWith(nw) || nw.includes(normalizedInput);
+    // Generate phrases from remaining words that match the input word count
+    const phrases: string[] = [];
+    for (let i = 0; i < remaining.length; i++) {
+      const phrase = remaining.slice(i, i + wordCount).join(" ");
+      if (phrase) phrases.push(phrase);
+    }
+
+    const matches = phrases.filter((p) => {
+      const np = normalizeArabic(p);
+      return np.startsWith(normalizedInput) || normalizedInput.startsWith(np) || np.includes(normalizedInput);
     });
     const unique = [...new Set(matches)].slice(0, 5);
     setSuggestions(unique);
@@ -114,12 +156,14 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     if (!toCheck.trim() || !currentWord) return;
 
     const normalizedInput = normalizeArabic(toCheck);
-    const normalizedExpected = normalizeArabic(currentWord);
+    const expectedText = getExpectedText();
+    const normalizedExpected = normalizeArabic(expectedText);
 
     if (normalizedInput === normalizedExpected) {
       setFeedback("correct");
-      onCorrectWord?.();
-      const newCount = revealedCount + 1;
+      const wordsToReveal = getWordsToReveal();
+      for (let i = 0; i < wordsToReveal; i++) onCorrectWord?.();
+      const newCount = revealedCount + wordsToReveal;
       setRevealedCount(newCount);
       setInputValue("");
       setSuggestions([]);
@@ -148,16 +192,44 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     }
   };
 
-  const selectSuggestion = (word: string) => {
-    setInputValue(word);
+  const backspaceWord = () => {
+    const currentWords = splitWords(inputValue);
+    if (currentWords.length > 0) {
+      currentWords.pop();
+      const newVal = currentWords.join(" ") + (currentWords.length > 0 ? " " : "");
+      handleInputChange(newVal);
+      // Refocus input after button click
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  };
+
+  const selectSuggestion = (phrase: string) => {
+    setInputValue(phrase);
     setSuggestions([]);
     setRecognizedText("");
-    clearCanvas();
-    setTimeout(() => checkWord(word), 50);
+    if (canvasRef.current) clearCanvas();
+
+    const phraseWords = splitWords(phrase);
+    const wordsToAdvance = phraseWords.length;
+
+    setTimeout(() => {
+      setFeedback("correct");
+      for (let i = 0; i < wordsToAdvance; i++) onCorrectWord?.();
+      const newCount = revealedCount + wordsToAdvance;
+      setRevealedCount(newCount);
+      setInputValue("");
+      if (newCount >= words.length) {
+        setVerseComplete(true);
+      } else {
+        setTimeout(() => setFeedback(null), 600);
+        if (inputRef.current) setTimeout(() => inputRef.current?.focus(), 100);
+      }
+    }, 50);
   };
 
   const skipWord = () => {
-    const newCount = revealedCount + 1;
+    const skip = getWordsToReveal();
+    const newCount = revealedCount + skip;
     setRevealedCount(newCount);
     setInputValue("");
     setSuggestions([]);
@@ -329,7 +401,7 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
       </div>
 
       {/* Practice Card */}
-      <div className="bg-card rounded-2xl border border-border p-6 md:p-10 shadow-gold">
+      <Card className="p-4 md:p-6 shadow-xl border-emerald/20 islamic-pattern bg-card/95 backdrop-blur-sm">
         {/* Progress */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs text-muted-foreground">
@@ -373,8 +445,27 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
           </Button>
         </div>
 
+        {/* Check mode selector */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3 border-b border-emerald/10 pb-3">
+          <span className="text-[10px] text-muted-foreground ml-1">وضع التحقق:</span>
+          <div className="flex gap-1">
+            {(Object.keys(CHECK_MODE_LABELS) as CheckMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setCheckMode(mode)}
+                className={`px-2 py-1 rounded-md text-[10px] font-semibold transition-all ${checkMode === mode
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+              >
+                {CHECK_MODE_LABELS[mode]}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Show/Hide toggle */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-2">
           <Button
             variant="ghost"
             size="sm"
@@ -386,24 +477,23 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
           </Button>
         </div>
 
-        {/* Words display */}
-        <div className="text-center mb-4 select-none" dir="rtl">
-          <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
+        {/* Arabic verse display (The output) */}
+        <div className="text-center mb-2 select-none" dir="rtl">
+          <p className="font-arabic leading-[1.8] text-lg md:text-xl">
             {words.map((word, i) => {
-              const isCurrent = i === revealedCount;
+              const isInCurrentChunk = i >= revealedCount && i < revealedCount + getWordsToReveal();
               return (
                 <span
                   key={i}
-                  className={`inline-block mx-1 transition-all duration-300 ${
-                    i < revealedCount
-                      ? "text-foreground"
-                      : showVerse
-                      ? isCurrent
+                  className={`inline-block mx-1 transition-all duration-300 ${i < revealedCount
+                    ? "text-foreground"
+                    : showVerse
+                      ? isInCurrentChunk
                         ? "text-primary font-bold border-b-2 border-primary pb-1"
                         : "text-muted-foreground/30"
                       : "text-transparent"
-                  }`}
-                  style={{ filter: !showVerse && i >= revealedCount ? "blur(0px)" : i > revealedCount ? "blur(2px)" : "none" }}
+                    }`}
+                  style={{ filter: !showVerse && i >= revealedCount + getWordsToReveal() - 1 ? "blur(0px)" : i > revealedCount + getWordsToReveal() - 1 ? "blur(2px)" : "none" }}
                 >
                   {i < revealedCount ? word : showVerse ? word : "ـــ"}
                 </span>
@@ -414,9 +504,17 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
 
         {/* Current word hint */}
         {!verseComplete && (
-          <div className="text-center mb-4">
+          <div className="text-center mb-2">
+            <p className="text-[10px] text-muted-foreground">
+              {inputMode === "draw" ? "ارسم " : "اكتب "}
+              {checkMode === "word" ? "الكلمة التالية" :
+                checkMode === "2words" ? "الكلمتين التاليتين" :
+                  checkMode === "half" ? "نصف الآية" : "الآية كاملة"}
+            </p>
             <p className="text-xs text-muted-foreground">
-              {inputMode === "draw" ? "ارسم الكلمة وسيتم تحويلها لنص" : "اكتب الكلمة التالية"} • كلمة {revealedCount + 1} من {words.length}
+              {checkMode === "word"
+                ? `كلمة ${revealedCount + 1} من ${words.length}`
+                : `${words.length - revealedCount} كلمات متبقية`}
             </p>
           </div>
         )}
@@ -432,13 +530,12 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
                     ref={canvasRef}
                     width={400}
                     height={150}
-                    className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
-                      feedback === "correct"
-                        ? "border-primary bg-primary/5"
-                        : feedback === "incorrect"
+                    className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${feedback === "correct"
+                      ? "border-primary bg-primary/5"
+                      : feedback === "incorrect"
                         ? "border-destructive bg-destructive/5"
                         : "border-border bg-muted/30"
-                    }`}
+                      }`}
                     onMouseDown={startDraw}
                     onMouseMove={draw}
                     onMouseUp={endDraw}
@@ -477,22 +574,34 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
               </>
             ) : (
               /* Keyboard input */
-              <div className="flex gap-2 items-center justify-center">
-                <input
+              <div className="flex flex-col items-center gap-3 w-full">
+                <div className="flex justify-end w-full max-w-2xl px-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={backspaceWord}
+                    disabled={!inputValue.trim()}
+                    className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <Delete className="w-5 h-5" />
+                    <span className="text-xs">حذف الكلمة</span>
+                  </Button>
+                </div>
+                <textarea
                   ref={inputRef}
-                  type="text"
                   dir="rtl"
+                  lang="ar"
+                  rows={3}
                   value={inputValue}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="اكتب الكلمة هنا..."
-                  className={`w-full max-w-sm px-4 py-3 rounded-xl border-2 bg-muted/30 font-arabic text-xl text-center outline-none transition-all ${
-                    feedback === "correct"
-                      ? "border-primary bg-primary/5"
-                      : feedback === "incorrect"
-                      ? "border-destructive bg-destructive/5"
-                      : "border-border focus:border-primary/50"
-                  }`}
+                  placeholder="اكتب هنا..."
+                  className={`w-full max-w-2xl px-6 py-4 rounded-2xl border-4 bg-muted/40 font-arabic text-3xl text-center outline-none transition-all resize-none ${feedback === "correct"
+                    ? "border-primary bg-primary/10 shadow-[0_0_30px_rgba(var(--primary),0.2)] scale-[1.01]"
+                    : feedback === "incorrect"
+                      ? "border-destructive bg-destructive/10 animate-shake"
+                      : "border-border/60 focus:border-primary/50 focus:shadow-[0_0_20px_rgba(var(--primary),0.1)] focus:bg-muted/60"
+                    }`}
                   autoComplete="off"
                   autoCorrect="off"
                   spellCheck={false}
@@ -548,17 +657,19 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
           {!verseComplete && (
             <Button
               variant="outline"
-              size="icon"
+              size="sm"
               onClick={skipWord}
-              className="rounded-full border-border hover:bg-primary/10"
+              className="rounded-full border-border hover:bg-primary/10 px-4 gap-2"
               title="تخطي"
             >
               <SkipForward className="w-4 h-4" />
+              <span className="text-xs">تخطي</span>
             </Button>
           )}
 
-          <Button variant="outline" size="icon" onClick={() => onNext()} className="rounded-full border-border hover:bg-primary/10">
+          <Button variant="outline" size="sm" onClick={() => onNext()} className="rounded-full border-border hover:bg-primary/10 px-4 gap-2">
             <SkipForward className="w-4 h-4" />
+            <span className="text-xs">التالي</span>
           </Button>
         </div>
 
@@ -569,7 +680,7 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
               : "اكتب الكلمة ثم اضغط Enter للتحقق"}
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

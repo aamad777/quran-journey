@@ -2,8 +2,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { SkipForward, SkipBack, RotateCcw, CheckCircle2, Eraser, Send, Loader2, Eye, EyeOff } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeArabic } from "@/lib/arabicUtils";
 
 interface VerseData {
   arabic: string;
@@ -47,6 +49,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
   const [autoCheck, setAutoCheck] = useState(false);
   const [canvasScale, setCanvasScale] = useState(70); // 30-100 percent
   const [checkMode, setCheckMode] = useState<CheckMode>("word");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [recognizedText, setRecognizedText] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -115,6 +119,54 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
       if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
     };
   }, [verseComplete, currentVerseIndex, verses.length, onNext]);
+
+  // Generate suggestions from remaining verse words based on input
+  const updateSuggestions = useCallback((input: string) => {
+    if (!input.trim()) {
+      setSuggestions([]);
+      return;
+    }
+    const normalizedInput = normalizeArabic(input);
+    const inputWords = splitWords(input);
+    const wordCount = inputWords.length;
+
+    const remaining = words.slice(revealedCount);
+    // Generate phrases from remaining words that match the input word count
+    const phrases: string[] = [];
+    for (let i = 0; i < remaining.length; i++) {
+      const phrase = remaining.slice(i, i + wordCount).join(" ");
+      if (phrase) phrases.push(phrase);
+    }
+
+    const matches = phrases.filter((p) => {
+      const np = normalizeArabic(p);
+      return np.startsWith(normalizedInput) || normalizedInput.startsWith(np) || np.includes(normalizedInput);
+    });
+    const unique = [...new Set(matches)].slice(0, 5);
+    setSuggestions(unique);
+  }, [words, revealedCount]);
+
+  const selectSuggestion = (phrase: string) => {
+    setSuggestions([]);
+    setRecognizedText("");
+    clearCanvas();
+
+    const phraseWords = splitWords(phrase);
+    const wordsToAdvance = phraseWords.length;
+
+    // Use timeout to allow states to clear before next check
+    setTimeout(() => {
+      setFeedback("correct");
+      for (let i = 0; i < wordsToAdvance; i++) onCorrectWord?.();
+      const newCount = revealedCount + wordsToAdvance;
+      setRevealedCount(newCount);
+      if (newCount >= words.length) {
+        setVerseComplete(true);
+      } else {
+        setTimeout(() => setFeedback(null), 600);
+      }
+    }, 50);
+  };
 
   const getCtx = useCallback(() => {
     const canvas = canvasRef.current;
@@ -228,6 +280,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
     setIsChecking(true);
     setFeedback(null);
+    setRecognizedText("");
+    setSuggestions([]);
     hasDrawn.current = false;
 
     try {
@@ -239,6 +293,12 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
       });
 
       if (error) throw error;
+
+      const recognized = data?.recognized || "";
+      if (recognized) {
+        setRecognizedText(recognized);
+        updateSuggestions(recognized);
+      }
 
       if (data?.match) {
         setFeedback("correct");
@@ -298,7 +358,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
       </div>
 
       {/* Practice Card */}
-      <div className="bg-card rounded-2xl border border-border p-6 md:p-10 shadow-gold">
+      <Card className="p-4 md:p-6 shadow-xl border-emerald/20 islamic-pattern bg-card/95 backdrop-blur-sm">
         {/* Progress */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs text-muted-foreground">
@@ -321,7 +381,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         </div>
 
         {/* Settings Row */}
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-4 text-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3 border-b border-emerald/10 pb-3">
           {/* Check mode */}
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">وضع التحقق:</span>
@@ -330,11 +390,10 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                 <button
                   key={mode}
                   onClick={() => setCheckMode(mode)}
-                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                    checkMode === mode
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }`}
+                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all ${checkMode === mode
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
                 >
                   {CHECK_MODE_LABELS[mode]}
                 </button>
@@ -349,7 +408,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         </div>
 
         {/* Show/Hide toggle */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-3">
           <Button
             variant="ghost"
             size="sm"
@@ -361,23 +420,22 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
           </Button>
         </div>
 
-        {/* Words display */}
-        <div className="text-center mb-4 select-none" dir="rtl">
-          <p className="font-arabic leading-[2.4] text-2xl md:text-3xl">
+        {/* Arabic verse display (The output) */}
+        <div className="text-center mb-3 select-none" dir="rtl">
+          <p className="font-arabic leading-[1.8] text-lg md:text-xl">
             {words.map((word, i) => {
               const isInCurrentChunk = i >= revealedCount && i < revealedCount + getWordsToReveal();
               return (
                 <span
                   key={i}
-                  className={`inline-block mx-1 transition-all duration-300 ${
-                    i < revealedCount
-                      ? "text-foreground"
-                      : showVerse
+                  className={`inline-block mx-1 transition-all duration-300 ${i < revealedCount
+                    ? "text-foreground"
+                    : showVerse
                       ? isInCurrentChunk
                         ? "text-primary font-bold border-b-2 border-primary pb-1"
                         : "text-muted-foreground/30"
                       : "text-transparent"
-                  }`}
+                    }`}
                   style={{ filter: !showVerse && i >= revealedCount ? "blur(0px)" : i > revealedCount + getWordsToReveal() - 1 ? "blur(2px)" : "none" }}
                 >
                   {i < revealedCount ? word : showVerse ? word : "ـــ"}
@@ -389,11 +447,11 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
         {/* Current word hint */}
         {!verseComplete && (
-          <div className="text-center mb-4">
-            <p className="text-xs text-muted-foreground">
+          <div className="text-center mb-3">
+            <p className="text-[10px] text-muted-foreground">
               {checkMode === "word" ? "ارسم الكلمة التالية" :
-               checkMode === "2words" ? "ارسم الكلمتين التاليتين" :
-               checkMode === "half" ? "ارسم نصف الآية" : "ارسم الآية كاملة"}
+                checkMode === "2words" ? "ارسم الكلمتين التاليتين" :
+                  checkMode === "half" ? "ارسم نصف الآية" : "ارسم الآية كاملة"}
             </p>
             <p className="text-xs text-muted-foreground">
               {checkMode === "word"
@@ -440,8 +498,8 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
               </div>
             </div>
 
-            {/* Canvas size slider */}
-            <div className="flex items-center justify-center gap-3 mb-3 px-4">
+            {/* Canvas Scale Slider */}
+            <div className="flex items-center justify-center gap-2 mb-3 px-4">
               <span className="text-[10px] text-muted-foreground whitespace-nowrap">الحجم</span>
               <Slider
                 value={[canvasScale]}
@@ -460,13 +518,12 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                 ref={canvasRef}
                 width={canvasWidth}
                 height={canvasHeight}
-                className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${
-                  feedback === "correct"
-                    ? "border-primary bg-primary/5"
-                    : feedback === "incorrect"
+                className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${feedback === "correct"
+                  ? "border-primary bg-primary/5"
+                  : feedback === "incorrect"
                     ? "border-destructive bg-destructive/5"
                     : "border-border bg-muted/30"
-                }`}
+                  }`}
                 onMouseDown={startDraw}
                 onMouseMove={draw}
                 onMouseUp={endDraw}
@@ -481,6 +538,31 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                 </div>
               )}
             </div>
+
+            {/* Recognized text display */}
+            {recognizedText && (
+              <div className="text-center mt-3 animate-in fade-in slide-in-from-top-1 duration-300">
+                <p className="text-[10px] text-muted-foreground mb-1 uppercase tracking-wider font-semibold">توقعنا للرسم:</p>
+                <div className="inline-block px-4 py-1.5 rounded-lg bg-muted/50 border border-border/50">
+                  <p className="font-arabic text-2xl text-foreground" dir="rtl">{recognizedText}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Suggestions from verse */}
+            {suggestions.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mt-4 animate-in fade-in zoom-in-95 duration-400">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => selectSuggestion(s)}
+                    className="px-4 py-2 rounded-xl bg-primary/10 text-primary font-arabic text-lg hover:bg-primary/20 transition-all border border-primary/20 hover:scale-105 active:scale-95 shadow-sm"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -520,7 +602,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
               <Button
                 variant="outline"
-                size="icon"
+                size="sm"
                 onClick={() => {
                   const skip = getWordsToReveal();
                   const newCount = revealedCount + skip;
@@ -530,10 +612,11 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                     setVerseComplete(true);
                   }
                 }}
-                className="rounded-full border-border hover:bg-primary/10"
+                className="rounded-full border-border hover:bg-primary/10 px-4 gap-2"
                 title="تخطي"
               >
                 <SkipForward className="w-4 h-4" />
+                <span className="text-xs">تخطي</span>
               </Button>
 
               <Button
@@ -547,8 +630,9 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
             </>
           )}
 
-          <Button variant="outline" size="icon" onClick={() => onNext()} className="rounded-full border-border hover:bg-primary/10">
+          <Button variant="outline" size="sm" onClick={() => onNext()} className="rounded-full border-border hover:bg-primary/10 px-4 gap-2">
             <SkipForward className="w-4 h-4" />
+            <span className="text-xs">التالي</span>
           </Button>
         </div>
 
@@ -562,7 +646,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
             جارٍ التحقق...
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 };
