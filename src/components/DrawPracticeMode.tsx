@@ -122,15 +122,22 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
   // Generate suggestions from remaining verse words based on input
   const updateSuggestions = useCallback((input: string) => {
+    const remaining = words.slice(revealedCount);
+
     if (!input.trim()) {
-      setSuggestions([]);
+      // Provide next 1, 2, and 3 words as default suggestions when input is empty
+      const defaults: string[] = [];
+      if (remaining.length >= 1) defaults.push(remaining[0]);
+      if (remaining.length >= 2) defaults.push(remaining.slice(0, 2).join(" "));
+      if (remaining.length >= 3) defaults.push(remaining.slice(0, 3).join(" "));
+      setSuggestions(defaults);
       return;
     }
+
     const normalizedInput = normalizeArabic(input);
     const inputWords = splitWords(input);
     const wordCount = inputWords.length;
 
-    const remaining = words.slice(revealedCount);
     // Generate phrases from remaining words that match the input word count
     const phrases: string[] = [];
     for (let i = 0; i < remaining.length; i++) {
@@ -145,6 +152,10 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
     const unique = [...new Set(matches)].slice(0, 5);
     setSuggestions(unique);
   }, [words, revealedCount]);
+
+  useEffect(() => {
+    updateSuggestions("");
+  }, [revealedCount, currentVerseIndex, words, updateSuggestions]);
 
   const selectSuggestion = (phrase: string) => {
     setSuggestions([]);
@@ -422,7 +433,7 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
 
         {/* Arabic verse display (The output) */}
         <div className="text-center mb-3 select-none" dir="rtl">
-          <p className="font-arabic leading-[1.8] text-lg md:text-xl">
+          <p className="font-arabic leading-[1.8] text-2xl md:text-3xl">
             {words.map((word, i) => {
               const isInCurrentChunk = i >= revealedCount && i < revealedCount + getWordsToReveal();
               return (
@@ -578,31 +589,36 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
         )}
 
         {/* Divider */}
-        <div className="flex items-center gap-4 my-6">
+        <div className="flex items-center gap-4 my-3">
           <div className="flex-1 h-px bg-border" />
           <div className="w-2 h-2 rounded-full bg-gold" />
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-3">
-          <Button variant="outline" size="icon" onClick={() => onPrev()} className="rounded-full border-border hover:bg-primary/10">
+        {/* Controls - mobile labeled */}
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          {/* Back */}
+          <button onClick={() => onPrev()} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <SkipBack className="w-4 h-4" />
-          </Button>
+            <span className="text-[10px] text-muted-foreground">رجوع</span>
+          </button>
 
-          <Button variant="outline" size="icon" onClick={resetPractice} className="rounded-full border-border hover:bg-primary/10">
+          {/* Reset */}
+          <button onClick={resetPractice} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <RotateCcw className="w-4 h-4" />
-          </Button>
+            <span className="text-[10px] text-muted-foreground">إعادة</span>
+          </button>
 
           {!verseComplete && (
             <>
-              <Button variant="outline" size="icon" onClick={clearCanvas} className="rounded-full border-border hover:bg-primary/10">
+              {/* Erase canvas */}
+              <button onClick={clearCanvas} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
                 <Eraser className="w-4 h-4" />
-              </Button>
+                <span className="text-[10px] text-muted-foreground">مسح</span>
+              </button>
 
-              <Button
-                variant="outline"
-                size="sm"
+              {/* Skip */}
+              <button
                 onClick={() => {
                   const skip = getWordsToReveal();
                   const newCount = revealedCount + skip;
@@ -612,28 +628,29 @@ const DrawPracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: DrawPractic
                     setVerseComplete(true);
                   }
                 }}
-                className="rounded-full border-border hover:bg-primary/10 px-4 gap-2"
-                title="تخطي"
+                className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]"
               >
                 <SkipForward className="w-4 h-4" />
-                <span className="text-xs">تخطي</span>
-              </Button>
+                <span className="text-[10px] text-muted-foreground">تخطي</span>
+              </button>
 
-              <Button
+              {/* Check/Send */}
+              <button
                 onClick={checkDrawing}
                 disabled={isChecking}
-                size="icon"
-                className="w-14 h-14 rounded-full gradient-islamic text-gold hover:opacity-90 transition-all"
+                className="flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl gradient-islamic text-gold hover:opacity-90 transition-all min-w-[52px] disabled:opacity-50"
               >
-                {isChecking ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
-              </Button>
+                {isChecking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                <span className="text-[10px]">إرسال</span>
+              </button>
             </>
           )}
 
-          <Button variant="outline" size="sm" onClick={() => onNext()} className="rounded-full border-border hover:bg-primary/10 px-4 gap-2">
+          {/* Next */}
+          <button onClick={() => onNext()} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <SkipForward className="w-4 h-4" />
-            <span className="text-xs">التالي</span>
-          </Button>
+            <span className="text-[10px] text-muted-foreground">التالي</span>
+          </button>
         </div>
 
         {!verseComplete && !isChecking && (

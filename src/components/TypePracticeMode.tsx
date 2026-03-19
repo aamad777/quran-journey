@@ -121,15 +121,22 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
 
   // Generate suggestions from remaining verse words based on input
   const updateSuggestions = useCallback((input: string) => {
+    const remaining = words.slice(revealedCount);
+    
     if (!input.trim()) {
-      setSuggestions([]);
+      // Provide next 1, 2, and 3 words as default suggestions when input is empty
+      const defaults: string[] = [];
+      if (remaining.length >= 1) defaults.push(remaining[0]);
+      if (remaining.length >= 2) defaults.push(remaining.slice(0, 2).join(" "));
+      if (remaining.length >= 3) defaults.push(remaining.slice(0, 3).join(" "));
+      setSuggestions(defaults);
       return;
     }
+
     const normalizedInput = normalizeArabic(input);
     const inputWords = splitWords(input);
     const wordCount = inputWords.length;
 
-    const remaining = words.slice(revealedCount);
     // Generate phrases from remaining words that match the input word count
     const phrases: string[] = [];
     for (let i = 0; i < remaining.length; i++) {
@@ -144,6 +151,10 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     const unique = [...new Set(matches)].slice(0, 5);
     setSuggestions(unique);
   }, [words, revealedCount]);
+
+  useEffect(() => {
+    updateSuggestions("");
+  }, [revealedCount, currentVerseIndex, words, updateSuggestions]);
 
   const handleInputChange = (val: string) => {
     setInputValue(val);
@@ -192,11 +203,9 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
     }
   };
 
-  const backspaceWord = () => {
-    const currentWords = splitWords(inputValue);
-    if (currentWords.length > 0) {
-      currentWords.pop();
-      const newVal = currentWords.join(" ") + (currentWords.length > 0 ? " " : "");
+  const backspaceChar = () => {
+    if (inputValue.length > 0) {
+      const newVal = inputValue.slice(0, -1);
       handleInputChange(newVal);
       // Refocus input after button click
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -423,27 +432,7 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
           />
         </div>
 
-        {/* Input mode toggle */}
-        <div className="flex justify-center gap-2 mb-4">
-          <Button
-            variant={inputMode === "draw" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setInputMode("draw")}
-            className="gap-1.5 text-xs"
-          >
-            <PenTool className="w-3.5 h-3.5" />
-            رسم
-          </Button>
-          <Button
-            variant={inputMode === "keyboard" ? "default" : "outline"}
-            size="sm"
-            onClick={() => { setInputMode("keyboard"); setTimeout(() => inputRef.current?.focus(), 100); }}
-            className="gap-1.5 text-xs"
-          >
-            <Keyboard className="w-3.5 h-3.5" />
-            لوحة مفاتيح
-          </Button>
-        </div>
+
 
         {/* Check mode selector */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3 border-b border-emerald/10 pb-3">
@@ -478,8 +467,8 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
         </div>
 
         {/* Arabic verse display (The output) */}
-        <div className="text-center mb-2 select-none" dir="rtl">
-          <p className="font-arabic leading-[1.8] text-lg md:text-xl">
+        <div className="text-center mb-4 select-none" dir="rtl">
+          <p className="font-arabic leading-[1.8] text-2xl md:text-4xl">
             {words.map((word, i) => {
               const isInCurrentChunk = i >= revealedCount && i < revealedCount + getWordsToReveal();
               return (
@@ -529,7 +518,7 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
                   <canvas
                     ref={canvasRef}
                     width={400}
-                    height={150}
+                    height={120}
                     className={`w-full rounded-xl border-2 cursor-crosshair touch-none ${feedback === "correct"
                       ? "border-primary bg-primary/5"
                       : feedback === "incorrect"
@@ -574,29 +563,29 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
               </>
             ) : (
               /* Keyboard input */
-              <div className="flex flex-col items-center gap-3 w-full">
+              <div className="flex flex-col items-center gap-2 w-full">
                 <div className="flex justify-end w-full max-w-2xl px-2">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={backspaceWord}
+                    onClick={backspaceChar}
                     disabled={!inputValue.trim()}
                     className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                   >
-                    <Delete className="w-5 h-5" />
-                    <span className="text-xs">حذف الكلمة</span>
+                    <Delete className="w-4 h-4" />
+                    <span className="text-xs">حذف</span>
                   </Button>
                 </div>
                 <textarea
                   ref={inputRef}
                   dir="rtl"
                   lang="ar"
-                  rows={3}
+                  rows={1}
                   value={inputValue}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="اكتب هنا..."
-                  className={`w-full max-w-2xl px-6 py-4 rounded-2xl border-4 bg-muted/40 font-arabic text-3xl text-center outline-none transition-all resize-none ${feedback === "correct"
+                  className={`w-full max-w-2xl px-4 py-3 rounded-2xl border-4 bg-muted/40 font-arabic text-2xl text-center outline-none transition-all resize-none ${feedback === "correct"
                     ? "border-primary bg-primary/10 shadow-[0_0_30px_rgba(var(--primary),0.2)] scale-[1.01]"
                     : feedback === "incorrect"
                       ? "border-destructive bg-destructive/10 animate-shake"
@@ -638,39 +627,81 @@ const TypePracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: TypePractic
         )}
 
         {/* Divider */}
-        <div className="flex items-center gap-4 my-6">
+        <div className="flex items-center gap-4 my-3">
           <div className="flex-1 h-px bg-border" />
           <div className="w-2 h-2 rounded-full bg-gold" />
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-3">
-          <Button variant="outline" size="icon" onClick={() => onPrev()} className="rounded-full border-border hover:bg-primary/10">
-            <SkipBack className="w-4 h-4" />
-          </Button>
+        {/* Controls - Split into two rows as requested */}
+        <div className="flex flex-col gap-4 mt-2">
+          {/* Row 1: Navigation Controls (Above) */}
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {/* Back */}
+            <button onClick={() => onPrev()} className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl border border-border bg-muted/20 hover:bg-primary/10 transition-all min-w-[64px]">
+              <SkipBack className="w-4 h-4" />
+              <span className="text-[10px] text-muted-foreground font-semibold">رجوع</span>
+            </button>
 
-          <Button variant="outline" size="icon" onClick={resetPractice} className="rounded-full border-border hover:bg-primary/10">
-            <RotateCcw className="w-4 h-4" />
-          </Button>
+            {/* Reset */}
+            <button onClick={resetPractice} className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl border border-border bg-muted/20 hover:bg-primary/10 transition-all min-w-[64px]">
+              <RotateCcw className="w-4 h-4" />
+              <span className="text-[10px] text-muted-foreground font-semibold">إعادة</span>
+            </button>
 
-          {!verseComplete && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={skipWord}
-              className="rounded-full border-border hover:bg-primary/10 px-4 gap-2"
-              title="تخطي"
-            >
+            {!verseComplete && (
+              /* Skip word */
+              <button onClick={skipWord} className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl border border-border bg-muted/20 hover:bg-primary/10 transition-all min-w-[64px]">
+                <SkipForward className="w-4 h-4" />
+                <span className="text-[10px] text-muted-foreground font-semibold">تخطي</span>
+              </button>
+            )}
+
+            {/* Check (submit word) */}
+            {!verseComplete && (
+              <button
+                onClick={() => checkWord()}
+                className="flex flex-col items-center gap-1 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-all min-w-[70px] shadow-lg shadow-primary/20"
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                <span className="text-[10px] font-bold">تحقق</span>
+              </button>
+            )}
+
+            {/* Next verse */}
+            <button onClick={() => onNext()} className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl border border-border bg-muted/20 hover:bg-primary/10 transition-all min-w-[64px]">
               <SkipForward className="w-4 h-4" />
-              <span className="text-xs">تخطي</span>
-            </Button>
-          )}
+              <span className="text-[10px] text-muted-foreground font-semibold">التالي</span>
+            </button>
+          </div>
 
-          <Button variant="outline" size="sm" onClick={() => onNext()} className="rounded-full border-border hover:bg-primary/10 px-4 gap-2">
-            <SkipForward className="w-4 h-4" />
-            <span className="text-xs">التالي</span>
-          </Button>
+          {/* Row 2: Mode Switcher (Dowan) */}
+          <div className="flex justify-center border-t border-border/50 pt-3">
+            <div className="bg-muted/30 p-1.5 rounded-2xl flex gap-2 border border-border/50">
+              <button
+                onClick={() => { setInputMode("keyboard"); setTimeout(() => inputRef.current?.focus(), 100); }}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-bold transition-all ${
+                  inputMode === "keyboard" 
+                    ? "bg-primary text-primary-foreground shadow-md" 
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Keyboard className="w-4 h-4" />
+                لوحة مفاتيح
+              </button>
+              <button
+                onClick={() => setInputMode("draw")}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-bold transition-all ${
+                  inputMode === "draw" 
+                    ? "bg-primary text-primary-foreground shadow-md" 
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <PenTool className="w-4 h-4" />
+                رسم
+              </button>
+            </div>
+          </div>
         </div>
 
         {!verseComplete && (

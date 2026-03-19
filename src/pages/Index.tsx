@@ -9,7 +9,9 @@ import DrawPracticeMode from "@/components/DrawPracticeMode";
 import TypePracticeMode from "@/components/TypePracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, Keyboard, BarChart3, Heart } from "lucide-react";
+import VerseSearch from "@/components/VerseSearch";
+import AlphabetTajweed from "@/components/AlphabetTajweed";
+import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, Keyboard, BarChart3, Heart, Search, Type } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
 import PermissionPrompt from "@/components/PermissionPrompt";
@@ -41,9 +43,9 @@ const Index = () => {
   const bgTheme = BG_THEMES[background];
   const overlayOpacity = bgPattern?.image ? Math.min(0.75, (1 - bgOpacity) + 0.22) : 0;
   const { user, loading: authLoading, signOut } = useAuth();
-  const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah } = useQuranProgress(user);
-  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "type" | "stats">(() => {
-    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw" | "type" | "stats") || "read"; } catch { return "read"; }
+  const { progress, loading: progressLoading, goToNext, goToPrev, goToSurah, goToVerse } = useQuranProgress(user);
+  const [activeTab, setActiveTab] = useState<"read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets">(() => {
+    try { return (localStorage.getItem("quran_active_tab") as "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets") || "read"; } catch { return "read"; }
   });
   const [verseCount, setVerseCount] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_verse_count") || "1"); } catch { return 1; }
@@ -161,17 +163,17 @@ const Index = () => {
       {/* Progress + Tabs Combined Card */}
       <div className="container max-w-4xl mx-auto px-4 pt-3 pb-2">
         <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
-          {/* Progress Row — Heart centered */}
-          <div className="flex flex-col items-center gap-2 px-4 py-4">
-            {/* Heart inside progress circle — centered */}
-            <div className="relative w-16 h-16 shrink-0">
+          {/* Progress Row — Heart + Stats */}
+          <div className="flex items-center gap-3 px-4 py-3">
+            {/* Heart inside progress circle */}
+            <div className="relative w-12 h-12 shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" style={{ stroke: `${bgTheme.btnBg}18` }} />
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
                 <Heart
-                  className="w-6 h-6 fill-current"
+                  className="w-5 h-5 fill-current"
                   style={{
                     color: bgTheme.btnBg,
                     filter: `drop-shadow(0 0 ${3 + progressPercent * 0.08}px ${bgTheme.btnBg})`,
@@ -181,14 +183,15 @@ const Index = () => {
               </div>
             </div>
             {/* Stats row */}
-            <div className="flex items-center justify-center gap-4 w-full">
+            <div className="flex items-center justify-center gap-4 flex-1 flex-wrap">
               <div className="flex flex-col items-center">
-                <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} آية مقروءة</span>
-                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪ مكتمل</span>
+                <span className="text-lg font-bold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")}</span>
+                <span className="text-[10px] uppercase tracking-wider" style={{ color: bgTheme.mutedText }}>مقروءة</span>
               </div>
-              <div className="w-px h-6" style={{ backgroundColor: `${bgTheme.mutedText}20` }} />
+              <div className="w-px h-8" style={{ backgroundColor: `${bgTheme.mutedText}30` }} />
               <div className="flex flex-col items-center">
-                <span className="text-xs font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
+                <span className="text-lg font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")}</span>
+                <span className="text-[10px] uppercase tracking-wider" style={{ color: bgTheme.mutedText }}>متبقية</span>
               </div>
             </div>
           </div>
@@ -199,13 +202,14 @@ const Index = () => {
             </div>
           </div>
           {/* Tab Bar */}
-          <div className="flex gap-2 px-3 py-2.5 border-t" style={{ borderColor: `${bgTheme.mutedText}12` }}>
+          <div className="flex gap-2 px-3 py-2.5 border-t overflow-x-auto hide-scrollbar" style={{ borderColor: `${bgTheme.mutedText}12` }}>
             {([
-              { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
-              { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
-              { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
-              { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
-              { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
+              { key: "read" as const, icon: <BookOpen className="w-4 h-4 shrink-0" />, label: "قراءة" },
+              { key: "practice" as const, icon: <Mic className="w-4 h-4 shrink-0" />, label: "صوت" },
+              { key: "type" as const, icon: <PenTool className="w-4 h-4 shrink-0" />, label: "كتابة" },
+              { key: "stats" as const, icon: <BarChart3 className="w-4 h-4 shrink-0" />, label: "إحصائيات" },
+              { key: "search" as const, icon: <Search className="w-4 h-4 shrink-0" />, label: "بحث" },
+              { key: "alphabets" as const, icon: <Type className="w-4 h-4 shrink-0" />, label: "الحروف" },
             ]).map((tab) => (
               <button
                 key={tab.key}
@@ -236,6 +240,25 @@ const Index = () => {
             progressPercent={progressPercent}
             voiceCorrect={voiceCorrect}
             drawCorrect={drawCorrect}
+          />
+        ) : activeTab === "search" ? (
+          <VerseSearch
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
+            onSelectVerse={(surah, ayah) => {
+              goToVerse(surah, ayah);
+              setActiveTab("read");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
+        ) : activeTab === "alphabets" ? (
+          <AlphabetTajweed
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
           />
         ) : isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
@@ -276,15 +299,8 @@ const Index = () => {
             onPrev={() => goToPrev(verseCount)}
             onCorrectWord={onVoiceCorrect}
           />
-        ) : activeTab === "type" ? (
-          <TypePracticeMode
-            verses={verses}
-            onNext={() => goToNext(verseCount)}
-            onPrev={() => goToPrev(verseCount)}
-            onCorrectWord={onDrawCorrect}
-          />
         ) : (
-          <DrawPracticeMode
+          <TypePracticeMode
             verses={verses}
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}

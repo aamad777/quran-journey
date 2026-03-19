@@ -242,7 +242,7 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
         )}
 
         {/* Divider */}
-        <div className="flex items-center gap-4 my-6">
+        <div className="flex items-center gap-4 my-3">
           <div className="flex-1 h-px bg-border" />
           <div className="w-2 h-2 rounded-full bg-gold" />
           <div className="flex-1 h-px bg-border" />
@@ -263,32 +263,39 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
           <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => { stopListening(); onPrev(); }} className="rounded-full border-border hover:bg-primary/10">
+        {/* Controls - mobile labeled */}
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          {/* Back */}
+          <button onClick={() => { stopListening(); onPrev(); }} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <SkipBack className="w-4 h-4" />
-          </Button>
+            <span className="text-[10px] text-muted-foreground">رجوع</span>
+          </button>
 
-          <Button variant="outline" size="icon" onClick={resetPractice} className="rounded-full border-border hover:bg-primary/10">
+          {/* Reset */}
+          <button onClick={resetPractice} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <RotateCcw className="w-4 h-4" />
-          </Button>
+            <span className="text-[10px] text-muted-foreground">إعادة</span>
+          </button>
 
-          <Button
+          {/* Mic */}
+          <button
             onClick={isListening ? stopListening : startListening}
-            size="icon"
             disabled={verseComplete}
-            className={`w-14 h-14 rounded-full transition-all ${
+            className={`flex flex-col items-center gap-0.5 w-14 py-2 rounded-xl transition-all ${
               isListening
                 ? "bg-destructive text-destructive-foreground animate-pulse"
                 : "gradient-islamic text-gold hover:opacity-90"
-            }`}
+            } disabled:opacity-50`}
           >
-            {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-          </Button>
+            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            <span className="text-[10px]">{isListening ? "إيقاف" : "ميك"}</span>
+          </button>
 
-          <Button variant="outline" size="icon" onClick={() => { stopListening(); onNext(); }} className="rounded-full border-border hover:bg-primary/10">
+          {/* Next */}
+          <button onClick={() => { stopListening(); onNext(); }} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <SkipForward className="w-4 h-4" />
-          </Button>
+            <span className="text-[10px] text-muted-foreground">التالي</span>
+          </button>
         </div>
 
         {!isListening && !verseComplete && (
