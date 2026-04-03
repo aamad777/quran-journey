@@ -451,10 +451,14 @@ const Tajweed = () => {
               {group.letters.map(letter => (
                 <button
                   key={letter.letter}
-                  onClick={() => setSelectedLetter(letter)}
-                  className="group relative flex flex-col items-center justify-center p-3 rounded-xl border border-border bg-card hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95"
-                  style={{ borderColor: `${letter.color}30` }}
+                  onClick={() => {
+                    pronounceLetter(letter.letter, letter.name);
+                    setSelectedLetter(letter);
+                  }}
+                  className={`group relative flex flex-col items-center justify-center p-3 rounded-xl border border-border bg-card hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95 ${playingLetter === letter.letter ? 'ring-2' : ''}`}
+                  style={{ borderColor: `${letter.color}30`, ...(playingLetter === letter.letter ? { ringColor: letter.color } : {}) }}
                 >
+                  <Volume2 className="absolute top-1 left-1 w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" style={{ color: letter.color }} />
                   <span className="text-2xl font-arabic font-bold" style={{ color: letter.color }}>{letter.letter}</span>
                   <span className="text-[9px] text-muted-foreground mt-0.5">{letter.name}</span>
                 </button>
