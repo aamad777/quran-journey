@@ -116,6 +116,9 @@ const Index = () => {
             <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
           </button>
           <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/tajweed")} title="مخارج الحروف" style={{ color: bgTheme.mutedText }}>
+              <BookA className="w-4 h-4" />
+            </Button>
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
