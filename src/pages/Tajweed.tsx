@@ -399,6 +399,26 @@ const MouthDiagram = ({ category, letter }: { category: string; letter: string }
 const Tajweed = () => {
   const navigate = useNavigate();
   const [selectedLetter, setSelectedLetter] = useState<LetterInfo | null>(null);
+  const [playingLetter, setPlayingLetter] = useState<string | null>(null);
+
+  const pronounceLetter = useCallback((letter: string, name: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    window.speechSynthesis.cancel();
+    // Speak the letter with harakat for clarity, then the name
+    const text = `${letter}. ${name}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ar-SA";
+    utterance.rate = 0.7;
+    utterance.pitch = 1;
+    // Try to find an Arabic voice
+    const voices = window.speechSynthesis.getVoices();
+    const arabicVoice = voices.find(v => v.lang.startsWith("ar"));
+    if (arabicVoice) utterance.voice = arabicVoice;
+    setPlayingLetter(letter);
+    utterance.onend = () => setPlayingLetter(null);
+    utterance.onerror = () => setPlayingLetter(null);
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
   const grouped = CATEGORY_ORDER.map(cat => ({
     ...CATEGORY_LABELS[cat],
