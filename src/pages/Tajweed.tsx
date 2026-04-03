@@ -497,6 +497,15 @@ const Tajweed = () => {
                     <div className="text-lg font-arabic font-bold text-foreground">{selectedLetter.name}</div>
                     <div className="text-sm text-muted-foreground">{selectedLetter.transliteration}</div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 rounded-full mr-auto"
+                    style={{ borderColor: `${selectedLetter.color}40`, color: selectedLetter.color }}
+                    onClick={() => pronounceLetter(selectedLetter.letter, selectedLetter.name)}
+                  >
+                    <Volume2 className={`w-5 h-5 ${playingLetter === selectedLetter.letter ? 'animate-pulse' : ''}`} />
+                  </Button>
                 </DialogTitle>
               </DialogHeader>
 
