@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -399,6 +399,26 @@ const MouthDiagram = ({ category, letter }: { category: string; letter: string }
 const Tajweed = () => {
   const navigate = useNavigate();
   const [selectedLetter, setSelectedLetter] = useState<LetterInfo | null>(null);
+  const [playingLetter, setPlayingLetter] = useState<string | null>(null);
+
+  const pronounceLetter = useCallback((letter: string, name: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    window.speechSynthesis.cancel();
+    // Speak the letter with harakat for clarity, then the name
+    const text = `${letter}. ${name}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ar-SA";
+    utterance.rate = 0.7;
+    utterance.pitch = 1;
+    // Try to find an Arabic voice
+    const voices = window.speechSynthesis.getVoices();
+    const arabicVoice = voices.find(v => v.lang.startsWith("ar"));
+    if (arabicVoice) utterance.voice = arabicVoice;
+    setPlayingLetter(letter);
+    utterance.onend = () => setPlayingLetter(null);
+    utterance.onerror = () => setPlayingLetter(null);
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
   const grouped = CATEGORY_ORDER.map(cat => ({
     ...CATEGORY_LABELS[cat],
@@ -431,10 +451,14 @@ const Tajweed = () => {
               {group.letters.map(letter => (
                 <button
                   key={letter.letter}
-                  onClick={() => setSelectedLetter(letter)}
-                  className="group relative flex flex-col items-center justify-center p-3 rounded-xl border border-border bg-card hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95"
-                  style={{ borderColor: `${letter.color}30` }}
+                  onClick={() => {
+                    pronounceLetter(letter.letter, letter.name);
+                    setSelectedLetter(letter);
+                  }}
+                  className={`group relative flex flex-col items-center justify-center p-3 rounded-xl border border-border bg-card hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95 ${playingLetter === letter.letter ? 'ring-2' : ''}`}
+                  style={{ borderColor: `${letter.color}30`, ...(playingLetter === letter.letter ? { ringColor: letter.color } : {}) }}
                 >
+                  <Volume2 className="absolute top-1 left-1 w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" style={{ color: letter.color }} />
                   <span className="text-2xl font-arabic font-bold" style={{ color: letter.color }}>{letter.letter}</span>
                   <span className="text-[9px] text-muted-foreground mt-0.5">{letter.name}</span>
                 </button>
@@ -473,6 +497,15 @@ const Tajweed = () => {
                     <div className="text-lg font-arabic font-bold text-foreground">{selectedLetter.name}</div>
                     <div className="text-sm text-muted-foreground">{selectedLetter.transliteration}</div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 rounded-full mr-auto"
+                    style={{ borderColor: `${selectedLetter.color}40`, color: selectedLetter.color }}
+                    onClick={() => pronounceLetter(selectedLetter.letter, selectedLetter.name)}
+                  >
+                    <Volume2 className={`w-5 h-5 ${playingLetter === selectedLetter.letter ? 'animate-pulse' : ''}`} />
+                  </Button>
                 </DialogTitle>
               </DialogHeader>
 
