@@ -9,7 +9,7 @@ import DrawPracticeMode from "@/components/DrawPracticeMode";
 import TypePracticeMode from "@/components/TypePracticeMode";
 import QuranStats from "@/components/QuranStats";
 import SurahList from "@/components/SurahList";
-import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, Keyboard, BarChart3, Heart } from "lucide-react";
+import { BookOpen, LogOut, LogIn, UserPlus, Mic, PenTool, Keyboard, BarChart3, Heart, BookA } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
 import PermissionPrompt from "@/components/PermissionPrompt";
