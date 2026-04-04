@@ -4,6 +4,12 @@ import { ArrowRight, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
+interface QuranExample {
+  text: string;
+  surah: string;
+  ayah: string;
+}
+
 interface LetterInfo {
   letter: string;
   name: string;
@@ -16,6 +22,7 @@ interface LetterInfo {
   mouthPosition: string;
   tips: string[];
   color: string;
+  examples: QuranExample[];
 }
 
 const LETTERS: LetterInfo[] = [
@@ -26,7 +33,11 @@ const LETTERS: LetterInfo[] = [
     description: "الألف حرف مد يخرج من أقصى الحلق. وهو حرف ساكن مفتوح ما قبله.",
     mouthPosition: "يُفتح الفم بشكل طبيعي مع فتح الحلق. الهواء يخرج بحرية دون أي عائق.",
     tips: ["افتح فمك بشكل مريح", "لا تحرك اللسان", "الصوت يأتي من الحلق مباشرة"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ", surah: "الفاتحة", ayah: "٢" },
+      { text: "الٓمٓ", surah: "البقرة", ayah: "١" },
+    ]
   },
   {
     letter: "ب", name: "باء", transliteration: "Ba",
@@ -35,7 +46,11 @@ const LETTERS: LetterInfo[] = [
     description: "الباء تخرج من التقاء الشفتين. يُطبق الشفتان ثم ينفصلان مع خروج الهواء.",
     mouthPosition: "أغلق الشفتين تماماً ثم افتحهما بسرعة مع إخراج الصوت.",
     tips: ["اضغط الشفتين معاً بلطف", "افتحهما بسرعة", "الصوت يخرج مع فتح الشفتين"],
-    color: "#3498db"
+    color: "#3498db",
+    examples: [
+      { text: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", surah: "الفاتحة", ayah: "١" },
+      { text: "ذَٰلِكَ ٱلْكِتَابُ لَا رَيْبَ فِيهِ", surah: "البقرة", ayah: "٢" },
+    ]
   },
   {
     letter: "ت", name: "تاء", transliteration: "Ta",
@@ -44,7 +59,11 @@ const LETTERS: LetterInfo[] = [
     description: "التاء تخرج من طرف اللسان مع أصول الثنايا العليا (اللثة).",
     mouthPosition: "ضع طرف لسانك على اللثة خلف الأسنان العليا مباشرة، ثم أبعده بسرعة.",
     tips: ["طرف اللسان يلمس اللثة العليا", "انفصال سريع", "حرف مهموس بلا اهتزاز"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "تَبَارَكَ ٱلَّذِي بِيَدِهِ ٱلْمُلْكُ", surah: "الملك", ayah: "١" },
+      { text: "وَٱلتِّينِ وَٱلزَّيْتُونِ", surah: "التين", ayah: "١" },
+    ]
   },
   {
     letter: "ث", name: "ثاء", transliteration: "Tha",
@@ -53,7 +72,11 @@ const LETTERS: LetterInfo[] = [
     description: "الثاء تخرج بوضع طرف اللسان بين الأسنان العليا والسفلى مع خروج الهواء.",
     mouthPosition: "أخرج طرف لسانك قليلاً بين الأسنان وانفخ الهواء بلطف.",
     tips: ["اللسان بين الأسنان", "لا تعض على اللسان", "الهواء يخرج من الجانبين"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "ثُمَّ أَنشَأْنَاهُ خَلْقًا آخَرَ", surah: "المؤمنون", ayah: "١٤" },
+      { text: "فَإِذَا نُفِخَ فِي ٱلصُّورِ نَفْخَةٌ وَاحِدَةٌ", surah: "الحاقة", ayah: "١٣" },
+    ]
   },
   {
     letter: "ج", name: "جيم", transliteration: "Jim",
@@ -62,7 +85,11 @@ const LETTERS: LetterInfo[] = [
     description: "الجيم تخرج من وسط اللسان مع ما يحاذيه من الحنك الأعلى.",
     mouthPosition: "ارفع وسط اللسان للأعلى ليلامس سقف الحلق الصلب ثم أبعده.",
     tips: ["وسط اللسان يرتفع", "لمس سقف الفم", "انفصال مع صوت"],
-    color: "#9b59b6"
+    color: "#9b59b6",
+    examples: [
+      { text: "وَجَعَلْنَا مِنَ ٱلْمَاءِ كُلَّ شَيْءٍ حَيٍّ", surah: "الأنبياء", ayah: "٣٠" },
+      { text: "إِنَّا جَعَلْنَاهُ قُرْآنًا عَرَبِيًّا", surah: "الزخرف", ayah: "٣" },
+    ]
   },
   {
     letter: "ح", name: "حاء", transliteration: "Ha",
@@ -71,7 +98,11 @@ const LETTERS: LetterInfo[] = [
     description: "الحاء تخرج من وسط الحلق. حرف مهموس يخرج بتضييق وسط الحلق.",
     mouthPosition: "ضيّق وسط الحلق وأخرج الهواء بهمس. مثل نفخ الهواء من الحلق.",
     tips: ["تضييق وسط الحلق", "همس بدون اهتزاز الحبال الصوتية", "مثل النفخ الخفيف"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "قُلْ هُوَ ٱللَّهُ أَحَدٌ", surah: "الإخلاص", ayah: "١" },
+      { text: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ", surah: "الفاتحة", ayah: "٢" },
+    ]
   },
   {
     letter: "خ", name: "خاء", transliteration: "Kha",
@@ -80,7 +111,11 @@ const LETTERS: LetterInfo[] = [
     description: "الخاء تخرج من أدنى الحلق (أقربه إلى الفم). حرف مهموس مستعلٍ.",
     mouthPosition: "ارفع مؤخرة اللسان نحو سقف الحلق الرخو مع تضييق المجرى.",
     tips: ["مؤخرة اللسان ترتفع", "الهواء يحتك بسقف الحلق", "صوت احتكاكي مهموس"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "خَتَمَ ٱللَّهُ عَلَىٰ قُلُوبِهِمْ", surah: "البقرة", ayah: "٧" },
+      { text: "خَلَقَ ٱلْإِنسَانَ مِنْ عَلَقٍ", surah: "العلق", ayah: "٢" },
+    ]
   },
   {
     letter: "د", name: "دال", transliteration: "Dal",
@@ -89,7 +124,11 @@ const LETTERS: LetterInfo[] = [
     description: "الدال تخرج من طرف اللسان مع أصول الثنايا العليا. مثل التاء لكنها مجهورة.",
     mouthPosition: "ضع طرف لسانك على اللثة العليا واضغط ثم حرره مع صوت.",
     tips: ["نفس مخرج التاء", "لكن مع اهتزاز الحبال الصوتية", "حرف مجهور"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "ذَٰلِكَ ٱلْكِتَابُ لَا رَيْبَ فِيهِ هُدًى لِّلْمُتَّقِينَ", surah: "البقرة", ayah: "٢" },
+      { text: "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ", surah: "الناس", ayah: "١" },
+    ]
   },
   {
     letter: "ذ", name: "ذال", transliteration: "Dhal",
@@ -98,7 +137,11 @@ const LETTERS: LetterInfo[] = [
     description: "الذال تخرج من طرف اللسان مع أطراف الثنايا العليا. مثل الثاء لكنها مجهورة.",
     mouthPosition: "أخرج طرف لسانك بين الأسنان مع اهتزاز الحبال الصوتية.",
     tips: ["نفس وضع الثاء", "لكن مع جهر (اهتزاز)", "اللسان بين الأسنان"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ", surah: "البقرة", ayah: "٣" },
+      { text: "وَذَكِّرْ فَإِنَّ ٱلذِّكْرَىٰ تَنفَعُ ٱلْمُؤْمِنِينَ", surah: "الذاريات", ayah: "٥٥" },
+    ]
   },
   {
     letter: "ر", name: "راء", transliteration: "Ra",
@@ -107,7 +150,11 @@ const LETTERS: LetterInfo[] = [
     description: "الراء تخرج من طرف اللسان مائلاً إلى ظهره مع ما يحاذيه من اللثة. حرف متكرر.",
     mouthPosition: "ارفع طرف لسانك للأعلى قرب اللثة واجعله يرتعش مرة واحدة.",
     tips: ["طرف اللسان يرتعش", "قريب من سقف الفم الأمامي", "حرف تكراري مجهور"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", surah: "الفاتحة", ayah: "٣" },
+      { text: "رَبِّ ٱشْرَحْ لِي صَدْرِي", surah: "طه", ayah: "٢٥" },
+    ]
   },
   {
     letter: "ز", name: "زاي", transliteration: "Za",
@@ -116,7 +163,11 @@ const LETTERS: LetterInfo[] = [
     description: "الزاي تخرج من طرف اللسان مع ما يحاذيه من أطراف الثنايا السفلى والعليا.",
     mouthPosition: "ضع طرف لسانك خلف الأسنان السفلية مع تقريب الأسنان وأخرج الهواء.",
     tips: ["الأسنان متقاربة", "الهواء يخرج بصفير", "حرف مجهور"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "وَلَا تَحْسَبَنَّ ٱللَّهَ غَافِلًا", surah: "إبراهيم", ayah: "٤٢" },
+      { text: "فَفَزِعَ مَن فِي ٱلسَّمَاوَاتِ", surah: "النمل", ayah: "٨٧" },
+    ]
   },
   {
     letter: "س", name: "سين", transliteration: "Sin",
@@ -125,7 +176,11 @@ const LETTERS: LetterInfo[] = [
     description: "السين تخرج من طرف اللسان والثنايا السفلى. حرف صفيري مهموس.",
     mouthPosition: "ضع طرف لسانك خلف الأسنان السفلية وأخرج الهواء بصفير خفيف.",
     tips: ["صفير واضح", "الأسنان متقاربة جداً", "حرف مهموس بلا اهتزاز"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", surah: "الفاتحة", ayah: "١" },
+      { text: "سُبْحَانَ ٱلَّذِي أَسْرَىٰ بِعَبْدِهِ", surah: "الإسراء", ayah: "١" },
+    ]
   },
   {
     letter: "ش", name: "شين", transliteration: "Shin",
@@ -134,7 +189,11 @@ const LETTERS: LetterInfo[] = [
     description: "الشين تخرج من وسط اللسان مع ما يحاذيه من الحنك الأعلى. حرف مهموس متفشٍّ.",
     mouthPosition: "ارفع وسط لسانك نحو سقف الفم مع ترك فراغ لخروج الهواء المنتشر.",
     tips: ["الهواء ينتشر في الفم", "وسط اللسان مرتفع", "حرف تفشٍّ"],
-    color: "#9b59b6"
+    color: "#9b59b6",
+    examples: [
+      { text: "وَٱلشَّمْسِ وَضُحَاهَا", surah: "الشمس", ayah: "١" },
+      { text: "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ مِن شَرِّ ٱلْوَسْوَاسِ", surah: "الناس", ayah: "١-٤" },
+    ]
   },
   {
     letter: "ص", name: "صاد", transliteration: "Sad",
@@ -143,7 +202,11 @@ const LETTERS: LetterInfo[] = [
     description: "الصاد مثل السين في المخرج لكن مع استعلاء اللسان وإطباقه على سقف الحلق.",
     mouthPosition: "نفس وضع السين لكن ارفع مؤخرة لسانك نحو سقف الحلق لإعطاء التفخيم.",
     tips: ["مثل السين + تفخيم", "مؤخرة اللسان مرتفعة", "صوت مفخّم ثقيل"],
-    color: "#e67e22"
+    color: "#e67e22",
+    examples: [
+      { text: "صِرَاطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ", surah: "الفاتحة", ayah: "٧" },
+      { text: "وَٱلصَّافَّاتِ صَفًّا", surah: "الصافات", ayah: "١" },
+    ]
   },
   {
     letter: "ض", name: "ضاد", transliteration: "Dad",
@@ -152,7 +215,11 @@ const LETTERS: LetterInfo[] = [
     description: "الضاد تخرج من حافة اللسان (إحدى الجهتين أو كلتيهما) مع الأضراس العليا. أصعب الحروف.",
     mouthPosition: "اضغط حافة لسانك على الأضراس العليا من أحد الجانبين أو كليهما.",
     tips: ["حرف فريد في العربية", "حافة اللسان تلمس الأضراس", "حرف مفخّم مستطيل"],
-    color: "#e67e22"
+    color: "#e67e22",
+    examples: [
+      { text: "وَٱلضُّحَىٰ", surah: "الضحى", ayah: "١" },
+      { text: "وَلَا ٱلضَّالِّينَ", surah: "الفاتحة", ayah: "٧" },
+    ]
   },
   {
     letter: "ط", name: "طاء", transliteration: "Ta (emphatic)",
@@ -161,7 +228,11 @@ const LETTERS: LetterInfo[] = [
     description: "الطاء مثل التاء في المخرج لكن مع استعلاء وإطباق. حرف مفخّم.",
     mouthPosition: "نفس وضع التاء لكن ارفع مؤخرة لسانك نحو سقف الحلق.",
     tips: ["مثل التاء + تفخيم", "استعلاء مؤخرة اللسان", "صوت قوي مفخّم"],
-    color: "#e67e22"
+    color: "#e67e22",
+    examples: [
+      { text: "طه", surah: "طه", ayah: "١" },
+      { text: "وَلَقَدْ مَنَنَّا عَلَىٰ مُوسَىٰ وَهَارُونَ", surah: "الصافات", ayah: "١١٤" },
+    ]
   },
   {
     letter: "ظ", name: "ظاء", transliteration: "Dha (emphatic)",
@@ -170,7 +241,11 @@ const LETTERS: LetterInfo[] = [
     description: "الظاء مثل الذال في المخرج لكن مع استعلاء وإطباق. حرف مفخّم.",
     mouthPosition: "أخرج طرف لسانك بين الأسنان مع رفع مؤخرة اللسان للتفخيم.",
     tips: ["مثل الذال + تفخيم", "اللسان بين الأسنان مع استعلاء", "صوت مفخّم"],
-    color: "#e67e22"
+    color: "#e67e22",
+    examples: [
+      { text: "إِنَّ ٱلَّذِينَ ظَلَمُوا", surah: "يونس", ayah: "١٣" },
+      { text: "وَظَلَّلْنَا عَلَيْكُمُ ٱلْغَمَامَ", surah: "البقرة", ayah: "٥٧" },
+    ]
   },
   {
     letter: "ع", name: "عين", transliteration: "Ain",
@@ -179,7 +254,11 @@ const LETTERS: LetterInfo[] = [
     description: "العين تخرج من وسط الحلق. حرف مجهور يخرج بتضييق وسط الحلق مع اهتزاز.",
     mouthPosition: "ضيّق وسط الحلق مع جعل الحبال الصوتية تهتز. مثل الحاء لكن مجهور.",
     tips: ["وسط الحلق يضيق", "مع اهتزاز (جهر)", "مثل الحاء المجهورة"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", surah: "الفاتحة", ayah: "٥" },
+      { text: "عَمَّ يَتَسَاءَلُونَ", surah: "النبأ", ayah: "١" },
+    ]
   },
   {
     letter: "غ", name: "غين", transliteration: "Ghain",
@@ -188,7 +267,11 @@ const LETTERS: LetterInfo[] = [
     description: "الغين تخرج من أدنى الحلق (أقربه للفم). مثل الخاء لكنها مجهورة.",
     mouthPosition: "ارفع مؤخرة اللسان نحو سقف الحلق الرخو مع اهتزاز الحبال الصوتية.",
     tips: ["مثل الخاء المجهورة", "غرغرة خفيفة", "مؤخرة اللسان مرتفعة"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "غَافِرِ ٱلذَّنبِ وَقَابِلِ ٱلتَّوْبِ", surah: "غافر", ayah: "٣" },
+      { text: "ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ", surah: "البقرة", ayah: "٣" },
+    ]
   },
   {
     letter: "ف", name: "فاء", transliteration: "Fa",
@@ -197,7 +280,11 @@ const LETTERS: LetterInfo[] = [
     description: "الفاء تخرج من باطن الشفة السفلى مع أطراف الثنايا العليا.",
     mouthPosition: "ضع أسنانك العليا على شفتك السفلى بلطف وأخرج الهواء.",
     tips: ["الأسنان العليا على الشفة السفلى", "هواء يخرج بينهما", "حرف مهموس احتكاكي"],
-    color: "#3498db"
+    color: "#3498db",
+    examples: [
+      { text: "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ", surah: "الفلق", ayah: "١" },
+      { text: "فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ", surah: "الرحمن", ayah: "١٣" },
+    ]
   },
   {
     letter: "ق", name: "قاف", transliteration: "Qaf",
@@ -206,7 +293,11 @@ const LETTERS: LetterInfo[] = [
     description: "القاف تخرج من أقصى اللسان (أبعده عن الفم) مع ما يحاذيه من الحنك اللحمي.",
     mouthPosition: "ارفع أقصى اللسان ليلامس سقف الحلق الرخو ثم أبعده بسرعة.",
     tips: ["أقصى اللسان يرتفع", "يلامس اللهاة", "حرف مفخّم قوي"],
-    color: "#f39c12"
+    color: "#f39c12",
+    examples: [
+      { text: "قُلْ هُوَ ٱللَّهُ أَحَدٌ", surah: "الإخلاص", ayah: "١" },
+      { text: "ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِي خَلَقَ", surah: "العلق", ayah: "١" },
+    ]
   },
   {
     letter: "ك", name: "كاف", transliteration: "Kaf",
@@ -215,7 +306,11 @@ const LETTERS: LetterInfo[] = [
     description: "الكاف تخرج من أقصى اللسان مع ما فوقه من الحنك الأعلى. أمام مخرج القاف.",
     mouthPosition: "ارفع مؤخرة اللسان ليلامس سقف الحلق الصلب ثم أبعده.",
     tips: ["أمام مخرج القاف قليلاً", "سقف الحلق الصلب", "حرف مهموس"],
-    color: "#f39c12"
+    color: "#f39c12",
+    examples: [
+      { text: "قُلْ يَا أَيُّهَا ٱلْكَافِرُونَ", surah: "الكافرون", ayah: "١" },
+      { text: "إِنَّا أَعْطَيْنَاكَ ٱلْكَوْثَرَ", surah: "الكوثر", ayah: "١" },
+    ]
   },
   {
     letter: "ل", name: "لام", transliteration: "Lam",
@@ -224,7 +319,11 @@ const LETTERS: LetterInfo[] = [
     description: "اللام تخرج من أدنى حافة اللسان إلى منتهاها مع ما يحاذيها من اللثة العليا.",
     mouthPosition: "ضع طرف لسانك وحافتيه على اللثة العليا والهواء يخرج من الجانبين.",
     tips: ["طرف اللسان على اللثة", "الهواء يمر من الجانبين", "حرف جانبي منحرف"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "قُلْ هُوَ ٱللَّهُ أَحَدٌ", surah: "الإخلاص", ayah: "١" },
+      { text: "لَا إِلَٰهَ إِلَّا ٱللَّهُ", surah: "محمد", ayah: "١٩" },
+    ]
   },
   {
     letter: "م", name: "ميم", transliteration: "Mim",
@@ -233,7 +332,11 @@ const LETTERS: LetterInfo[] = [
     description: "الميم تخرج من الشفتين مع انطباقهما. الهواء يخرج من الأنف.",
     mouthPosition: "أغلق الشفتين والهواء يخرج من الأنف مع غنّة.",
     tips: ["الشفتان مغلقتان", "الهواء من الأنف", "غنّة واضحة"],
-    color: "#3498db"
+    color: "#3498db",
+    examples: [
+      { text: "مَالِكِ يَوْمِ ٱلدِّينِ", surah: "الفاتحة", ayah: "٤" },
+      { text: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", surah: "الفاتحة", ayah: "١" },
+    ]
   },
   {
     letter: "ن", name: "نون", transliteration: "Nun",
@@ -242,7 +345,11 @@ const LETTERS: LetterInfo[] = [
     description: "النون تخرج من طرف اللسان مع ما يحاذيه من اللثة العليا. فيها غنّة من الأنف.",
     mouthPosition: "ضع طرف لسانك على اللثة العليا والهواء يخرج من الأنف.",
     tips: ["طرف اللسان على اللثة", "غنّة من الأنف", "مثل اللام لكن أنفي"],
-    color: "#2ecc71"
+    color: "#2ecc71",
+    examples: [
+      { text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", surah: "الفاتحة", ayah: "٥" },
+      { text: "وَٱلنَّازِعَاتِ غَرْقًا", surah: "النازعات", ayah: "١" },
+    ]
   },
   {
     letter: "هـ", name: "هاء", transliteration: "Ha (soft)",
@@ -251,7 +358,11 @@ const LETTERS: LetterInfo[] = [
     description: "الهاء تخرج من أقصى الحلق (أبعد نقطة). حرف مهموس خفيف.",
     mouthPosition: "أخرج نفساً خفيفاً من أعمق نقطة في الحلق بلا ضغط.",
     tips: ["أبعد نقطة في الحلق", "نفس خفيف بلا ضغط", "حرف مهموس رخو"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "قُلْ هُوَ ٱللَّهُ أَحَدٌ", surah: "الإخلاص", ayah: "١" },
+      { text: "ٱهْدِنَا ٱلصِّرَاطَ ٱلْمُسْتَقِيمَ", surah: "الفاتحة", ayah: "٦" },
+    ]
   },
   {
     letter: "و", name: "واو", transliteration: "Waw",
@@ -260,7 +371,11 @@ const LETTERS: LetterInfo[] = [
     description: "الواو تخرج من ضم الشفتين مع امتدادهما إلى الأمام.",
     mouthPosition: "ضم شفتيك للأمام كأنك تنفخ شمعة واصدر الصوت.",
     tips: ["الشفتان مضمومتان ممتدتان", "شكل دائري", "حرف مد ولين"],
-    color: "#3498db"
+    color: "#3498db",
+    examples: [
+      { text: "وَٱلْعَصْرِ", surah: "العصر", ayah: "١" },
+      { text: "وَمَا أَدْرَاكَ مَا يَوْمُ ٱلدِّينِ", surah: "الانفطار", ayah: "١٧" },
+    ]
   },
   {
     letter: "ي", name: "ياء", transliteration: "Ya",
@@ -269,7 +384,11 @@ const LETTERS: LetterInfo[] = [
     description: "الياء تخرج من وسط اللسان مع ما يحاذيه من الحنك الأعلى.",
     mouthPosition: "ارفع وسط اللسان نحو سقف الفم مع مد الشفتين أفقياً.",
     tips: ["وسط اللسان مرتفع", "الشفتان ممتدتان أفقياً", "حرف مد ولين"],
-    color: "#9b59b6"
+    color: "#9b59b6",
+    examples: [
+      { text: "يس", surah: "يس", ayah: "١" },
+      { text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", surah: "الفاتحة", ayah: "٥" },
+    ]
   },
   {
     letter: "ء", name: "همزة", transliteration: "Hamza",
@@ -278,7 +397,11 @@ const LETTERS: LetterInfo[] = [
     description: "الهمزة تخرج من أقصى الحلق من المزمار. تنتج بإغلاق الحبال الصوتية ثم فتحها فجأة.",
     mouthPosition: "أغلق الحبال الصوتية في الحلق تماماً ثم افتحها بسرعة.",
     tips: ["إغلاق ثم فتح مفاجئ", "أعمق نقطة في الحلق", "مثل الكحة الخفيفة"],
-    color: "#e74c3c"
+    color: "#e74c3c",
+    examples: [
+      { text: "ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِي خَلَقَ", surah: "العلق", ayah: "١" },
+      { text: "إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ ٱلْقَدْرِ", surah: "القدر", ayah: "١" },
+    ]
   },
 ];
 
@@ -547,6 +670,21 @@ const Tajweed = () => {
                     ))}
                   </ul>
                 </div>
+
+                {/* Quranic Examples */}
+                {selectedLetter.examples.length > 0 && (
+                  <div>
+                    <h4 className="font-arabic text-sm font-semibold text-foreground mb-2">📖 أمثلة قرآنية</h4>
+                    <div className="space-y-2">
+                      {selectedLetter.examples.map((ex, i) => (
+                        <div key={i} className="rounded-lg border border-border bg-muted/30 p-3">
+                          <p className="font-arabic text-base leading-loose text-foreground text-center mb-1">{ex.text}</p>
+                          <p className="text-xs text-muted-foreground text-center font-arabic">سورة {ex.surah} - آية {ex.ayah}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Category badge */}
                 <div className="flex justify-center">
