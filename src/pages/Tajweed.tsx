@@ -367,7 +367,11 @@ const LETTERS: LetterInfo[] = [
     description: "الواو تخرج من ضم الشفتين مع امتدادهما إلى الأمام.",
     mouthPosition: "ضم شفتيك للأمام كأنك تنفخ شمعة واصدر الصوت.",
     tips: ["الشفتان مضمومتان ممتدتان", "شكل دائري", "حرف مد ولين"],
-    color: "#3498db"
+    color: "#3498db",
+    examples: [
+      { text: "وَٱلْعَصْرِ", surah: "العصر", ayah: "١" },
+      { text: "وَمَا أَدْرَاكَ مَا يَوْمُ ٱلدِّينِ", surah: "الانفطار", ayah: "١٧" },
+    ]
   },
   {
     letter: "ي", name: "ياء", transliteration: "Ya",
