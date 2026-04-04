@@ -380,7 +380,11 @@ const LETTERS: LetterInfo[] = [
     description: "الياء تخرج من وسط اللسان مع ما يحاذيه من الحنك الأعلى.",
     mouthPosition: "ارفع وسط اللسان نحو سقف الفم مع مد الشفتين أفقياً.",
     tips: ["وسط اللسان مرتفع", "الشفتان ممتدتان أفقياً", "حرف مد ولين"],
-    color: "#9b59b6"
+    color: "#9b59b6",
+    examples: [
+      { text: "يس", surah: "يس", ayah: "١" },
+      { text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", surah: "الفاتحة", ayah: "٥" },
+    ]
   },
   {
     letter: "ء", name: "همزة", transliteration: "Hamza",
