@@ -684,7 +684,9 @@ const Tajweed = () => {
                       ))}
                     </div>
                   </div>
-                )
+                )}
+
+                {/* Category badge */}
                 <div className="flex justify-center">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-arabic" style={{ backgroundColor: `${selectedLetter.color}15`, color: selectedLetter.color }}>
                     {CATEGORY_LABELS[selectedLetter.category]?.icon} {selectedLetter.categoryArabic}
