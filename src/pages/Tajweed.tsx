@@ -4,6 +4,12 @@ import { ArrowRight, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
+interface QuranExample {
+  text: string;
+  surah: string;
+  ayah: string;
+}
+
 interface LetterInfo {
   letter: string;
   name: string;
@@ -16,6 +22,7 @@ interface LetterInfo {
   mouthPosition: string;
   tips: string[];
   color: string;
+  examples: QuranExample[];
 }
 
 const LETTERS: LetterInfo[] = [
