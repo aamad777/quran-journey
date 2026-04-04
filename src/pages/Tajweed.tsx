@@ -224,7 +224,11 @@ const LETTERS: LetterInfo[] = [
     description: "الطاء مثل التاء في المخرج لكن مع استعلاء وإطباق. حرف مفخّم.",
     mouthPosition: "نفس وضع التاء لكن ارفع مؤخرة لسانك نحو سقف الحلق.",
     tips: ["مثل التاء + تفخيم", "استعلاء مؤخرة اللسان", "صوت قوي مفخّم"],
-    color: "#e67e22"
+    color: "#e67e22",
+    examples: [
+      { text: "طه", surah: "طه", ayah: "١" },
+      { text: "وَلَقَدْ مَنَنَّا عَلَىٰ مُوسَىٰ وَهَارُونَ", surah: "الصافات", ayah: "١١٤" },
+    ]
   },
   {
     letter: "ظ", name: "ظاء", transliteration: "Dha (emphatic)",
