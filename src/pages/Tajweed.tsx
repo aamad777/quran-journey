@@ -671,7 +671,20 @@ const Tajweed = () => {
                   </ul>
                 </div>
 
-                {/* Category badge */}
+                {/* Quranic Examples */}
+                {selectedLetter.examples.length > 0 && (
+                  <div>
+                    <h4 className="font-arabic text-sm font-semibold text-foreground mb-2">📖 أمثلة قرآنية</h4>
+                    <div className="space-y-2">
+                      {selectedLetter.examples.map((ex, i) => (
+                        <div key={i} className="rounded-lg border border-border bg-muted/30 p-3">
+                          <p className="font-arabic text-base leading-loose text-foreground text-center mb-1">{ex.text}</p>
+                          <p className="text-xs text-muted-foreground text-center font-arabic">سورة {ex.surah} - آية {ex.ayah}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
                 <div className="flex justify-center">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-arabic" style={{ backgroundColor: `${selectedLetter.color}15`, color: selectedLetter.color }}>
                     {CATEGORY_LABELS[selectedLetter.category]?.icon} {selectedLetter.categoryArabic}
