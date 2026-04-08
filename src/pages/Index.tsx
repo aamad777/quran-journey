@@ -97,9 +97,19 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background relative" style={bgStyle}>
+    <div className="min-h-screen bg-background relative">
+      {/* Background image layer with crossfade transition */}
+      <div
+        className="fixed inset-0 transition-all duration-700 ease-in-out"
+        style={{
+          backgroundImage: bgPattern?.image ? `url(${bgPattern.image})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: bgPattern?.image ? 1 : 0,
+        }}
+      />
       {overlayOpacity > 0 && (
-        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: overlayOpacity }} />
+        <div className="fixed inset-0 bg-background pointer-events-none transition-opacity duration-700 ease-in-out" style={{ opacity: overlayOpacity }} />
       )}
       <div className="relative z-[1]">
 
