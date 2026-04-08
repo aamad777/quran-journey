@@ -77,7 +77,7 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" style={bgStyle}>
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
             <BookOpen className="w-8 h-8 text-gold" />
