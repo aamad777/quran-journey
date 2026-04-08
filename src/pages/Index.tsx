@@ -35,9 +35,6 @@ const Index = () => {
     localStorage.setItem("quran_bg_opacity", String(val));
   };
   const bgPattern = PATTERNS.find(p => p.id === background);
-  const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
-    : {};
   const bgTheme = BG_THEMES[background];
   const overlayOpacity = bgPattern?.image ? Math.min(0.75, (1 - bgOpacity) + 0.22) : 0;
   const { user, loading: authLoading, signOut } = useAuth();
@@ -80,7 +77,7 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" style={bgStyle}>
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
             <BookOpen className="w-8 h-8 text-gold" />
@@ -100,9 +97,19 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background relative" style={bgStyle}>
+    <div className="min-h-screen bg-background relative">
+      {/* Background image layer with crossfade transition */}
+      <div
+        className="fixed inset-0 transition-all duration-700 ease-in-out"
+        style={{
+          backgroundImage: bgPattern?.image ? `url(${bgPattern.image})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: bgPattern?.image ? 1 : 0,
+        }}
+      />
       {overlayOpacity > 0 && (
-        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: overlayOpacity }} />
+        <div className="fixed inset-0 bg-background pointer-events-none transition-opacity duration-700 ease-in-out" style={{ opacity: overlayOpacity }} />
       )}
       <div className="relative z-[1]">
 
