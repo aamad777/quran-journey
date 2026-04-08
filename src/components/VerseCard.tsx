@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { parseTajweed, TAJWEED_RULES, type TajweedRuleInfo } from "@/lib/tajweedParser";
+import { getBaseArabicLetter, type LetterData } from "@/lib/arabicData";
 import {
   Tooltip,
   TooltipContent,
@@ -73,6 +74,8 @@ interface VerseCardProps {
   isSurahLevel?: boolean;
 }
 
+const segmenter = new (Intl as any).Segmenter("ar", { granularity: "grapheme" });
+
 const VerseCard = ({
   verses,
   audioUrl,
@@ -126,6 +129,12 @@ const VerseCard = ({
   const [tajweedAudioPlaying, setTajweedAudioPlaying] = useState(false);
   const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
   const [pulseDuration, setPulseDuration] = useState(1.5);
+  const [letterPopupOpen, setLetterPopupOpen] = useState(false);
+  const [selectedLetterInfo, setSelectedLetterInfo] = useState<{
+    grapheme: string;
+    baseData: LetterData;
+    tajweedRule: TajweedRuleInfo | null;
+  } | null>(null);
 
   // Vivid gradient colors for active word during recitation
   const RECITE_GRADIENTS = [
@@ -388,18 +397,40 @@ const VerseCard = ({
                         >
                           {wg.segments.map((seg, si) => {
                             const rule = seg.rule ? TAJWEED_RULES[seg.rule] : null;
-                            return rule ? (
-                              <span
-                                key={si}
-                                style={{ color: isActive && activeWordIndex === wi ? 'inherit' : rule.color, cursor: 'pointer' }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedTajweedRule(rule);
-                                  setTajweedPopupOpen(true);
-                                }}
-                              >{seg.text}</span>
-                            ) : (
-                              <span key={si} style={{ color: isActive && activeWordIndex === wi ? 'inherit' : (themeTextColor || undefined) }} className={isActive && activeWordIndex === wi ? '' : ''}>{seg.text}</span>
+                            const graphemes = Array.from(segmenter.segment(seg.text)).map((s: any) => s.segment as string);
+                            return (
+                              <span key={si}>
+                                {graphemes.map((g, gi) => {
+                                  const baseData = getBaseArabicLetter(g);
+                                  // API rule takes priority; fall back to letter-identity colour from arabicData
+                                  const letterColor: string =
+                                    rule?.color ??
+                                    (baseData && baseData.tajweedRules.length > 0
+                                      ? (TAJWEED_RULES[baseData.tajweedRules[0]]?.color ?? themeTextColor)
+                                      : themeTextColor);
+                                  return (
+                                    <span
+                                      key={gi}
+                                      style={{
+                                        color: isActive && activeWordIndex === wi ? 'inherit' : letterColor,
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (baseData) {
+                                          setSelectedLetterInfo({ grapheme: g, baseData, tajweedRule: rule });
+                                          setLetterPopupOpen(true);
+                                        } else if (rule) {
+                                          setSelectedTajweedRule(rule);
+                                          setTajweedPopupOpen(true);
+                                        }
+                                      }}
+                                    >
+                                      {g}
+                                    </span>
+                                  );
+                                })}
+                              </span>
                             );
                           })}
                         </span>
@@ -410,17 +441,43 @@ const VerseCard = ({
                 ) : (
                   (() => {
                     const words = v.arabic.trim().split(/\s+/);
-                    return words.map((word, wi) => (
+                    return words.map((word, wi) => {
+                      const graphemes = Array.from(segmenter.segment(word)).map((s: any) => s.segment as string);
+                      return (
                       <span key={wi}>
                           <span
                           className="inline transition-all duration-500 ease-in-out"
                           style={isActive && activeWordIndex === wi ? { backgroundImage: getReciteGradient(wi), WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: `drop-shadow(0 0 8px ${getReciteColor(wi)}50)`, animation: `pulse ${pulseDuration}s cubic-bezier(0.4,0,0.6,1) infinite` } : undefined}
                         >
-                          {word}
+                          {graphemes.map((g, gi) => {
+                            const baseData = getBaseArabicLetter(g);
+                            const letterColor: string =
+                              baseData && baseData.tajweedRules.length > 0
+                                ? (TAJWEED_RULES[baseData.tajweedRules[0]]?.color ?? themeTextColor)
+                                : themeTextColor;
+                            return (
+                              <span
+                                key={gi}
+                                style={{
+                                  color: isActive && activeWordIndex === wi ? 'inherit' : letterColor,
+                                  cursor: "pointer",
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (baseData) {
+                                    setSelectedLetterInfo({ grapheme: g, baseData, tajweedRule: null });
+                                    setLetterPopupOpen(true);
+                                  }
+                                }}
+                              >
+                                {g}
+                              </span>
+                            );
+                          })}
                         </span>
                         {wi < words.length - 1 && ' '}
                       </span>
-                    ));
+                    )});
                   })()
                 )}
                 <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
@@ -687,6 +744,59 @@ const VerseCard = ({
             </Button>
           </div>
         </div>
+
+        {/* Individual Letter Information Popup */}
+        <Dialog open={letterPopupOpen} onOpenChange={setLetterPopupOpen}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            {selectedLetterInfo && (
+              <div className="space-y-4">
+                <div className="flex flex-col items-center">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-4xl font-bold font-arabic mb-3 shadow-inner border-4" 
+                    style={{ backgroundColor: `${themeAccentColor || 'hsl(var(--primary))'}10`, color: themeAccentColor, borderColor: `${themeAccentColor || 'hsl(var(--primary))'}30` }}
+                  >
+                    {selectedLetterInfo.grapheme}
+                  </div>
+                  <h3 className="text-xl font-bold font-arabic mb-1" style={{ color: themeTextColor }}>
+                    حرف {selectedLetterInfo.baseData.name}
+                  </h3>
+                </div>
+
+                {selectedLetterInfo.tajweedRule && (
+                  <div className="p-3 rounded-xl border bg-card/50" style={{ borderColor: selectedLetterInfo.tajweedRule.color }}>
+                    <h4 className="font-bold font-arabic text-sm mb-1" style={{ color: selectedLetterInfo.tajweedRule.color }}>
+                      حكم التجويد: {selectedLetterInfo.tajweedRule.labelAr}
+                    </h4>
+                    <p className="text-xs font-arabic text-muted-foreground leading-relaxed">{selectedLetterInfo.tajweedRule.description}</p>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: `${themeMutedText}10` }}>
+                    <p className="text-xs font-semibold mb-1" style={{ color: themeMutedText }}>كيف تنطقه؟ (المخرج)</p>
+                    <p className="font-arabic font-bold text-sm" style={{ color: themeTextColor }}>{selectedLetterInfo.baseData.makhraj}</p>
+                    <p className="font-arabic text-xs mt-1 leading-relaxed" style={{ color: themeMutedText }}>{selectedLetterInfo.baseData.makhrajDesc}</p>
+                  </div>
+
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: `${themeMutedText}10` }}>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: themeMutedText }}>صفات الحرف</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedLetterInfo.baseData.sifaat.map((s, idx) => (
+                        <span 
+                          key={idx} 
+                          className="border text-[10px] px-2 py-0.5 rounded-full font-arabic"
+                          style={{ backgroundColor: themeCardBg, color: themeTextColor, borderColor: `${themeMutedText}20` }}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         <audio
           ref={audioRef}
