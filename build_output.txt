@@ -1,0 +1,574 @@
+﻿docker : #0 building 
+with "desktop-linux" 
+instance using docker 
+driver
+At line:1 char:1
++ docker build 
+--no-cache 
+--progress=plain . 
+2>&1 | Out-File 
+-FilePath  ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~
+    + CategoryInfo     
+         : 
+NotSpecified: (#    0 
+building wit...g do    
+cker driver:String) [  
+  ], RemoteException
+    + 
+FullyQualifiedError    
+Id : NativeCommandErr  
+  or
+ 
+
+#1 [internal] load 
+build definition from 
+Dockerfile
+#1 transferring 
+dockerfile: 665B done
+#1 DONE 0.0s
+
+#2 [internal] load 
+metadata for docker.io/
+library/nginx:1.27-alpi
+ne
+#2 ...
+
+#3 [auth] 
+library/node:pull 
+token for 
+registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [auth] 
+library/nginx:pull 
+token for 
+registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [internal] load 
+metadata for docker.io/
+library/node:20-alpine
+#5 ...
+
+#2 [internal] load 
+metadata for docker.io/
+library/nginx:1.27-alpi
+ne
+#2 DONE 2.2s
+
+#5 [internal] load 
+metadata for docker.io/
+library/node:20-alpine
+#5 DONE 2.2s
+
+#6 [internal] load 
+.dockerignore
+#6 transferring 
+context: 262B done
+#6 DONE 0.0s
+
+#7 [internal] load 
+build context
+#7 DONE 0.0s
+
+#8 [stage-1 1/4] FROM d
+ocker.io/library/nginx:
+1.27-alpine@sha256:6564
+5c7bb6a0661892a8b03b89d
+0743208a18dd2f3f17a54ef
+4b76fb8e2f2a10
+#8 resolve docker.io/li
+brary/nginx:1.27-alpine
+@sha256:65645c7bb6a0661
+892a8b03b89d0743208a18d
+d2f3f17a54ef4b76fb8e2f2
+a10 0.1s done
+#8 CACHED
+
+#9 [build 1/7] FROM doc
+ker.io/library/node:20-
+alpine@sha256:f598378b5
+240225e6beab68fa9f356db
+1fb8efe55173e6d4d815311
+3bb8f333c
+#9 resolve docker.io/li
+brary/node:20-alpine@sh
+a256:f598378b5240225e6b
+eab68fa9f356db1fb8efe55
+173e6d4d8153113bb8f333c
+ 0.1s done
+#9 CACHED
+
+#7 [internal] load 
+build context
+#7 transferring 
+context: 15.29kB 0.0s 
+done
+#7 DONE 0.1s
+
+#10 [build 2/7] RUN 
+apk add --no-cache 
+build-base g++ make
+#10 3.472 ( 1/19) 
+Installing jansson 
+(2.14.1-r0)
+#10 3.586 ( 2/19) 
+Installing zstd-libs 
+(1.5.7-r2)
+#10 ...
+
+#11 [stage-1 2/4] RUN 
+apk add --no-cache curl
+#11 0.349 fetch https:/
+/dl-cdn.alpinelinux.org
+/alpine/v3.21/main/x86_
+64/APKINDEX.tar.gz
+#11 1.130 fetch https:/
+/dl-cdn.alpinelinux.org
+/alpine/v3.21/community
+/x86_64/APKINDEX.tar.gz
+#11 3.753 OK: 45 MiB 
+in 68 packages
+#11 DONE 3.9s
+
+#10 [build 2/7] RUN 
+apk add --no-cache 
+build-base g++ make
+#10 3.817 ( 3/19) 
+Installing binutils 
+(2.45.1-r0)
+#10 ...
+
+#12 [stage-1 3/4] COPY 
+nginx.conf /etc/nginx/c
+onf.d/default.conf
+#12 DONE 0.1s
+
+#10 [build 2/7] RUN 
+apk add --no-cache 
+build-base g++ make
+#10 5.644 ( 4/19) 
+Installing libmagic 
+(5.46-r2)
+#10 5.912 ( 5/19) 
+Installing file 
+(5.46-r2)
+#10 5.963 ( 6/19) 
+Installing libgomp 
+(15.2.0-r2)
+#10 6.161 ( 7/19) 
+Installing libatomic 
+(15.2.0-r2)
+#10 6.215 ( 8/19) 
+Installing gmp 
+(6.3.0-r4)
+#10 6.397 ( 9/19) 
+Installing isl26 
+(0.26-r1)
+#10 6.877 (10/19) 
+Installing mpfr4 
+(4.2.2-r0)
+#10 7.108 (11/19) 
+Installing mpc1 
+(1.3.1-r1)
+#10 7.221 (12/19) 
+Installing gcc 
+(15.2.0-r2)
+#10 69.62 (13/19) 
+Installing 
+libstdc++-dev 
+(15.2.0-r2)
+#10 72.87 (14/19) 
+Installing musl-dev 
+(1.2.5-r21)
+#10 75.88 (15/19) 
+Installing g++ 
+(15.2.0-r2)
+#10 95.97 (16/19) 
+Installing make 
+(4.4.1-r3)
+#10 96.08 (17/19) 
+Installing 
+fortify-headers 
+(1.1-r5)
+#10 96.13 (18/19) 
+Installing patch 
+(2.8-r0)
+#10 96.26 (19/19) 
+Installing build-base 
+(0.5-r3)
+#10 96.26 Executing bus
+ybox-1.37.0-r30.trigger
+#10 96.28 OK: 275.2 
+MiB in 37 packages
+#10 DONE 96.4s
+
+#13 [build 3/7] 
+WORKDIR /app
+#13 DONE 0.1s
+
+#14 [build 4/7] COPY 
+package.json 
+package-lock.json* ./
+#14 DONE 0.2s
+
+#15 [build 5/7] RUN 
+npm install
+#15 62.49 npm warn 
+EBADENGINE Unsupported 
+engine {
+#15 62.49 npm warn 
+EBADENGINE   package: 
+'@capacitor/cli@8.3.0',
+#15 62.49 npm warn 
+EBADENGINE   required: 
+{ node: '>=22.0.0' },
+#15 62.49 npm warn 
+EBADENGINE   current: 
+{ node: 'v20.20.2', 
+npm: '10.8.2' }
+#15 62.49 npm warn 
+EBADENGINE }
+#15 66.64 npm warn 
+deprecated 
+inflight@1.0.6: This 
+module is not 
+supported, and leaks 
+memory. Do not use it. 
+Check out lru-cache if 
+you want a good and 
+tested way to coalesce 
+async requests by a 
+key value, which is 
+much more 
+comprehensive and 
+powerful.
+#15 67.60 npm warn 
+deprecated prebuild-ins
+tall@7.1.3: No longer 
+maintained. Please 
+contact the author of 
+the relevant native 
+addon; alternatives 
+are available.
+#15 70.86 npm warn 
+deprecated 
+git-semver-tags@4.1.1: 
+This package is no 
+longer maintained. For 
+the JavaScript API, 
+please use @conventiona
+l-changelog/git-client 
+instead.
+#15 70.94 npm warn 
+deprecated git-raw-comm
+its@2.0.11: This 
+package is no longer 
+maintained. For the 
+JavaScript API, please 
+use @conventional-chang
+elog/git-client 
+instead.
+#15 71.38 npm warn 
+deprecated q@1.5.1: 
+You or someone you 
+depend on is using Q, 
+the JavaScript Promise 
+library that gave 
+JavaScript developers 
+strong feelings about 
+promises. They can 
+almost certainly 
+migrate to the native 
+JavaScript promise 
+now. Thank you 
+literally everyone for 
+joining me in this bet 
+against the odds. Be 
+excellent to each 
+other.
+#15 71.38 npm warn 
+deprecated
+#15 71.38 npm warn 
+deprecated (For a 
+CapTP with native 
+promises, see 
+@endo/eventual-send 
+and @endo/captp)
+#15 74.46 npm warn 
+deprecated 
+@xmldom/xmldom@0.7.13: 
+this version has 
+critical issues, 
+please update to the 
+latest version
+#15 82.83 npm warn 
+deprecated 
+whatwg-encoding@2.0.0: 
+Use @exodus/bytes 
+instead for a more 
+spec-conformant and 
+faster implementation
+#15 100.8 npm warn 
+deprecated 
+domexception@4.0.0: 
+Use your platform's 
+native DOMException 
+instead
+#15 102.9 npm warn 
+deprecated abab@2.0.6: 
+Use your platform's 
+native atob() and 
+btoa() methods instead
+#15 119.5 npm warn 
+deprecated 
+rimraf@3.0.2: Rimraf 
+versions prior to v4 
+are no longer supported
+#15 119.8 npm warn 
+deprecated glob@7.2.3: 
+Old versions of glob 
+are not supported, and 
+contain widely 
+publicized security 
+vulnerabilities, which 
+have been fixed in the 
+current version. 
+Please update. Support 
+for old versions may 
+be purchased (at 
+exorbitant rates) by 
+contacting i@izs.me
+#15 123.9 npm warn 
+deprecated tar@6.2.1: 
+Old versions of tar 
+are not supported, and 
+contain widely 
+publicized security 
+vulnerabilities, which 
+have been fixed in the 
+current version. 
+Please update. Support 
+for old versions may 
+be purchased (at 
+exorbitant rates) by 
+contacting i@izs.me
+#15 123.9 npm warn 
+deprecated glob@9.3.5: 
+Old versions of glob 
+are not supported, and 
+contain widely 
+publicized security 
+vulnerabilities, which 
+have been fixed in the 
+current version. 
+Please update. Support 
+for old versions may 
+be purchased (at 
+exorbitant rates) by 
+contacting i@izs.me
+#15 181.9 
+#15 181.9 added 925 
+packages, and audited 
+926 packages in 3m
+#15 181.9 
+#15 181.9 149 packages 
+are looking for funding
+#15 181.9   run `npm 
+fund` for details
+#15 182.0 
+#15 182.0 24 
+vulnerabilities (3 
+low, 6 moderate, 15 
+high)
+#15 182.0 
+#15 182.0 To address 
+issues that do not 
+require attention, run:
+#15 182.0   npm audit 
+fix
+#15 182.0 
+#15 182.0 To address 
+all issues possible 
+(including breaking 
+changes), run:
+#15 182.0   npm audit 
+fix --force
+#15 182.0 
+#15 182.0 Some issues 
+need review, and may 
+require choosing
+#15 182.0 a different 
+dependency.
+#15 182.0 
+#15 182.0 Run `npm 
+audit` for details.
+#15 182.0 npm notice
+#15 182.0 npm notice 
+New major version of 
+npm available! 10.8.2 
+-> 11.12.1
+#15 182.0 npm notice 
+Changelog: https://gith
+ub.com/npm/cli/releases
+/tag/v11.12.1
+#15 182.0 npm notice 
+To update run: npm 
+install -g npm@11.12.1
+#15 182.0 npm notice
+#15 DONE 182.2s
+
+#16 [build 6/7] COPY . 
+.
+#16 DONE 0.3s
+
+#17 [build 7/7] RUN 
+npm run build
+#17 0.537 
+#17 0.537 > vite_react_
+shadcn_ts@0.0.0 build
+#17 0.537 > vite build
+#17 0.537 
+#17 0.904 vite v5.4.19 
+building for 
+production...
+#17 0.975 
+transforming...
+#17 1.482 
+Browserslist: browsers 
+data (caniuse-lite) is 
+10 months old. Please 
+run:
+#17 1.482   npx update-
+browserslist-db@latest
+#17 1.482   Why you 
+should do it 
+regularly: https://gith
+ub.com/browserslist/upd
+ate-db#readme
+#17 6.414 Γ£ô 1770 
+modules transformed.
+#17 6.833 rendering 
+chunks...
+#17 6.860 computing 
+gzip size...
+#17 6.887 
+dist/index.html        
+                    
+1.55 kB Γöé gzip:   
+0.73 kB
+#17 6.887 dist/assets/b
+g-marble-Dpu6Lg5l.jpg  
+      43.21 kB
+#17 6.887 dist/assets/b
+g-desert-BAq9S-f4.jpg  
+      54.37 kB
+#17 6.887 dist/assets/b
+g-lanterns-C-NECi3_.jpg
+      66.58 kB
+#17 6.888 dist/assets/b
+g-night-BdOT126K.jpg   
+      75.43 kB
+#17 6.888 dist/assets/b
+g-stars-DiVYIcl3.jpg   
+     200.94 kB
+#17 6.888 dist/assets/b
+g-mosque-BLLoWmOj.jpg  
+     245.28 kB
+#17 6.888 dist/assets/b
+g-calligraphy-BFpEb2RM.
+jpg  294.95 kB
+#17 6.888 dist/assets/b
+g-geometric-J8Z4Ecwl.jp
+g    431.96 kB
+#17 6.888 dist/assets/i
+ndex-_Pi4j0nE.css      
+      74.23 kB Γöé 
+gzip:  12.96 kB
+#17 6.888 dist/assets/i
+ndex-uRsNPhww.js       
+     581.06 kB Γöé 
+gzip: 174.55 kB
+#17 6.888 
+#17 6.888 (!) Some 
+chunks are larger than 
+500 kB after 
+minification. Consider:
+#17 6.888 - Using 
+dynamic import() to 
+code-split the 
+application
+#17 6.888 - Use build.r
+ollupOptions.output.man
+ualChunks to improve 
+chunking: https://rollu
+pjs.org/configuration-o
+ptions/#output-manualch
+unks
+#17 6.888 - Adjust 
+chunk size limit for 
+this warning via build.
+chunkSizeWarningLimit.
+#17 6.889 Γ£ô built in 
+5.95s
+#17 DONE 7.0s
+
+#18 [stage-1 4/4] COPY 
+--from=build /app/dist 
+/usr/share/nginx/html
+#18 DONE 0.1s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 
+0.5s done
+#19 exporting manifest 
+sha256:583e72f73b2b59e2
+28fcba8d4f3ab0860e38540
+11a57cd30e46d6b2fa2b4a4
+4d 0.0s done
+#19 exporting config sh
+a256:8292603b7ea46e223c
+8635457dc5ab64c32c3d6da
+113b471aaa77a74132aa5e5
+ 0.0s done
+#19 exporting 
+attestation manifest sh
+a256:de3dfd35ab926ac99c
+e0892709f1202187daeca79
+3c4be33d848f54286c8d781
+#19 exporting 
+attestation manifest sh
+a256:de3dfd35ab926ac99c
+e0892709f1202187daeca79
+3c4be33d848f54286c8d781
+ 0.1s done
+#19 exporting manifest 
+list sha256:ee2afc2a844
+dd4a9ad3d5794bc52c9a89e
+050d9e8d3430cd4fbf1e991
+3b20ac9
+#19 exporting manifest 
+list sha256:ee2afc2a844
+dd4a9ad3d5794bc52c9a89e
+050d9e8d3430cd4fbf1e991
+3b20ac9 0.1s done
+#19 naming to moby-dang
+ling@sha256:ee2afc2a844
+dd4a9ad3d5794bc52c9a89e
+050d9e8d3430cd4fbf1e991
+3b20ac9 done
+#19 unpacking to moby-d
+angling@sha256:ee2afc2a
+844dd4a9ad3d5794bc52c9a
+89e050d9e8d3430cd4fbf1e
+9913b20ac9
+#19 unpacking to moby-d
+angling@sha256:ee2afc2a
+844dd4a9ad3d5794bc52c9a
+89e050d9e8d3430cd4fbf1e
+9913b20ac9 0.2s done
+#19 DONE 1.0s

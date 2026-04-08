@@ -1,191 +1,10 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useQuranProgress } from "@/hooks/useQuranProgress";
-import { useQuranVerse } from "@/hooks/useQuranVerse";
-import { useNavigate } from "react-router-dom";
-import VerseCard from "@/components/VerseCard";
-import PracticeMode from "@/components/PracticeMode";
-import DrawPracticeMode from "@/components/DrawPracticeMode";
-import TypePracticeMode from "@/components/TypePracticeMode";
-import QuranStats from "@/components/QuranStats";
-import SurahList from "@/components/SurahList";
-
-// ✅ ADDED from main branch
-import VerseSearch from "@/components/VerseSearch";
-import AlphabetTajweed from "@/components/AlphabetTajweed";
-
-// ✅ FIXED merged icons
-import {
-  BookOpen,
-  LogOut,
-  LogIn,
-  UserPlus,
-  Mic,
-  PenTool,
-  Keyboard,
-  BarChart3,
-  Heart,
-  Search,
-  Type,
-  BookA
-} from "lucide-react";
-
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import PrayerBanner from "@/components/PrayerBanner";
-import PermissionPrompt from "@/components/PermissionPrompt";
-import { useTheme } from "@/hooks/useTheme";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import BackgroundSelector, {
-  PATTERNS,
-  BG_THEMES,
-  type BackgroundPattern
-} from "@/components/BackgroundSelector";
-
-const Index = () => {
-  const { theme, setTheme, mode, toggleMode } = useTheme();
-
-  const [background, setBackgroundState] = useState<BackgroundPattern>(() => {
-    try {
-      return (localStorage.getItem("quran_bg_pattern") as BackgroundPattern) || "geometric";
-    } catch {
-      return "geometric";
-    }
-  });
-
-  const [bgOpacity, setBgOpacityState] = useState(() => {
-    try {
-      return parseFloat(localStorage.getItem("quran_bg_opacity") || "1");
-    } catch {
-      return 1;
-    }
-  });
-
-  const setBackground = (bg: BackgroundPattern) => {
-    setBackgroundState(bg);
-    localStorage.setItem("quran_bg_pattern", bg);
-  };
-
-  const setBgOpacity = (val: number) => {
-    setBgOpacityState(val);
-    localStorage.setItem("quran_bg_opacity", String(val));
-  };
-
-  const bgPattern = PATTERNS.find(p => p.id === background);
-  const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
-    : {};
-  const bgTheme = BG_THEMES[background];
-
-  const overlayOpacity = bgPattern?.image
-    ? Math.min(0.75, (1 - bgOpacity) + 0.22)
-    : 0;
-
-  const { user, loading: authLoading, signOut } = useAuth();
-
-  const {
-    progress,
-    loading: progressLoading,
-    goToNext,
-    goToPrev,
-    goToSurah,
-    goToVerse
-  } = useQuranProgress(user);
-
-  const [activeTab, setActiveTab] = useState<
-    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets"
-  >(() => {
-    try {
-      return (
-        (localStorage.getItem("quran_active_tab") as any) || "read"
-      );
-    } catch {
-      return "read";
-    }
-  });
-
-  const [verseCount, setVerseCount] = useState(() => {
-    try {
-      return parseInt(localStorage.getItem("quran_verse_count") || "1");
-    } catch {
-      return 1;
-    }
-  });
-
-  const [voiceCorrect, setVoiceCorrect] = useState(() => {
-    try {
-      return parseInt(localStorage.getItem("quran_voice_correct") || "0");
-    } catch {
-      return 0;
-    }
-  });
-
-  const [drawCorrect, setDrawCorrect] = useState(() => {
-    try {
-      return parseInt(localStorage.getItem("quran_draw_correct") || "0");
-    } catch {
-      return 0;
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem("quran_verse_count", String(verseCount));
-  }, [verseCount]);
-
-  useEffect(() => {
-    localStorage.setItem("quran_active_tab", activeTab);
-  }, [activeTab]);
-
-  const {
-    verses,
-    audioUrl,
-    audioUrls,
-    loading: verseLoading,
-    selectedReciter,
-    setSelectedReciter,
-    reciters,
-    isSurahLevel
-  } = useQuranVerse(
-    progress.surah_number,
-    progress.ayah_number,
-    verseCount
-  );
-
-  const navigate = useNavigate();
-
-  const onVoiceCorrect = () =>
-    setVoiceCorrect(prev => {
-      const n = prev + 1;
-      localStorage.setItem("quran_voice_correct", String(n));
-      return n;
-    });
-
-  const onDrawCorrect = () =>
-    setDrawCorrect(prev => {
-      const n = prev + 1;
-      localStorage.setItem("quran_draw_correct", String(n));
-      return n;
-    });
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background" style={bgStyle}>
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
-            <BookOpen className="w-8 h-8 text-gold" />
-          </div>
-          <p className="text-muted-foreground">جاري التحميل...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const SURAH_AYAH_COUNT = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+﻿  const SURAH_AYAH_COUNT = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
   const TOTAL_VERSES = 6236;
   const versesRead = SURAH_AYAH_COUNT.slice(0, progress.surah_number - 1).reduce((a, b) => a + b, 0) + progress.ayah_number;
   const versesRemaining = TOTAL_VERSES - versesRead;
   const progressPercent = Math.min(100, Math.ceil((versesRead / TOTAL_VERSES) * 100));
   const isLoading = progressLoading || verseLoading;
+
 
   return (
     <div className="min-h-screen bg-background relative" style={bgStyle}>
@@ -199,9 +18,9 @@ const Index = () => {
         <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-4">
           <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
-              <span className="text-sm font-arabic font-bold text-primary-foreground">قٌ</span>
+              <span className="text-sm font-arabic font-bold text-primary-foreground">┘é┘Ç</span>
             </div>
-            <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>┘é╪º╪▒╪ª ╪º┘ä┘é╪▒╪ó┘å</h1>
           </button>
           <div className="flex items-center gap-1">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
@@ -215,11 +34,11 @@ const Index = () => {
               <>
                 <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
                   <LogIn className="w-3.5 h-3.5" />
-                  دخول
+                  ╪»╪«┘ê┘ä
                 </Button>
                 <Button size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
                   <UserPlus className="w-3.5 h-3.5" />
-                  تسجيل
+                  ╪¬╪│╪¼┘è┘ä
                 </Button>
               </>
             )}
@@ -234,7 +53,7 @@ const Index = () => {
           {!user && (
             <div className="py-1.5 text-center border-t" style={{ borderColor: `${bgTheme.mutedText}10` }}>
               <p className="text-[11px]" style={{ color: bgTheme.mutedText }}>
-                تقرأ كضيف. <button onClick={() => navigate("/auth")} className="font-semibold hover:underline" style={{ color: bgTheme.btnBg }}>سجّل دخولك</button> لحفظ تقدمك عبر الأجهزة.
+                ╪¬┘é╪▒╪ú ┘â╪╢┘è┘ü. <button onClick={() => navigate("/auth")} className="font-semibold hover:underline" style={{ color: bgTheme.btnBg }}>╪│╪¼┘æ┘ä ╪»╪«┘ê┘ä┘â</button> ┘ä╪¡┘ü╪╕ ╪¬┘é╪»┘à┘â ╪╣╪¿╪▒ ╪º┘ä╪ú╪¼┘ç╪▓╪⌐.
               </p>
             </div>
           )}
@@ -249,9 +68,9 @@ const Index = () => {
       {/* Progress + Tabs Combined Card */}
       <div className="container max-w-4xl mx-auto px-4 pt-3 pb-2">
         <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
-          {/* Progress Row — Heart centered */}
+          {/* Progress Row ΓÇö Heart centered */}
           <div className="flex flex-col items-center gap-2 px-4 py-4">
-            {/* Heart inside progress circle — centered */}
+            {/* Heart inside progress circle ΓÇö centered */}
             <div className="relative w-16 h-16 shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" style={{ stroke: `${bgTheme.btnBg}18` }} />
@@ -271,12 +90,12 @@ const Index = () => {
             {/* Stats row */}
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-col items-center">
-                <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} آية مقروءة</span>
-                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪ مكتمل</span>
+                <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} ╪ó┘è╪⌐ ┘à┘é╪▒┘ê╪í╪⌐</span>
+                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}┘¬ ┘à┘â╪¬┘à┘ä</span>
               </div>
               <div className="w-px h-6" style={{ backgroundColor: `${bgTheme.mutedText}20` }} />
               <div className="flex flex-col items-center">
-                <span className="text-xs font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
+                <span className="text-xs font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} ╪ó┘è╪⌐ ┘à╪¬╪¿┘é┘è╪⌐</span>
               </div>
             </div>
           </div>
@@ -287,20 +106,18 @@ const Index = () => {
             </div>
           </div>
           {/* Tab Bar */}
-          <div className="flex gap-2 px-3 py-2.5 border-t overflow-x-auto" style={{ borderColor: `${bgTheme.mutedText}12` }}>
+          <div className="flex gap-2 px-3 py-2.5 border-t" style={{ borderColor: `${bgTheme.mutedText}12` }}>
             {([
-              { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
-              { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
-              { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
-              { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
-              { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
-              { key: "search" as const, icon: <Search className="w-4 h-4" />, label: "بحث" },
-              { key: "alphabets" as const, icon: <BookA className="w-4 h-4" />, label: "حروف" },
+              { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "┘é╪▒╪º╪í╪⌐" },
+              { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "╪╡┘ê╪¬" },
+              { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "╪▒╪│┘à" },
+              { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "┘â╪¬╪º╪¿╪⌐" },
+              { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "╪Ñ╪¡╪╡╪º╪ª┘è╪º╪¬" },
             ]).map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-200 ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
                 style={
                   activeTab === tab.key
                     ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40` }
@@ -327,10 +144,6 @@ const Index = () => {
             voiceCorrect={voiceCorrect}
             drawCorrect={drawCorrect}
           />
-        ) : activeTab === "search" ? (
-          <VerseSearch onNavigate={(surah, ayah) => { goToVerse(surah, ayah); setActiveTab("read"); }} />
-        ) : activeTab === "alphabets" ? (
-          <AlphabetTajweed />
         ) : isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
@@ -369,12 +182,6 @@ const Index = () => {
             onNext={() => goToNext(verseCount)}
             onPrev={() => goToPrev(verseCount)}
             onCorrectWord={onVoiceCorrect}
-          />
-        ) : activeTab === "type" ? (
-          <TypePracticeMode
-            verses={verses}
-            onNext={() => goToNext(verseCount)}
-            onPrev={() => goToPrev(verseCount)}
           />
         ) : (
           <DrawPracticeMode
