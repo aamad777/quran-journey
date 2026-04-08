@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-export type ThemeColor = "emerald" | "ocean" | "royal" | "sunset" | "rose";
+export type ThemeColor = "emerald" | "ocean" | "royal" | "sunset" | "rose" | "midnight" | "copper" | "teal" | "burgundy" | "slate";
 export type ThemeMode = "light" | "dark";
 
 interface ThemeInfo {
@@ -16,6 +16,11 @@ export const THEMES: ThemeInfo[] = [
   { id: "royal", label: "Royal", labelAr: "ملكي", preview: "#5b3a8c" },
   { id: "sunset", label: "Sunset", labelAr: "غروب", preview: "#b45309" },
   { id: "rose", label: "Rose", labelAr: "وردي", preview: "#9f1239" },
+  { id: "midnight", label: "Midnight", labelAr: "منتصف الليل", preview: "#1e293b" },
+  { id: "copper", label: "Copper", labelAr: "نحاسي", preview: "#a0522d" },
+  { id: "teal", label: "Teal", labelAr: "أخضر مزرق", preview: "#0d7377" },
+  { id: "burgundy", label: "Burgundy", labelAr: "عنابي", preview: "#722f37" },
+  { id: "slate", label: "Slate", labelAr: "رمادي", preview: "#475569" },
 ];
 
 // Each theme defines CSS variable overrides
