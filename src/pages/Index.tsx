@@ -35,9 +35,6 @@ const Index = () => {
     localStorage.setItem("quran_bg_opacity", String(val));
   };
   const bgPattern = PATTERNS.find(p => p.id === background);
-  const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
-    : {};
   const bgTheme = BG_THEMES[background];
   const overlayOpacity = bgPattern?.image ? Math.min(0.75, (1 - bgOpacity) + 0.22) : 0;
   const { user, loading: authLoading, signOut } = useAuth();
