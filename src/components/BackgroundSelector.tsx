@@ -13,6 +13,10 @@ import bgArabesque from "@/assets/bg-arabesque.jpg";
 import bgNight from "@/assets/bg-night.jpg";
 import bgCalligraphy from "@/assets/bg-calligraphy.jpg";
 import bgTiles from "@/assets/bg-tiles.jpg";
+import bgStars from "@/assets/bg-stars.jpg";
+import bgLanterns from "@/assets/bg-lanterns.jpg";
+import bgMarble from "@/assets/bg-marble.jpg";
+import bgDesert from "@/assets/bg-desert.jpg";
 
 export type BackgroundPattern =
   | "none"
@@ -21,7 +25,11 @@ export type BackgroundPattern =
   | "arabesque"
   | "night"
   | "calligraphy"
-  | "tiles";
+  | "tiles"
+  | "stars"
+  | "lanterns"
+  | "marble"
+  | "desert";
 
 interface PatternInfo {
   id: BackgroundPattern;
@@ -91,6 +99,34 @@ export const BG_THEMES: Record<BackgroundPattern, BgThemeColors> = {
     textColor: "hsl(200 40% 15%)", mutedText: "hsl(200 30% 35%)",
     cardBg: "hsl(190 20% 95% / 0.93)",
   },
+  stars: {
+    btnBg: "hsl(42 70% 50%)", btnText: "hsl(220 50% 10%)",
+    btnOutlineBorder: "hsl(42 50% 45% / 0.5)", btnOutlineText: "hsl(42 60% 75%)",
+    activeWordColor: "hsl(42 80% 60%)", activeWordGlow: "0 0 14px hsl(42 80% 55% / 0.5)",
+    textColor: "hsl(42 50% 92%)", mutedText: "hsl(42 40% 78%)",
+    cardBg: "hsl(220 50% 12% / 0.93)",
+  },
+  lanterns: {
+    btnBg: "hsl(30 70% 45%)", btnText: "hsl(0 0% 100%)",
+    btnOutlineBorder: "hsl(30 50% 40% / 0.5)", btnOutlineText: "hsl(30 60% 75%)",
+    activeWordColor: "hsl(35 80% 55%)", activeWordGlow: "0 0 14px hsl(35 80% 50% / 0.5)",
+    textColor: "hsl(35 50% 92%)", mutedText: "hsl(30 40% 78%)",
+    cardBg: "hsl(20 30% 8% / 0.93)",
+  },
+  marble: {
+    btnBg: "hsl(35 50% 40%)", btnText: "hsl(0 0% 100%)",
+    btnOutlineBorder: "hsl(35 30% 50% / 0.5)", btnOutlineText: "hsl(35 30% 30%)",
+    activeWordColor: "hsl(35 60% 45%)", activeWordGlow: "0 0 14px hsl(35 60% 40% / 0.4)",
+    textColor: "hsl(30 20% 15%)", mutedText: "hsl(30 15% 40%)",
+    cardBg: "hsl(40 20% 96% / 0.93)",
+  },
+  desert: {
+    btnBg: "hsl(25 60% 45%)", btnText: "hsl(0 0% 100%)",
+    btnOutlineBorder: "hsl(25 40% 50% / 0.5)", btnOutlineText: "hsl(25 30% 25%)",
+    activeWordColor: "hsl(30 70% 50%)", activeWordGlow: "0 0 14px hsl(30 70% 45% / 0.4)",
+    textColor: "hsl(25 25% 15%)", mutedText: "hsl(25 20% 35%)",
+    cardBg: "hsl(35 30% 95% / 0.93)",
+  },
 };
 
 const PATTERNS: PatternInfo[] = [
@@ -99,6 +135,10 @@ const PATTERNS: PatternInfo[] = [
   { id: "mosque", labelAr: "مسجد", image: bgMosque },
   { id: "night", labelAr: "ليلي", image: bgNight },
   { id: "calligraphy", labelAr: "خط عربي", image: bgCalligraphy },
+  { id: "stars", labelAr: "نجوم", image: bgStars },
+  { id: "lanterns", labelAr: "فوانيس", image: bgLanterns },
+  { id: "marble", labelAr: "رخام", image: bgMarble },
+  { id: "desert", labelAr: "صحراء", image: bgDesert },
 ];
 
 interface BackgroundSelectorProps {
