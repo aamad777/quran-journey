@@ -13,6 +13,10 @@ import bgArabesque from "@/assets/bg-arabesque.jpg";
 import bgNight from "@/assets/bg-night.jpg";
 import bgCalligraphy from "@/assets/bg-calligraphy.jpg";
 import bgTiles from "@/assets/bg-tiles.jpg";
+import bgStars from "@/assets/bg-stars.jpg";
+import bgLanterns from "@/assets/bg-lanterns.jpg";
+import bgMarble from "@/assets/bg-marble.jpg";
+import bgDesert from "@/assets/bg-desert.jpg";
 
 export type BackgroundPattern =
   | "none"
@@ -21,7 +25,11 @@ export type BackgroundPattern =
   | "arabesque"
   | "night"
   | "calligraphy"
-  | "tiles";
+  | "tiles"
+  | "stars"
+  | "lanterns"
+  | "marble"
+  | "desert";
 
 interface PatternInfo {
   id: BackgroundPattern;
