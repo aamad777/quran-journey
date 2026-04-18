@@ -90,10 +90,20 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "bg-fade-in": {
+          "0%": { opacity: "0", transform: "scale(1.08)", filter: "blur(8px)" },
+          "100%": { opacity: "1", transform: "scale(1)", filter: "blur(0)" },
+        },
+        "bg-fade-out": {
+          "0%": { opacity: "1", filter: "blur(0)" },
+          "100%": { opacity: "0", filter: "blur(8px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "bg-fade-in": "bg-fade-in 0.9s ease-in-out forwards",
+        "bg-fade-out": "bg-fade-out 0.9s ease-in-out forwards",
       },
     },
   },

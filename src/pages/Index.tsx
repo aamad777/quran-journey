@@ -87,6 +87,21 @@ const Index = () => {
   }, []);
   const parallaxOffset = scrollY * 0.25;
 
+  // Crossfade between background images on change
+  const [prevBgImage, setPrevBgImage] = useState<string | undefined>(bgPattern?.image);
+  const [currentBgImage, setCurrentBgImage] = useState<string | undefined>(bgPattern?.image);
+  const [bgTransitioning, setBgTransitioning] = useState(false);
+  useEffect(() => {
+    if (bgPattern?.image !== currentBgImage) {
+      setPrevBgImage(currentBgImage);
+      setCurrentBgImage(bgPattern?.image);
+      setBgTransitioning(true);
+      const t = setTimeout(() => setBgTransitioning(false), 900);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bgPattern?.image]);
+
   const { user, loading: authLoading, signOut } = useAuth();
 
   const {
@@ -195,11 +210,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-x-hidden">
-      {bgPattern?.image && (
+      {bgTransitioning && prevBgImage && (
         <div
-          className="fixed inset-x-0 -top-24 -bottom-24 pointer-events-none transition-opacity duration-700 ease-in-out will-change-transform"
+          key={`prev-${prevBgImage}`}
+          className="fixed inset-x-0 -top-24 -bottom-24 pointer-events-none will-change-transform animate-bg-fade-out"
           style={{
-            backgroundImage: `url(${bgPattern.image})`,
+            backgroundImage: `url(${prevBgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            transform: `translate3d(0, ${parallaxOffset}px, 0) scale(1.05)`,
+            opacity: bgOpacity,
+          }}
+        />
+      )}
+      {currentBgImage && (
+        <div
+          key={`cur-${currentBgImage}`}
+          className={`fixed inset-x-0 -top-24 -bottom-24 pointer-events-none will-change-transform ${bgTransitioning ? 'animate-bg-fade-in' : ''}`}
+          style={{
+            backgroundImage: `url(${currentBgImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             transform: `translate3d(0, ${parallaxOffset}px, 0)`,
