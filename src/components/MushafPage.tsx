@@ -19,6 +19,8 @@ interface Ayah {
   numberInSurah: number;
   surah: { number: number; name: string; englishName: string };
   page: number;
+  juz: number;
+  hizbQuarter: number;
 }
 
 const TOTAL_PAGES = 604;
@@ -33,12 +35,18 @@ const getBookmarks = (): number[] => {
   }
 };
 
+// Convert number to Arabic-Indic digits
+const toArabic = (n: number) => n.toLocaleString("ar-EG");
+
+// Surah-specific bismillah handling: surah 1 contains bismillah as first ayah, surah 9 has none
+const SURAH_HAS_BISMILLAH_INLINE = 1;
+const SURAH_NO_BISMILLAH = 9;
+
 const MushafPage = ({
   themeTextColor,
   themeMutedText,
   themeCardBg,
   themeAccentColor,
-  activeWordColor,
   initialPage,
 }: MushafPageProps) => {
   const [page, setPage] = useState<number>(() => {
@@ -78,7 +86,9 @@ const MushafPage = ({
   const isBookmarked = bookmarks.includes(page);
 
   const toggleBookmark = () => {
-    const next = isBookmarked ? bookmarks.filter((p) => p !== page) : [...bookmarks, page].sort((a, b) => a - b);
+    const next = isBookmarked
+      ? bookmarks.filter((p) => p !== page)
+      : [...bookmarks, page].sort((a, b) => a - b);
     setBookmarks(next);
     localStorage.setItem(BOOKMARK_KEY, JSON.stringify(next));
     toast.success(isBookmarked ? `تمت إزالة العلامة من صفحة ${page}` : `تم حفظ صفحة ${page}`);
@@ -91,38 +101,54 @@ const MushafPage = ({
   };
 
   const grouped = useMemo(() => {
-    const groups: { surah: Ayah["surah"]; ayahs: Ayah[] }[] = [];
+    const groups: { surah: Ayah["surah"]; ayahs: Ayah[]; startsAtAyah1: boolean }[] = [];
     ayahs.forEach((a) => {
       const last = groups[groups.length - 1];
       if (last && last.surah.number === a.surah.number) {
         last.ayahs.push(a);
       } else {
-        groups.push({ surah: a.surah, ayahs: [a] });
+        groups.push({ surah: a.surah, ayahs: [a], startsAtAyah1: a.numberInSurah === 1 });
       }
     });
     return groups;
   }, [ayahs]);
 
+  const currentJuz = ayahs[0]?.juz;
+  const currentSurahName = ayahs[0]?.surah.name.replace("سُورَةُ ", "");
+
+  // Touch swipe navigation
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const diff = e.changedTouches[0].clientX - touchStart;
+    if (Math.abs(diff) > 60) {
+      // RTL: swipe right → previous page, swipe left → next page
+      if (diff > 0) goPage(page - 1);
+      else goPage(page + 1);
+    }
+    setTouchStart(null);
+  };
+
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
-      {/* Toolbar */}
+    <div className="max-w-2xl mx-auto space-y-3">
+      {/* Compact toolbar */}
       <div
-        className="rounded-xl backdrop-blur-md p-3 flex items-center justify-between gap-2 flex-wrap"
+        className="rounded-xl backdrop-blur-md p-2 flex items-center justify-between gap-2 flex-wrap"
         style={{ backgroundColor: themeCardBg, border: `1px solid ${themeMutedText}20` }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Button
             size="sm"
             variant="ghost"
             onClick={() => goPage(page - 1)}
             disabled={page <= 1}
+            className="h-8 px-2"
             style={{ color: themeTextColor }}
           >
             <ChevronRight className="w-4 h-4" />
-            السابقة
           </Button>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: themeMutedText }}>
-            <span>صفحة</span>
             <input
               type="number"
               min={1}
@@ -137,23 +163,23 @@ const MushafPage = ({
               onKeyDown={(e) => {
                 if (e.key === "Enter") (e.target as HTMLInputElement).blur();
               }}
-              className="w-14 text-center rounded-md py-1 text-sm font-bold outline-none"
+              className="w-12 text-center rounded-md py-1 text-sm font-bold outline-none"
               style={{
                 backgroundColor: `${themeAccentColor}15`,
                 color: themeTextColor,
                 border: `1px solid ${themeAccentColor}30`,
               }}
             />
-            <span>من {TOTAL_PAGES}</span>
+            <span>/ {TOTAL_PAGES}</span>
           </div>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => goPage(page + 1)}
             disabled={page >= TOTAL_PAGES}
+            className="h-8 px-2"
             style={{ color: themeTextColor }}
           >
-            التالية
             <ChevronLeft className="w-4 h-4" />
           </Button>
         </div>
@@ -162,23 +188,22 @@ const MushafPage = ({
             size="sm"
             variant="ghost"
             onClick={() => setShowBookmarks((s) => !s)}
-            className="gap-1.5 text-xs"
+            className="gap-1.5 text-xs h-8 px-2"
             style={{ color: themeMutedText }}
           >
             <BookOpen className="w-4 h-4" />
-            العلامات ({bookmarks.length})
+            {bookmarks.length > 0 && <span>{bookmarks.length}</span>}
           </Button>
           <Button
             size="sm"
             onClick={toggleBookmark}
-            className="gap-1.5 text-xs"
+            className="gap-1.5 text-xs h-8 px-3"
             style={{
               backgroundColor: isBookmarked ? themeAccentColor : `${themeAccentColor}20`,
               color: isBookmarked ? "#fff" : themeAccentColor,
             }}
           >
             {isBookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-            {isBookmarked ? "محفوظة" : "احفظ"}
           </Button>
         </div>
       </div>
@@ -208,7 +233,7 @@ const MushafPage = ({
                     color: p === page ? "#fff" : themeAccentColor,
                   }}
                 >
-                  صفحة {p}
+                  صفحة {toArabic(p)}
                 </button>
               ))}
             </div>
@@ -216,76 +241,158 @@ const MushafPage = ({
         </div>
       )}
 
-      {/* Page content */}
+      {/* Mushaf page — mobile Quran style */}
       <div
-        className="rounded-2xl backdrop-blur-md p-6 md:p-10"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        className="relative rounded-xl overflow-hidden"
         style={{
-          backgroundColor: themeCardBg,
-          border: `1px solid ${themeMutedText}20`,
-          boxShadow: `0 4px 24px ${themeAccentColor}10`,
+          background: `linear-gradient(135deg, #fdf6e3 0%, #f5ecd0 50%, #ede0b8 100%)`,
+          boxShadow: `0 8px 32px ${themeAccentColor}25, inset 0 0 60px rgba(139, 90, 30, 0.08)`,
+          border: `1px solid rgba(139, 90, 30, 0.25)`,
         }}
       >
-        {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-8 w-1/3 mx-auto" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-6 w-5/6" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-6 w-4/6" />
-          </div>
-        ) : (
-          <div dir="rtl" className="space-y-6">
-            {grouped.map((g, gi) => (
-              <div key={`${g.surah.number}-${gi}`}>
-                {(g.ayahs[0].numberInSurah === 1 || gi === 0) && (
-                  <div
-                    className="text-center py-3 mb-4 rounded-xl"
-                    style={{
-                      background: `linear-gradient(90deg, ${themeAccentColor}10, ${themeAccentColor}25, ${themeAccentColor}10)`,
-                      border: `1px solid ${themeAccentColor}30`,
-                    }}
-                  >
-                    <h3 className="font-arabic text-2xl font-bold" style={{ color: themeTextColor }}>
-                      سورة {g.surah.name.replace("سُورَةُ ", "")}
-                    </h3>
-                  </div>
-                )}
-                <p
-                  className="font-arabic text-2xl md:text-3xl leading-[2.6] text-justify"
-                  style={{ color: themeTextColor }}
-                >
-                  {g.ayahs.map((a) => (
-                    <span key={a.number}>
-                      {a.text}
-                      <span
-                        className="inline-flex items-center justify-center mx-1 w-8 h-8 rounded-full text-xs font-bold align-middle"
+        {/* Top header strip: surah name | juz */}
+        <div
+          className="flex items-center justify-between px-4 py-2 text-xs font-bold"
+          style={{
+            background: `linear-gradient(90deg, rgba(139, 90, 30, 0.12), rgba(139, 90, 30, 0.05), rgba(139, 90, 30, 0.12))`,
+            borderBottom: `1px solid rgba(139, 90, 30, 0.25)`,
+            color: "#5a3a15",
+          }}
+        >
+          <span className="font-arabic">سورة {currentSurahName}</span>
+          <span className="font-arabic">الجزء {currentJuz ? toArabic(currentJuz) : ""}</span>
+        </div>
+
+        {/* Decorative double border */}
+        <div
+          className="m-2 p-3 md:p-5 rounded-lg"
+          style={{
+            border: `2px solid rgba(139, 90, 30, 0.45)`,
+            outline: `1px solid rgba(139, 90, 30, 0.25)`,
+            outlineOffset: "3px",
+          }}
+        >
+          {loading ? (
+            <div className="space-y-3 py-4">
+              <Skeleton className="h-8 w-1/2 mx-auto" style={{ backgroundColor: "rgba(139, 90, 30, 0.1)" }} />
+              <Skeleton className="h-6 w-full" style={{ backgroundColor: "rgba(139, 90, 30, 0.1)" }} />
+              <Skeleton className="h-6 w-full" style={{ backgroundColor: "rgba(139, 90, 30, 0.1)" }} />
+              <Skeleton className="h-6 w-5/6" style={{ backgroundColor: "rgba(139, 90, 30, 0.1)" }} />
+              <Skeleton className="h-6 w-full" style={{ backgroundColor: "rgba(139, 90, 30, 0.1)" }} />
+              <Skeleton className="h-6 w-4/6" style={{ backgroundColor: "rgba(139, 90, 30, 0.1)" }} />
+            </div>
+          ) : (
+            <div dir="rtl" className="space-y-4">
+              {grouped.map((g, gi) => {
+                const showSurahHeader = g.startsAtAyah1;
+                const showBismillah =
+                  g.startsAtAyah1 &&
+                  g.surah.number !== SURAH_HAS_BISMILLAH_INLINE &&
+                  g.surah.number !== SURAH_NO_BISMILLAH;
+                return (
+                  <div key={`${g.surah.number}-${gi}`}>
+                    {showSurahHeader && (
+                      <div
+                        className="relative my-3 py-3 px-4 text-center rounded-md"
                         style={{
-                          backgroundColor: `${themeAccentColor}20`,
-                          color: themeAccentColor,
-                          border: `1px solid ${themeAccentColor}40`,
+                          background: `linear-gradient(90deg, rgba(139, 90, 30, 0.1), rgba(212, 175, 55, 0.25), rgba(139, 90, 30, 0.1))`,
+                          border: `1.5px solid rgba(139, 90, 30, 0.5)`,
+                          boxShadow: `inset 0 0 20px rgba(212, 175, 55, 0.15)`,
                         }}
                       >
-                        {a.numberInSurah.toLocaleString("ar-EG")}
-                      </span>{" "}
-                    </span>
-                  ))}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+                        {/* Decorative corners */}
+                        <div className="absolute top-1 right-2 text-xs" style={{ color: "rgba(139, 90, 30, 0.6)" }}>﴾</div>
+                        <div className="absolute top-1 left-2 text-xs" style={{ color: "rgba(139, 90, 30, 0.6)" }}>﴿</div>
+                        <h3 className="font-arabic text-xl md:text-2xl font-bold tracking-wide" style={{ color: "#5a3a15" }}>
+                          سورة {g.surah.name.replace("سُورَةُ ", "")}
+                        </h3>
+                        <div className="text-[10px] mt-0.5" style={{ color: "rgba(90, 58, 21, 0.7)" }}>
+                          عدد آياتها {/* aya count not in API; omit */}
+                        </div>
+                      </div>
+                    )}
+                    {showBismillah && (
+                      <div className="text-center my-3">
+                        <p
+                          className="font-arabic text-2xl md:text-3xl font-bold"
+                          style={{ color: "#3a2510" }}
+                        >
+                          بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                        </p>
+                      </div>
+                    )}
+                    <p
+                      className="font-arabic text-justify"
+                      style={{
+                        color: "#1a1208",
+                        fontSize: "clamp(20px, 4.5vw, 26px)",
+                        lineHeight: "2.4",
+                        textAlignLast: "center",
+                        wordSpacing: "0.05em",
+                      }}
+                    >
+                      {g.ayahs.map((a) => (
+                        <span key={a.number}>
+                          {a.text}
+                          <span
+                            className="inline-flex items-center justify-center mx-0.5 align-middle"
+                            style={{
+                              width: "1.6em",
+                              height: "1.6em",
+                              fontSize: "0.55em",
+                              fontWeight: 700,
+                              color: "#5a3a15",
+                              background:
+                                "radial-gradient(circle, rgba(212, 175, 55, 0.35) 0%, rgba(212, 175, 55, 0.15) 70%, transparent 100%)",
+                              border: "1.5px solid rgba(139, 90, 30, 0.55)",
+                              borderRadius: "50%",
+                              fontFamily: "'Amiri', serif",
+                            }}
+                          >
+                            {toArabic(a.numberInSurah)}
+                          </span>
+                          {" "}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
-        {/* Footer page number */}
-        <div className="text-center mt-8 pt-4 border-t" style={{ borderColor: `${themeMutedText}20` }}>
+        {/* Footer strip */}
+        <div
+          className="flex items-center justify-center px-4 py-2"
+          style={{
+            background: `linear-gradient(90deg, rgba(139, 90, 30, 0.05), rgba(139, 90, 30, 0.15), rgba(139, 90, 30, 0.05))`,
+            borderTop: `1px solid rgba(139, 90, 30, 0.25)`,
+          }}
+        >
           <span
-            className="inline-block px-4 py-1 rounded-full text-sm font-bold"
-            style={{ backgroundColor: `${themeAccentColor}15`, color: themeAccentColor }}
+            className="inline-flex items-center justify-center font-arabic font-bold"
+            style={{
+              minWidth: "2.5rem",
+              height: "2.5rem",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(212, 175, 55, 0.3), rgba(139, 90, 30, 0.12))",
+              border: "1.5px solid rgba(139, 90, 30, 0.5)",
+              color: "#5a3a15",
+              fontSize: "0.95rem",
+            }}
           >
-            {page.toLocaleString("ar-EG")}
+            {toArabic(page)}
           </span>
         </div>
       </div>
+
+      {/* Hint */}
+      <p className="text-center text-[11px]" style={{ color: themeMutedText }}>
+        اسحب يميناً أو يساراً للتنقل بين الصفحات
+      </p>
     </div>
   );
 };
