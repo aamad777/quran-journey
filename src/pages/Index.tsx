@@ -72,14 +72,20 @@ const Index = () => {
   };
 
   const bgPattern = PATTERNS.find(p => p.id === background);
-  const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
-    : {};
   const bgTheme = BG_THEMES[background];
 
   const overlayOpacity = bgPattern?.image
     ? Math.min(0.75, (1 - bgOpacity) + 0.22)
     : 0;
+
+  // Parallax: subtle vertical translate based on scroll
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const parallaxOffset = scrollY * 0.25;
 
   const { user, loading: authLoading, signOut } = useAuth();
 
@@ -169,7 +175,7 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" style={bgStyle}>
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-islamic mb-4 animate-pulse">
             <BookOpen className="w-8 h-8 text-gold" />
@@ -188,9 +194,21 @@ const Index = () => {
   const isLoading = progressLoading || verseLoading;
 
   return (
-    <div className="min-h-screen bg-background relative" style={bgStyle}>
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
+      {bgPattern?.image && (
+        <div
+          className="fixed inset-x-0 -top-24 -bottom-24 pointer-events-none transition-opacity duration-700 ease-in-out will-change-transform"
+          style={{
+            backgroundImage: `url(${bgPattern.image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            transform: `translate3d(0, ${parallaxOffset}px, 0)`,
+            opacity: bgOpacity,
+          }}
+        />
+      )}
       {overlayOpacity > 0 && (
-        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: overlayOpacity }} />
+        <div className="fixed inset-0 bg-background pointer-events-none transition-opacity duration-700 ease-in-out" style={{ opacity: overlayOpacity }} />
       )}
       <div className="relative z-[1]">
 
