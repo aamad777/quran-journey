@@ -72,14 +72,20 @@ const Index = () => {
   };
 
   const bgPattern = PATTERNS.find(p => p.id === background);
-  const bgStyle = bgPattern?.image
-    ? { backgroundImage: `url(${bgPattern.image})`, backgroundSize: "cover" as const, backgroundPosition: "center", backgroundAttachment: "fixed" as const }
-    : {};
   const bgTheme = BG_THEMES[background];
 
   const overlayOpacity = bgPattern?.image
     ? Math.min(0.75, (1 - bgOpacity) + 0.22)
     : 0;
+
+  // Parallax: subtle vertical translate based on scroll
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const parallaxOffset = scrollY * 0.25;
 
   const { user, loading: authLoading, signOut } = useAuth();
 
