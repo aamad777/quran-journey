@@ -13,6 +13,7 @@ import SurahList from "@/components/SurahList";
 // ✅ ADDED from main branch
 import VerseSearch from "@/components/VerseSearch";
 import AlphabetTajweed from "@/components/AlphabetTajweed";
+import MushafPage from "@/components/MushafPage";
 
 // ✅ FIXED merged icons
 import {
@@ -27,7 +28,8 @@ import {
   Heart,
   Search,
   Type,
-  BookA
+  BookA,
+  BookMarked
 } from "lucide-react";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -114,7 +116,7 @@ const Index = () => {
   } = useQuranProgress(user);
 
   const [activeTab, setActiveTab] = useState<
-    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets"
+    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page"
   >(() => {
     try {
       return (
@@ -341,6 +343,7 @@ const Index = () => {
               { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
               { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
               { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
+              { key: "page" as const, icon: <BookMarked className="w-4 h-4" />, label: "صفحة" },
               { key: "search" as const, icon: <Search className="w-4 h-4" />, label: "بحث" },
               { key: "alphabets" as const, icon: <BookA className="w-4 h-4" />, label: "حروف" },
             ]).map((tab) => (
@@ -377,6 +380,13 @@ const Index = () => {
         ) : activeTab === "search" ? (
           <VerseSearch
             onSelectVerse={(surah, ayah) => { goToVerse(surah, ayah); setActiveTab("read"); }}
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
+          />
+        ) : activeTab === "page" ? (
+          <MushafPage
             themeTextColor={bgTheme.textColor}
             themeMutedText={bgTheme.mutedText}
             themeCardBg={bgTheme.cardBg}
