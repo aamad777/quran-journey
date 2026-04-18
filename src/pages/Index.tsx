@@ -194,9 +194,21 @@ const Index = () => {
   const isLoading = progressLoading || verseLoading;
 
   return (
-    <div className="min-h-screen bg-background relative" style={bgStyle}>
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
+      {bgPattern?.image && (
+        <div
+          className="fixed inset-x-0 -top-24 -bottom-24 pointer-events-none transition-opacity duration-700 ease-in-out will-change-transform"
+          style={{
+            backgroundImage: `url(${bgPattern.image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            transform: `translate3d(0, ${parallaxOffset}px, 0)`,
+            opacity: bgOpacity,
+          }}
+        />
+      )}
       {overlayOpacity > 0 && (
-        <div className="fixed inset-0 bg-background pointer-events-none" style={{ opacity: overlayOpacity }} />
+        <div className="fixed inset-0 bg-background pointer-events-none transition-opacity duration-700 ease-in-out" style={{ opacity: overlayOpacity }} />
       )}
       <div className="relative z-[1]">
 
