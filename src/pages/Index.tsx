@@ -328,9 +328,20 @@ const Index = () => {
             drawCorrect={drawCorrect}
           />
         ) : activeTab === "search" ? (
-          <VerseSearch onNavigate={(surah, ayah) => { goToVerse(surah, ayah); setActiveTab("read"); }} />
+          <VerseSearch
+            onSelectVerse={(surah, ayah) => { goToVerse(surah, ayah); setActiveTab("read"); }}
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
+          />
         ) : activeTab === "alphabets" ? (
-          <AlphabetTajweed />
+          <AlphabetTajweed
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
+          />
         ) : isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
