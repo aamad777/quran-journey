@@ -12,6 +12,7 @@ import {
   Play,
   Pause,
   ListOrdered,
+  Mic2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -21,6 +22,7 @@ import {
   getJuzPageRange,
 } from "@/lib/juzPages";
 import { colorizeUthmani } from "@/lib/simpleTajweed";
+import { RECITERS, getReciterById, resolveAyahAudioUrl } from "@/lib/reciters";
 
 interface MushafPageProps {
   themeTextColor: string;
@@ -57,11 +59,7 @@ const toArabic = (n: number) => n.toLocaleString("ar-EG");
 const SURAH_HAS_BISMILLAH_INLINE = 1;
 const SURAH_NO_BISMILLAH = 9;
 
-// Default reciter (EveryAyah - Alafasy)
-const RECITER_FOLDER = "Alafasy_128kbps";
-const pad3 = (n: number) => n.toString().padStart(3, "0");
-const ayahAudioUrl = (surah: number, ayah: number) =>
-  `https://everyayah.com/data/${RECITER_FOLDER}/${pad3(surah)}${pad3(ayah)}.mp3`;
+const RECITER_KEY = "quran_mushaf_reciter";
 
 const MushafPage = ({
   themeTextColor,
@@ -90,6 +88,20 @@ const MushafPage = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingIdx, setPlayingIdx] = useState<number>(-1); // index in ayahs[]
   const [isPlaying, setIsPlaying] = useState(false);
+  const [reciterId, setReciterId] = useState<string>(() => {
+    try {
+      return localStorage.getItem(RECITER_KEY) || "ar.alafasy";
+    } catch {
+      return "ar.alafasy";
+    }
+  });
+  const reciter = getReciterById(reciterId);
+
+  const changeReciter = (id: string) => {
+    setReciterId(id);
+    try { localStorage.setItem(RECITER_KEY, id); } catch {}
+    stopAudio();
+  };
 
   useEffect(() => {
     setPageInput(String(page));
@@ -187,29 +199,40 @@ const MushafPage = ({
     setIsPlaying(false);
   };
 
-  const playFromIndex = (idx: number) => {
+  const playReqId = useRef(0);
+
+  const playFromIndex = async (idx: number) => {
     if (idx < 0 || idx >= ayahs.length) {
       stopAudio();
       return;
     }
     const a = ayahs[idx];
-    const url = ayahAudioUrl(a.surah.number, a.numberInSurah);
+    const reqId = ++playReqId.current;
+    setPlayingIdx(idx);
+    const url = await resolveAyahAudioUrl(reciter, a.surah.number, a.numberInSurah);
+    // ignore stale resolutions (user changed reciter / page / track)
+    if (reqId !== playReqId.current) return;
+    if (!url) {
+      // skip ayah on failure
+      playFromIndex(idx + 1);
+      return;
+    }
     if (!audioRef.current) audioRef.current = new Audio();
     const audio = audioRef.current;
     audio.src = url;
-    audio.onended = () => playFromIndex(idx + 1);
+    audio.onended = () => {
+      if (reqId === playReqId.current) playFromIndex(idx + 1);
+    };
     audio.onpause = () => setIsPlaying(false);
     audio.onplay = () => setIsPlaying(true);
     audio.onerror = () => {
-      // skip on error
-      playFromIndex(idx + 1);
+      if (reqId === playReqId.current) playFromIndex(idx + 1);
     };
     audio.play().catch(() => {});
-    setPlayingIdx(idx);
   };
 
   const togglePagePlay = () => {
-    if (playingIdx >= 0 && audioRef.current) {
+    if (playingIdx >= 0 && audioRef.current && audioRef.current.src) {
       if (audioRef.current.paused) {
         audioRef.current.play().catch(() => {});
       } else {
@@ -376,6 +399,26 @@ const MushafPage = ({
           </Button>
         </div>
         <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" title="القارئ">
+            <Mic2 className="w-3.5 h-3.5" style={{ color: themeMutedText }} />
+            <select
+              value={reciterId}
+              onChange={(e) => changeReciter(e.target.value)}
+              className="h-8 max-w-[140px] sm:max-w-[180px] rounded-md text-xs font-bold outline-none px-1.5 truncate"
+              style={{
+                backgroundColor: `${themeAccentColor}15`,
+                color: themeTextColor,
+                border: `1px solid ${themeAccentColor}30`,
+                direction: "rtl",
+              }}
+            >
+              {RECITERS.map((r) => (
+                <option key={r.id} value={r.id} style={{ color: "#000" }}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <Button
             size="sm"
             variant="ghost"
