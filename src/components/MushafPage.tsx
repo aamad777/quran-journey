@@ -192,12 +192,21 @@ const MushafPage = ({
   };
 
   // ---------- Audio ----------
+  const clearTimer = () => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
   const stopAudio = () => {
+    clearTimer();
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
     }
     setPlayingIdx(-1);
+    setActiveWordIdx(-1);
     setIsPlaying(false);
   };
 
@@ -211,27 +220,60 @@ const MushafPage = ({
     const a = ayahs[idx];
     const reqId = ++playReqId.current;
     setPlayingIdx(idx);
+    setActiveWordIdx(-1);
     const url = await resolveAyahAudioUrl(reciter, a.surah.number, a.numberInSurah);
-    // ignore stale resolutions (user changed reciter / page / track)
     if (reqId !== playReqId.current) return;
     if (!url) {
-      // skip ayah on failure
       playFromIndex(idx + 1);
       return;
     }
     if (!audioRef.current) audioRef.current = new Audio();
     const audio = audioRef.current;
     audio.src = url;
+
+    // Word-by-word highlighting via char-proportion timing
+    // (works for any reciter without needing per-word timestamps)
+    const words = a.text.split(/\s+/).filter(Boolean);
+    const lengths = words.map((w) => Math.max(1, Array.from(w).length));
+    const totalChars = lengths.reduce((s, n) => s + n, 0);
+    const cumulative: number[] = [];
+    let acc = 0;
+    for (const l of lengths) {
+      acc += l;
+      cumulative.push(acc);
+    }
+
+    const tick = () => {
+      if (!audioRef.current || reqId !== playReqId.current) return;
+      const dur = audioRef.current.duration;
+      const cur = audioRef.current.currentTime;
+      if (!isFinite(dur) || dur <= 0) return;
+      const ratio = cur / dur;
+      const target = ratio * totalChars;
+      let wi = cumulative.findIndex((c) => target <= c);
+      if (wi < 0) wi = words.length - 1;
+      setActiveWordIdx(wi);
+    };
+
     audio.onended = () => {
+      clearTimer();
       if (reqId === playReqId.current) playFromIndex(idx + 1);
     };
-    audio.onpause = () => setIsPlaying(false);
-    audio.onplay = () => setIsPlaying(true);
+    audio.onpause = () => {
+      setIsPlaying(false);
+    };
+    audio.onplay = () => {
+      setIsPlaying(true);
+      clearTimer();
+      timerRef.current = window.setInterval(tick, 80);
+    };
     audio.onerror = () => {
+      clearTimer();
       if (reqId === playReqId.current) playFromIndex(idx + 1);
     };
     audio.play().catch(() => {});
   };
+
 
   const togglePagePlay = () => {
     if (playingIdx >= 0 && audioRef.current && audioRef.current.src) {
