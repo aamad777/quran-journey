@@ -86,8 +86,10 @@ const MushafPage = ({
 
   // Audio playback
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<number | null>(null);
   const [playingIdx, setPlayingIdx] = useState<number>(-1); // index in ayahs[]
   const [isPlaying, setIsPlaying] = useState(false);
+  const [activeWordIdx, setActiveWordIdx] = useState<number>(-1); // word index inside playing ayah
   const [reciterId, setReciterId] = useState<string>(() => {
     try {
       return localStorage.getItem(RECITER_KEY) || "ar.alafasy";
@@ -190,12 +192,21 @@ const MushafPage = ({
   };
 
   // ---------- Audio ----------
+  const clearTimer = () => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
   const stopAudio = () => {
+    clearTimer();
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
     }
     setPlayingIdx(-1);
+    setActiveWordIdx(-1);
     setIsPlaying(false);
   };
 
@@ -209,27 +220,60 @@ const MushafPage = ({
     const a = ayahs[idx];
     const reqId = ++playReqId.current;
     setPlayingIdx(idx);
+    setActiveWordIdx(-1);
     const url = await resolveAyahAudioUrl(reciter, a.surah.number, a.numberInSurah);
-    // ignore stale resolutions (user changed reciter / page / track)
     if (reqId !== playReqId.current) return;
     if (!url) {
-      // skip ayah on failure
       playFromIndex(idx + 1);
       return;
     }
     if (!audioRef.current) audioRef.current = new Audio();
     const audio = audioRef.current;
     audio.src = url;
+
+    // Word-by-word highlighting via char-proportion timing
+    // (works for any reciter without needing per-word timestamps)
+    const words = a.text.split(/\s+/).filter(Boolean);
+    const lengths = words.map((w) => Math.max(1, Array.from(w).length));
+    const totalChars = lengths.reduce((s, n) => s + n, 0);
+    const cumulative: number[] = [];
+    let acc = 0;
+    for (const l of lengths) {
+      acc += l;
+      cumulative.push(acc);
+    }
+
+    const tick = () => {
+      if (!audioRef.current || reqId !== playReqId.current) return;
+      const dur = audioRef.current.duration;
+      const cur = audioRef.current.currentTime;
+      if (!isFinite(dur) || dur <= 0) return;
+      const ratio = cur / dur;
+      const target = ratio * totalChars;
+      let wi = cumulative.findIndex((c) => target <= c);
+      if (wi < 0) wi = words.length - 1;
+      setActiveWordIdx(wi);
+    };
+
     audio.onended = () => {
+      clearTimer();
       if (reqId === playReqId.current) playFromIndex(idx + 1);
     };
-    audio.onpause = () => setIsPlaying(false);
-    audio.onplay = () => setIsPlaying(true);
+    audio.onpause = () => {
+      setIsPlaying(false);
+    };
+    audio.onplay = () => {
+      setIsPlaying(true);
+      clearTimer();
+      timerRef.current = window.setInterval(tick, 80);
+    };
     audio.onerror = () => {
+      clearTimer();
       if (reqId === playReqId.current) playFromIndex(idx + 1);
     };
     audio.play().catch(() => {});
   };
+
 
   const togglePagePlay = () => {
     if (playingIdx >= 0 && audioRef.current && audioRef.current.src) {
@@ -580,30 +624,56 @@ const MushafPage = ({
                       }}
                     >
                       {g.ayahs.map((a) => {
-                        const isActive = a.number === playingAyahNumber;
-                        const segs = colorizeUthmani(a.text);
+                        const ayahIdx = ayahs.findIndex((x) => x.number === a.number);
+                        const isActiveAyah = a.number === playingAyahNumber;
+                        const words = a.text.split(/\s+/).filter(Boolean);
                         return (
                           <span
                             key={a.number}
-                            onClick={() => playFromIndex(ayahs.findIndex((x) => x.number === a.number))}
+                            onClick={() => playFromIndex(ayahIdx)}
                             style={{
                               cursor: "pointer",
-                              backgroundColor: isActive
-                                ? "rgba(212, 175, 55, 0.35)"
+                              backgroundColor: isActiveAyah
+                                ? "rgba(212, 175, 55, 0.18)"
                                 : "transparent",
                               borderRadius: "4px",
-                              padding: isActive ? "2px 4px" : "0",
+                              padding: isActiveAyah ? "2px 3px" : "0",
                               transition: "background-color 0.3s",
-                              boxShadow: isActive
-                                ? "0 0 12px rgba(212, 175, 55, 0.5)"
-                                : "none",
                             }}
                           >
-                            {segs.map((s, si) => (
-                              <span key={si} style={s.color ? { color: s.color } : undefined}>
-                                {s.text}
-                              </span>
-                            ))}
+                            {words.map((w, wi) => {
+                              const isActiveWord = isActiveAyah && wi === activeWordIdx;
+                              const segs = colorizeUthmani(w);
+                              return (
+                                <span
+                                  key={wi}
+                                  style={{
+                                    display: "inline-block",
+                                    padding: isActiveWord ? "1px 4px" : "0",
+                                    margin: isActiveWord ? "0 1px" : "0",
+                                    borderRadius: "5px",
+                                    backgroundColor: isActiveWord
+                                      ? "rgba(212, 175, 55, 0.55)"
+                                      : "transparent",
+                                    boxShadow: isActiveWord
+                                      ? "0 0 14px rgba(212, 175, 55, 0.7)"
+                                      : "none",
+                                    transform: isActiveWord ? "scale(1.06)" : "scale(1)",
+                                    transition: "all 0.18s ease-out",
+                                  }}
+                                >
+                                  {segs.map((s, si) => (
+                                    <span key={si} style={s.color ? { color: s.color } : undefined}>
+                                      {s.text}
+                                    </span>
+                                  ))}
+                                </span>
+                              );
+                            }).reduce<React.ReactNode[]>((acc, el, i) => {
+                              if (i > 0) acc.push(" ");
+                              acc.push(el);
+                              return acc;
+                            }, [])}
                             <span
                               className="inline-flex items-center justify-center mx-0.5 align-middle"
                               style={{
