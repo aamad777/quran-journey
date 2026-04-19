@@ -59,11 +59,7 @@ const toArabic = (n: number) => n.toLocaleString("ar-EG");
 const SURAH_HAS_BISMILLAH_INLINE = 1;
 const SURAH_NO_BISMILLAH = 9;
 
-// Default reciter (EveryAyah - Alafasy)
-const RECITER_FOLDER = "Alafasy_128kbps";
-const pad3 = (n: number) => n.toString().padStart(3, "0");
-const ayahAudioUrl = (surah: number, ayah: number) =>
-  `https://everyayah.com/data/${RECITER_FOLDER}/${pad3(surah)}${pad3(ayah)}.mp3`;
+const RECITER_KEY = "quran_mushaf_reciter";
 
 const MushafPage = ({
   themeTextColor,
