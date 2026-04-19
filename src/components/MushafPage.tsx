@@ -12,6 +12,7 @@ import {
   Play,
   Pause,
   ListOrdered,
+  Mic2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -21,6 +22,7 @@ import {
   getJuzPageRange,
 } from "@/lib/juzPages";
 import { colorizeUthmani } from "@/lib/simpleTajweed";
+import { RECITERS, getReciterById, resolveAyahAudioUrl } from "@/lib/reciters";
 
 interface MushafPageProps {
   themeTextColor: string;
