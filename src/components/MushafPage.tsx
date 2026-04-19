@@ -624,30 +624,56 @@ const MushafPage = ({
                       }}
                     >
                       {g.ayahs.map((a) => {
-                        const isActive = a.number === playingAyahNumber;
-                        const segs = colorizeUthmani(a.text);
+                        const ayahIdx = ayahs.findIndex((x) => x.number === a.number);
+                        const isActiveAyah = a.number === playingAyahNumber;
+                        const words = a.text.split(/\s+/).filter(Boolean);
                         return (
                           <span
                             key={a.number}
-                            onClick={() => playFromIndex(ayahs.findIndex((x) => x.number === a.number))}
+                            onClick={() => playFromIndex(ayahIdx)}
                             style={{
                               cursor: "pointer",
-                              backgroundColor: isActive
-                                ? "rgba(212, 175, 55, 0.35)"
+                              backgroundColor: isActiveAyah
+                                ? "rgba(212, 175, 55, 0.18)"
                                 : "transparent",
                               borderRadius: "4px",
-                              padding: isActive ? "2px 4px" : "0",
+                              padding: isActiveAyah ? "2px 3px" : "0",
                               transition: "background-color 0.3s",
-                              boxShadow: isActive
-                                ? "0 0 12px rgba(212, 175, 55, 0.5)"
-                                : "none",
                             }}
                           >
-                            {segs.map((s, si) => (
-                              <span key={si} style={s.color ? { color: s.color } : undefined}>
-                                {s.text}
-                              </span>
-                            ))}
+                            {words.map((w, wi) => {
+                              const isActiveWord = isActiveAyah && wi === activeWordIdx;
+                              const segs = colorizeUthmani(w);
+                              return (
+                                <span
+                                  key={wi}
+                                  style={{
+                                    display: "inline-block",
+                                    padding: isActiveWord ? "1px 4px" : "0",
+                                    margin: isActiveWord ? "0 1px" : "0",
+                                    borderRadius: "5px",
+                                    backgroundColor: isActiveWord
+                                      ? "rgba(212, 175, 55, 0.55)"
+                                      : "transparent",
+                                    boxShadow: isActiveWord
+                                      ? "0 0 14px rgba(212, 175, 55, 0.7)"
+                                      : "none",
+                                    transform: isActiveWord ? "scale(1.06)" : "scale(1)",
+                                    transition: "all 0.18s ease-out",
+                                  }}
+                                >
+                                  {segs.map((s, si) => (
+                                    <span key={si} style={s.color ? { color: s.color } : undefined}>
+                                      {s.text}
+                                    </span>
+                                  ))}
+                                </span>
+                              );
+                            }).reduce<React.ReactNode[]>((acc, el, i) => {
+                              if (i > 0) acc.push(" ");
+                              acc.push(el);
+                              return acc;
+                            }, [])}
                             <span
                               className="inline-flex items-center justify-center mx-0.5 align-middle"
                               style={{
