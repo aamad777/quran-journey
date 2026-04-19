@@ -86,8 +86,10 @@ const MushafPage = ({
 
   // Audio playback
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<number | null>(null);
   const [playingIdx, setPlayingIdx] = useState<number>(-1); // index in ayahs[]
   const [isPlaying, setIsPlaying] = useState(false);
+  const [activeWordIdx, setActiveWordIdx] = useState<number>(-1); // word index inside playing ayah
   const [reciterId, setReciterId] = useState<string>(() => {
     try {
       return localStorage.getItem(RECITER_KEY) || "ar.alafasy";
