@@ -88,6 +88,20 @@ const MushafPage = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingIdx, setPlayingIdx] = useState<number>(-1); // index in ayahs[]
   const [isPlaying, setIsPlaying] = useState(false);
+  const [reciterId, setReciterId] = useState<string>(() => {
+    try {
+      return localStorage.getItem(RECITER_KEY) || "ar.alafasy";
+    } catch {
+      return "ar.alafasy";
+    }
+  });
+  const reciter = getReciterById(reciterId);
+
+  const changeReciter = (id: string) => {
+    setReciterId(id);
+    try { localStorage.setItem(RECITER_KEY, id); } catch {}
+    stopAudio();
+  };
 
   useEffect(() => {
     setPageInput(String(page));
@@ -185,29 +199,40 @@ const MushafPage = ({
     setIsPlaying(false);
   };
 
-  const playFromIndex = (idx: number) => {
+  const playReqId = useRef(0);
+
+  const playFromIndex = async (idx: number) => {
     if (idx < 0 || idx >= ayahs.length) {
       stopAudio();
       return;
     }
     const a = ayahs[idx];
-    const url = ayahAudioUrl(a.surah.number, a.numberInSurah);
+    const reqId = ++playReqId.current;
+    setPlayingIdx(idx);
+    const url = await resolveAyahAudioUrl(reciter, a.surah.number, a.numberInSurah);
+    // ignore stale resolutions (user changed reciter / page / track)
+    if (reqId !== playReqId.current) return;
+    if (!url) {
+      // skip ayah on failure
+      playFromIndex(idx + 1);
+      return;
+    }
     if (!audioRef.current) audioRef.current = new Audio();
     const audio = audioRef.current;
     audio.src = url;
-    audio.onended = () => playFromIndex(idx + 1);
+    audio.onended = () => {
+      if (reqId === playReqId.current) playFromIndex(idx + 1);
+    };
     audio.onpause = () => setIsPlaying(false);
     audio.onplay = () => setIsPlaying(true);
     audio.onerror = () => {
-      // skip on error
-      playFromIndex(idx + 1);
+      if (reqId === playReqId.current) playFromIndex(idx + 1);
     };
     audio.play().catch(() => {});
-    setPlayingIdx(idx);
   };
 
   const togglePagePlay = () => {
-    if (playingIdx >= 0 && audioRef.current) {
+    if (playingIdx >= 0 && audioRef.current && audioRef.current.src) {
       if (audioRef.current.paused) {
         audioRef.current.play().catch(() => {});
       } else {
