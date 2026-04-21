@@ -747,13 +747,15 @@ const MushafPage = ({
           <span
             className="inline-flex items-center justify-center font-arabic font-bold"
             style={{
-              minWidth: "2.5rem",
-              height: "2.5rem",
+              minWidth: "2.6rem",
+              height: "2.6rem",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(212, 175, 55, 0.35), rgba(120, 75, 20, 0.15))",
-              border: "1.5px solid rgba(120, 75, 20, 0.55)",
-              color: "#5a3a15",
-              fontSize: "0.95rem",
+              background: "radial-gradient(circle at 35% 30%, #f4d57a 0%, #d4a738 55%, #8b5a1a 100%)",
+              border: "1.5px solid rgba(60, 35, 8, 0.85)",
+              boxShadow: "inset 0 0 6px rgba(255, 240, 190, 0.7), 0 2px 4px rgba(60, 35, 8, 0.25)",
+              color: "#3d2810",
+              fontSize: "1rem",
+              textShadow: "0 1px 0 rgba(255, 245, 210, 0.6)",
             }}
           >
             {toArabic(page)}
