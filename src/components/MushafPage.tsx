@@ -704,16 +704,19 @@ const MushafPage = ({
                             <span
                               className="inline-flex items-center justify-center mx-0.5 align-middle"
                               style={{
-                                width: "1.6em",
-                                height: "1.6em",
+                                width: "1.7em",
+                                height: "1.7em",
                                 fontSize: "0.55em",
                                 fontWeight: 700,
-                                color: "#5a3a15",
+                                color: "#3d2810",
                                 background:
-                                  "radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, rgba(212, 175, 55, 0.18) 70%, transparent 100%)",
-                                border: "1.5px solid rgba(120, 75, 20, 0.6)",
+                                  "radial-gradient(circle at 35% 30%, #f4d57a 0%, #d4a738 55%, #8b5a1a 100%)",
+                                border: "1px solid rgba(60, 35, 8, 0.85)",
+                                boxShadow:
+                                  "inset 0 0 4px rgba(255, 240, 190, 0.7), inset 0 0 0 1px rgba(255, 240, 190, 0.4), 0 1px 2px rgba(60, 35, 8, 0.3)",
                                 borderRadius: "50%",
                                 fontFamily: "'Amiri', serif",
+                                textShadow: "0 1px 0 rgba(255, 245, 210, 0.5)",
                               }}
                             >
                               {toArabic(a.numberInSurah)}
