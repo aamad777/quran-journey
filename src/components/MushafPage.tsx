@@ -102,10 +102,23 @@ const MushafPage = ({
   });
   const reciter = getReciterById(reciterId);
 
+  const [headerStyle, setHeaderStyle] = useState<HeaderStyle>(() => {
+    try {
+      return (localStorage.getItem(HEADER_STYLE_KEY) as HeaderStyle) || "classic";
+    } catch {
+      return "classic";
+    }
+  });
+
   const changeReciter = (id: string) => {
     setReciterId(id);
     try { localStorage.setItem(RECITER_KEY, id); } catch {}
     stopAudio();
+  };
+
+  const changeHeaderStyle = (style: HeaderStyle) => {
+    setHeaderStyle(style);
+    try { localStorage.setItem(HEADER_STYLE_KEY, style); } catch {}
   };
 
   useEffect(() => {
