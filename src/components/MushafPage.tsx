@@ -480,6 +480,24 @@ const MushafPage = ({
               ))}
             </select>
           </div>
+          {/* Header Style Selector */}
+          <div className="flex items-center gap-1.5" title="نمط ترويسة السور">
+            <select
+              value={headerStyle}
+              onChange={(e) => changeHeaderStyle(e.target.value as HeaderStyle)}
+              className="h-8 max-w-[80px] sm:max-w-[100px] rounded-md text-xs font-bold outline-none px-2 truncate font-arabic"
+              style={{
+                background: `linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05))`,
+                color: "#8b5a1a",
+                border: `1.5px solid rgba(212, 175, 55, 0.5)`,
+                direction: "rtl",
+              }}
+            >
+              <option value="classic" style={{ color: "#000", fontWeight: 700 }}>تقليدي</option>
+              <option value="ornate" style={{ color: "#000", fontWeight: 700 }}>فاخر</option>
+              <option value="minimal" style={{ color: "#000", fontWeight: 700 }}>مختصر</option>
+            </select>
+          </div>
           <Button
             size="sm"
             variant="ghost"
