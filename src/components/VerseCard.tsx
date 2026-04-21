@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat, Download } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat, Download, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -135,6 +135,11 @@ const VerseCard = ({
     baseData: LetterData;
     tajweedRule: TajweedRuleInfo | null;
   } | null>(null);
+  const [readingStyle, setReadingStyle] = useState<"classic" | "minimal">(() => {
+    try { return (localStorage.getItem("quran_reading_style") as "classic" | "minimal") || "classic"; } catch { return "classic"; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
+  const isMinimal = readingStyle === "minimal";
 
   // Vivid gradient colors for active word during recitation
   const RECITE_GRADIENTS = [
@@ -333,12 +338,19 @@ const VerseCard = ({
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
       {/* Surah Header */}
       <div className="text-center mb-6">
-        <div className="inline-block px-6 py-2 rounded-full border backdrop-blur-sm" style={{ backgroundColor: themeCardBg, borderColor: themeAccentColor ? `${themeAccentColor}40` : undefined }}>
-          <span className="font-arabic text-lg font-bold" style={{ color: themeAccentColor || 'hsl(var(--gold))' }}>{primaryVerse.surahNameArabic}</span>
-          <span className="mx-3" style={{ color: themeMutedText }}>|</span>
-          <span className="font-display text-sm font-medium" style={{ color: themeTextColor }}>{primaryVerse.surahName}</span>
+        <div
+          className={isMinimal ? "inline-block px-8 py-2.5" : "inline-block px-6 py-2 rounded-full border backdrop-blur-sm"}
+          style={
+            isMinimal
+              ? { borderBottom: "2px solid #0d9488", backgroundColor: "transparent" }
+              : { backgroundColor: themeCardBg, borderColor: themeAccentColor ? `${themeAccentColor}40` : undefined }
+          }
+        >
+          <span className="font-arabic text-lg font-bold" style={{ color: isMinimal ? "#0d9488" : (themeAccentColor || 'hsl(var(--gold))') }}>{primaryVerse.surahNameArabic}</span>
+          <span className="mx-3" style={{ color: isMinimal ? "#94a3b8" : themeMutedText }}>|</span>
+          <span className="font-display text-sm font-medium" style={{ color: isMinimal ? "#1e293b" : themeTextColor }}>{primaryVerse.surahName}</span>
         </div>
-        <p className="text-sm mt-2 font-semibold" style={{ color: themeTextColor, textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
+        <p className="text-sm mt-2 font-semibold" style={{ color: isMinimal ? "#64748b" : themeTextColor, textShadow: isMinimal ? "none" : '0 1px 8px rgba(0,0,0,0.3)' }}>
           سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
           {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
@@ -346,8 +358,20 @@ const VerseCard = ({
 
       {/* Verse Card */}
       <div
-        className="rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed"
-        style={{
+        className={isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed"}
+        style={
+          isMinimal
+            ? {
+                backgroundColor: "#ffffff",
+                border: "1px solid #e8ecf1",
+                boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06)",
+                color: "#1e293b",
+                '--themed-muted': "#94a3b8",
+                '--themed-text': "#1e293b",
+                '--themed-accent': "#0d9488",
+                '--themed-card-bg': "#ffffff",
+              } as React.CSSProperties
+            : ({
           backgroundColor: themeCardBg,
           borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
           boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
@@ -357,7 +381,7 @@ const VerseCard = ({
           '--themed-text': themeTextColor,
           '--themed-accent': themeAccentColor,
           '--themed-card-bg': themeCardBg,
-        } as React.CSSProperties}
+        } as React.CSSProperties)}
       >
         {/* Verses */}
         {verses.map((v, i) => {
@@ -597,6 +621,21 @@ const VerseCard = ({
                   <SelectItem value="1">١</SelectItem>
                   <SelectItem value="2">٢</SelectItem>
                   <SelectItem value="3">٣</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Reading style */}
+            <div className="flex items-center gap-2">
+              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">نمط</span>
+              <Select value={readingStyle} onValueChange={(v) => setReadingStyle(v as "classic" | "minimal")}>
+                <SelectTrigger className="w-24 h-8 bg-background text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="classic">كلاسيكي</SelectItem>
+                  <SelectItem value="minimal">بساطة</SelectItem>
                 </SelectContent>
               </Select>
             </div>
