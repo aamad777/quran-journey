@@ -371,7 +371,7 @@ const VerseCard = ({
                 '--themed-accent': "#0d9488",
                 '--themed-card-bg': "#ffffff",
               } as React.CSSProperties
-            : {
+            : ({
           backgroundColor: themeCardBg,
           borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
           boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
@@ -381,7 +381,7 @@ const VerseCard = ({
           '--themed-text': themeTextColor,
           '--themed-accent': themeAccentColor,
           '--themed-card-bg': themeCardBg,
-        } as React.CSSProperties}
+        } as React.CSSProperties)}
       >
         {/* Verses */}
         {verses.map((v, i) => {
