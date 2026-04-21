@@ -641,26 +641,7 @@ const MushafPage = ({
                 return (
                   <div key={`${g.surah.number}-${gi}`}>
                     {showSurahHeader && (
-                      <div
-                        className="relative my-4 py-4 px-6 text-center"
-                        style={{
-                          background: `linear-gradient(180deg, rgba(212, 175, 55, 0.32) 0%, rgba(180, 130, 50, 0.22) 100%)`,
-                          border: `2px solid rgba(90, 58, 21, 0.7)`,
-                          outline: `1px solid rgba(90, 58, 21, 0.45)`,
-                          outlineOffset: "3px",
-                          boxShadow: `inset 0 0 28px rgba(212, 175, 55, 0.35), 0 2px 8px rgba(90, 58, 21, 0.15)`,
-                          borderRadius: "2px",
-                        }}
-                      >
-                        <div className="absolute -top-1 right-3 text-base font-bold" style={{ color: "rgba(90, 58, 21, 0.85)" }}>﴾</div>
-                        <div className="absolute -top-1 left-3 text-base font-bold" style={{ color: "rgba(90, 58, 21, 0.85)" }}>﴿</div>
-                        <h3 className="font-arabic text-2xl md:text-3xl font-bold tracking-wide" style={{ color: "#3d2810", textShadow: "0 1px 0 rgba(255, 245, 210, 0.5)" }}>
-                          سورة {g.surah.name.replace("سُورَةُ ", "")}
-                        </h3>
-                        <div className="mt-1 text-[10px] font-arabic tracking-[0.3em]" style={{ color: "rgba(90, 58, 21, 0.7)" }}>
-                          ◆ ◆ ◆
-                        </div>
-                      </div>
+                      <SurahHeader style={headerStyle} surahName={g.surah.name.replace("سُورَةُ ", "")} themeAccentColor={themeAccentColor} />
                     )}
                     {showBismillah && (
                       <div className="text-center my-4">
