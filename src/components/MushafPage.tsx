@@ -443,21 +443,22 @@ const MushafPage = ({
           </Button>
         </div>
         <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1" title="القارئ">
-            <Mic2 className="w-3.5 h-3.5" style={{ color: themeMutedText }} />
+          <div className="flex items-center gap-1.5" title="القارئ">
+            <Mic2 className="w-3.5 h-3.5" style={{ color: themeAccentColor }} />
             <select
               value={reciterId}
               onChange={(e) => changeReciter(e.target.value)}
-              className="h-8 max-w-[140px] sm:max-w-[180px] rounded-md text-xs font-bold outline-none px-1.5 truncate"
+              className="h-8 max-w-[150px] sm:max-w-[200px] rounded-md text-xs font-bold outline-none px-2 truncate font-arabic"
               style={{
-                backgroundColor: `${themeAccentColor}15`,
-                color: themeTextColor,
-                border: `1px solid ${themeAccentColor}30`,
+                background: `linear-gradient(135deg, ${themeAccentColor}25, ${themeAccentColor}10)`,
+                color: themeAccentColor,
+                border: `1.5px solid ${themeAccentColor}60`,
                 direction: "rtl",
+                textShadow: `0 0 1px ${themeAccentColor}40`,
               }}
             >
               {RECITERS.map((r) => (
-                <option key={r.id} value={r.id} style={{ color: "#000" }}>
+                <option key={r.id} value={r.id} style={{ color: "#000", fontWeight: 700 }}>
                   {r.name}
                 </option>
               ))}
@@ -530,41 +531,59 @@ const MushafPage = ({
         </div>
       )}
 
-      {/* Mushaf page — refined paper style */}
+      {/* Mushaf page — authentic Madani-style parchment */}
       <div
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
-        className="relative rounded-2xl overflow-hidden"
+        className="relative rounded-sm overflow-hidden"
         style={{
           background: `
-            radial-gradient(ellipse at top left, rgba(255, 250, 230, 0.9), transparent 60%),
-            radial-gradient(ellipse at bottom right, rgba(245, 225, 180, 0.7), transparent 60%),
-            linear-gradient(180deg, #fbf3dc 0%, #f5e8c2 50%, #ecd9a5 100%)
+            radial-gradient(ellipse at 50% 0%, rgba(255, 252, 240, 0.95), transparent 70%),
+            radial-gradient(ellipse at 50% 100%, rgba(232, 210, 165, 0.55), transparent 70%),
+            linear-gradient(180deg, #f7efd8 0%, #f1e6c2 50%, #e9dab0 100%)
           `,
-          boxShadow: `0 12px 40px ${themeAccentColor}30, inset 0 0 80px rgba(120, 75, 20, 0.12)`,
-          border: `1px solid rgba(120, 75, 20, 0.3)`,
+          backgroundColor: "#f4ead0",
+          boxShadow: `
+            0 18px 50px rgba(80, 50, 10, 0.28),
+            inset 0 0 100px rgba(140, 95, 30, 0.10),
+            inset 0 0 0 1px rgba(120, 75, 20, 0.15)
+          `,
+          border: `1px solid rgba(120, 75, 20, 0.45)`,
         }}
       >
+        {/* Subtle paper grain */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none opacity-[0.18] mix-blend-multiply"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.30  0 0 0 0 0.10  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+          }}
+        />
+
         {/* Top header strip */}
         <div
-          className="flex items-center justify-between px-4 py-2 text-xs font-bold"
+          className="relative flex items-center justify-between px-5 py-2.5 text-xs font-bold font-arabic"
           style={{
-            background: `linear-gradient(90deg, rgba(120, 75, 20, 0.18), rgba(212, 175, 55, 0.25), rgba(120, 75, 20, 0.18))`,
-            borderBottom: `2px double rgba(120, 75, 20, 0.4)`,
-            color: "#5a3a15",
+            background: `linear-gradient(90deg, rgba(90, 58, 21, 0.20) 0%, rgba(212, 175, 55, 0.35) 50%, rgba(90, 58, 21, 0.20) 100%)`,
+            borderBottom: `3px double rgba(90, 58, 21, 0.55)`,
+            color: "#3d2810",
+            textShadow: "0 1px 0 rgba(255, 245, 210, 0.6)",
           }}
         >
-          <span className="font-arabic">سورة {currentSurahName}</span>
-          <span className="font-arabic">الجزء {toArabic(currentJuz)}</span>
+          <span>سورة {currentSurahName}</span>
+          <span className="tracking-widest opacity-80">۞</span>
+          <span>الجزء {toArabic(currentJuz)}</span>
         </div>
 
         {/* Decorative double border */}
         <div
-          className="m-2 p-3 md:p-5 rounded-lg"
+          className="relative m-3 p-4 md:p-6 rounded-sm"
           style={{
-            border: `2px solid rgba(120, 75, 20, 0.5)`,
-            outline: `1px solid rgba(120, 75, 20, 0.3)`,
-            outlineOffset: "3px",
+            border: `2.5px solid rgba(90, 58, 21, 0.7)`,
+            outline: `1px solid rgba(90, 58, 21, 0.4)`,
+            outlineOffset: "4px",
+            boxShadow: "inset 0 0 30px rgba(140, 95, 30, 0.08)",
           }}
         >
           {loading ? (
@@ -589,38 +608,46 @@ const MushafPage = ({
                   <div key={`${g.surah.number}-${gi}`}>
                     {showSurahHeader && (
                       <div
-                        className="relative my-3 py-3 px-4 text-center rounded-md"
+                        className="relative my-4 py-4 px-6 text-center"
                         style={{
-                          background: `linear-gradient(90deg, rgba(120, 75, 20, 0.12), rgba(212, 175, 55, 0.3), rgba(120, 75, 20, 0.12))`,
-                          border: `1.5px solid rgba(120, 75, 20, 0.55)`,
-                          boxShadow: `inset 0 0 22px rgba(212, 175, 55, 0.2)`,
+                          background: `linear-gradient(180deg, rgba(212, 175, 55, 0.32) 0%, rgba(180, 130, 50, 0.22) 100%)`,
+                          border: `2px solid rgba(90, 58, 21, 0.7)`,
+                          outline: `1px solid rgba(90, 58, 21, 0.45)`,
+                          outlineOffset: "3px",
+                          boxShadow: `inset 0 0 28px rgba(212, 175, 55, 0.35), 0 2px 8px rgba(90, 58, 21, 0.15)`,
+                          borderRadius: "2px",
                         }}
                       >
-                        <div className="absolute top-1 right-2 text-xs" style={{ color: "rgba(120, 75, 20, 0.6)" }}>﴾</div>
-                        <div className="absolute top-1 left-2 text-xs" style={{ color: "rgba(120, 75, 20, 0.6)" }}>﴿</div>
-                        <h3 className="font-arabic text-xl md:text-2xl font-bold tracking-wide" style={{ color: "#5a3a15" }}>
+                        <div className="absolute -top-1 right-3 text-base font-bold" style={{ color: "rgba(90, 58, 21, 0.85)" }}>﴾</div>
+                        <div className="absolute -top-1 left-3 text-base font-bold" style={{ color: "rgba(90, 58, 21, 0.85)" }}>﴿</div>
+                        <h3 className="font-arabic text-2xl md:text-3xl font-bold tracking-wide" style={{ color: "#3d2810", textShadow: "0 1px 0 rgba(255, 245, 210, 0.5)" }}>
                           سورة {g.surah.name.replace("سُورَةُ ", "")}
                         </h3>
+                        <div className="mt-1 text-[10px] font-arabic tracking-[0.3em]" style={{ color: "rgba(90, 58, 21, 0.7)" }}>
+                          ◆ ◆ ◆
+                        </div>
                       </div>
                     )}
                     {showBismillah && (
-                      <div className="text-center my-3">
+                      <div className="text-center my-4">
                         <p
                           className="font-arabic text-2xl md:text-3xl font-bold"
-                          style={{ color: "#3a2510" }}
+                          style={{ color: "#1a1208", letterSpacing: "0.02em" }}
                         >
                           بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
                         </p>
                       </div>
                     )}
                     <p
-                      className="font-arabic text-justify"
+                      className="font-arabic text-justify relative"
                       style={{
-                        color: "#1a1208",
-                        fontSize: "clamp(20px, 4.5vw, 26px)",
-                        lineHeight: "2.4",
+                        color: "#0f0a04",
+                        fontSize: "clamp(21px, 4.6vw, 28px)",
+                        lineHeight: "2.5",
                         textAlignLast: "center",
-                        wordSpacing: "0.05em",
+                        wordSpacing: "0.06em",
+                        fontWeight: 500,
+                        textShadow: "0 0.5px 0 rgba(255, 245, 210, 0.4)",
                       }}
                     >
                       {g.ayahs.map((a) => {
@@ -677,16 +704,19 @@ const MushafPage = ({
                             <span
                               className="inline-flex items-center justify-center mx-0.5 align-middle"
                               style={{
-                                width: "1.6em",
-                                height: "1.6em",
+                                width: "1.7em",
+                                height: "1.7em",
                                 fontSize: "0.55em",
                                 fontWeight: 700,
-                                color: "#5a3a15",
+                                color: "#3d2810",
                                 background:
-                                  "radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, rgba(212, 175, 55, 0.18) 70%, transparent 100%)",
-                                border: "1.5px solid rgba(120, 75, 20, 0.6)",
+                                  "radial-gradient(circle at 35% 30%, #f4d57a 0%, #d4a738 55%, #8b5a1a 100%)",
+                                border: "1px solid rgba(60, 35, 8, 0.85)",
+                                boxShadow:
+                                  "inset 0 0 4px rgba(255, 240, 190, 0.7), inset 0 0 0 1px rgba(255, 240, 190, 0.4), 0 1px 2px rgba(60, 35, 8, 0.3)",
                                 borderRadius: "50%",
                                 fontFamily: "'Amiri', serif",
+                                textShadow: "0 1px 0 rgba(255, 245, 210, 0.5)",
                               }}
                             >
                               {toArabic(a.numberInSurah)}
@@ -717,13 +747,15 @@ const MushafPage = ({
           <span
             className="inline-flex items-center justify-center font-arabic font-bold"
             style={{
-              minWidth: "2.5rem",
-              height: "2.5rem",
+              minWidth: "2.6rem",
+              height: "2.6rem",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(212, 175, 55, 0.35), rgba(120, 75, 20, 0.15))",
-              border: "1.5px solid rgba(120, 75, 20, 0.55)",
-              color: "#5a3a15",
-              fontSize: "0.95rem",
+              background: "radial-gradient(circle at 35% 30%, #f4d57a 0%, #d4a738 55%, #8b5a1a 100%)",
+              border: "1.5px solid rgba(60, 35, 8, 0.85)",
+              boxShadow: "inset 0 0 6px rgba(255, 240, 190, 0.7), 0 2px 4px rgba(60, 35, 8, 0.25)",
+              color: "#3d2810",
+              fontSize: "1rem",
+              textShadow: "0 1px 0 rgba(255, 245, 210, 0.6)",
             }}
           >
             {toArabic(page)}
