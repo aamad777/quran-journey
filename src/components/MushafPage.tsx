@@ -639,13 +639,15 @@ const MushafPage = ({
                       </div>
                     )}
                     <p
-                      className="font-arabic text-justify"
+                      className="font-arabic text-justify relative"
                       style={{
-                        color: "#1a1208",
-                        fontSize: "clamp(20px, 4.5vw, 26px)",
-                        lineHeight: "2.4",
+                        color: "#0f0a04",
+                        fontSize: "clamp(21px, 4.6vw, 28px)",
+                        lineHeight: "2.5",
                         textAlignLast: "center",
-                        wordSpacing: "0.05em",
+                        wordSpacing: "0.06em",
+                        fontWeight: 500,
+                        textShadow: "0 0.5px 0 rgba(255, 245, 210, 0.4)",
                       }}
                     >
                       {g.ayahs.map((a) => {
