@@ -45,6 +45,9 @@ interface Ayah {
 const BOOKMARK_KEY = "quran_bookmarked_pages";
 const LAST_PAGE_KEY = "quran_last_mushaf_page";
 const COMPLETED_PAGES_KEY = "quran_completed_pages";
+const HEADER_STYLE_KEY = "quran_mushaf_header_style";
+
+export type HeaderStyle = "classic" | "ornate" | "minimal";
 
 const getStoredArr = (key: string): number[] => {
   try {
