@@ -62,6 +62,139 @@ const toArabic = (n: number) => n.toLocaleString("ar-EG");
 const SURAH_HAS_BISMILLAH_INLINE = 1;
 const SURAH_NO_BISMILLAH = 9;
 
+interface SurahHeaderProps {
+  style: HeaderStyle;
+  surahName: string;
+  themeAccentColor: string;
+}
+
+// Classic ornate header - traditional Madani style with gold gradient
+const ClassicHeader = ({ surahName }: { surahName: string }) => (
+  <div
+    className="relative my-4 py-4 px-6 text-center"
+    style={{
+      background: `linear-gradient(180deg, rgba(212, 175, 55, 0.32) 0%, rgba(180, 130, 50, 0.22) 100%)`,
+      border: `2px solid rgba(90, 58, 21, 0.7)`,
+      outline: `1px solid rgba(90, 58, 21, 0.45)`,
+      outlineOffset: "3px",
+      boxShadow: `inset 0 0 28px rgba(212, 175, 55, 0.35), 0 2px 8px rgba(90, 58, 21, 0.15)`,
+      borderRadius: "2px",
+    }}
+  >
+    <div className="absolute -top-1 right-3 text-base font-bold" style={{ color: "rgba(90, 58, 21, 0.85)" }}>﴾</div>
+    <div className="absolute -top-1 left-3 text-base font-bold" style={{ color: "rgba(90, 58, 21, 0.85)" }}>﴿</div>
+    <h3 className="font-arabic text-2xl md:text-3xl font-bold tracking-wide" style={{ color: "#3d2810", textShadow: "0 1px 0 rgba(255, 245, 210, 0.5)" }}>
+      سورة {surahName}
+    </h3>
+    <div className="mt-1 text-[10px] font-arabic tracking-[0.3em]" style={{ color: "rgba(90, 58, 21, 0.7)" }}>
+      ◆ ◆ ◆
+    </div>
+  </div>
+);
+
+// Ornate header - elaborate Islamic geometric style with ornamental borders
+const OrnateHeader = ({ surahName }: { surahName: string }) => (
+  <div className="relative my-4">
+    {/* Outer frame */}
+    <div
+      className="py-5 px-8 text-center relative"
+      style={{
+        background: `linear-gradient(145deg, #f9f3dc 0%, #f0e5c0 50%, #e6d5a5 100%)`,
+        border: `3px double rgba(139, 90, 26, 0.8)`,
+        borderRadius: "4px",
+        boxShadow: `
+          inset 0 0 40px rgba(212, 175, 55, 0.25),
+          0 4px 12px rgba(80, 50, 15, 0.2),
+          inset 0 0 0 1px rgba(212, 175, 55, 0.4)
+        `,
+      }}
+    >
+      {/* Corner ornaments */}
+      <div className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center text-lg" style={{ color: "rgba(139, 90, 26, 0.9)" }}>۝</div>
+      <div className="absolute top-1 left-1 w-6 h-6 flex items-center justify-center text-lg" style={{ color: "rgba(139, 90, 26, 0.9)" }}>۝</div>
+      <div className="absolute bottom-1 right-1 w-6 h-6 flex items-center justify-center text-lg" style={{ color: "rgba(139, 90, 26, 0.9)" }}>۝</div>
+      <div className="absolute bottom-1 left-1 w-6 h-6 flex items-center justify-center text-lg" style={{ color: "rgba(139, 90, 26, 0.9)" }}>۝</div>
+      
+      {/* Inner decorative band */}
+      <div
+        className="absolute top-2 left-1/2 -translate-x-1/2 w-[70%] h-0.5"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.8), rgba(139, 90, 26, 0.9), rgba(212, 175, 55, 0.8), transparent)`,
+        }}
+      />
+      <div
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-0.5"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.8), rgba(139, 90, 26, 0.9), rgba(212, 175, 55, 0.8), transparent)`,
+        }}
+      />
+      
+      {/* Surah name with elaborate styling */}
+      <h3
+        className="font-arabic text-2xl md:text-3xl font-bold relative z-10"
+        style={{
+          color: "#5a3a15",
+          textShadow: "0 1px 0 rgba(255, 245, 210, 0.8), 0 2px 2px rgba(139, 90, 26, 0.15)",
+          letterSpacing: "0.08em",
+        }}
+      >
+        <span className="mx-2 text-amber-700">﴾</span>
+        سورة {surahName}
+        <span className="mx-2 text-amber-700">﴿</span>
+      </h3>
+      
+      {/* Decorative divider */}
+      <div className="mt-2 flex items-center justify-center gap-2">
+        <span className="text-xs" style={{ color: "rgba(139, 90, 26, 0.6)" }}>❋</span>
+        <div className="w-12 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(139, 90, 26, 0.5))" }} />
+        <span className="text-xs" style={{ color: "rgba(139, 90, 26, 0.6)" }}>۞</span>
+        <div className="w-12 h-px" style={{ background: "linear-gradient(270deg, transparent, rgba(139, 90, 26, 0.5))" }} />
+        <span className="text-xs" style={{ color: "rgba(139, 90, 26, 0.6)" }}>❋</span>
+      </div>
+    </div>
+  </div>
+);
+
+// Minimal header - clean and elegant with subtle gold accents
+const MinimalHeader = ({ surahName, themeAccentColor }: { surahName: string; themeAccentColor: string }) => (
+  <div
+    className="my-4 py-3 px-6 text-center"
+    style={{
+      background: `linear-gradient(180deg, rgba(255, 250, 240, 0.5) 0%, rgba(247, 242, 230, 0.3) 100%)`,
+      borderBottom: `2px solid rgba(139, 90, 26, 0.4)`,
+      borderTop: `1px solid rgba(139, 90, 26, 0.15)`,
+    }}
+  >
+    <h3
+      className="font-arabic text-2xl md:text-3xl font-bold"
+      style={{
+        color: "#4a3a2a",
+        letterSpacing: "0.05em",
+      }}
+    >
+      سورة {surahName}
+    </h3>
+    <div
+      className="mt-2 mx-auto w-16 h-0.5 rounded-full"
+      style={{
+        background: `linear-gradient(90deg, transparent, ${themeAccentColor || "rgba(212, 175, 55, 0.8)"}, transparent)`,
+      }}
+    />
+  </div>
+);
+
+const SurahHeader = ({ style, surahName, themeAccentColor }: SurahHeaderProps) => {
+  switch (style) {
+    case "ornate":
+      return <OrnateHeader surahName={surahName} />;
+    case "minimal":
+      return <MinimalHeader surahName={surahName} themeAccentColor={themeAccentColor} />;
+    case "classic":
+    default:
+      return <ClassicHeader surahName={surahName} />;
+  }
+};
+
 const RECITER_KEY = "quran_mushaf_reciter";
 
 const MushafPage = ({
