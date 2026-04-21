@@ -443,21 +443,22 @@ const MushafPage = ({
           </Button>
         </div>
         <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1" title="القارئ">
-            <Mic2 className="w-3.5 h-3.5" style={{ color: themeMutedText }} />
+          <div className="flex items-center gap-1.5" title="القارئ">
+            <Mic2 className="w-3.5 h-3.5" style={{ color: themeAccentColor }} />
             <select
               value={reciterId}
               onChange={(e) => changeReciter(e.target.value)}
-              className="h-8 max-w-[140px] sm:max-w-[180px] rounded-md text-xs font-bold outline-none px-1.5 truncate"
+              className="h-8 max-w-[150px] sm:max-w-[200px] rounded-md text-xs font-bold outline-none px-2 truncate font-arabic"
               style={{
-                backgroundColor: `${themeAccentColor}15`,
-                color: themeTextColor,
-                border: `1px solid ${themeAccentColor}30`,
+                background: `linear-gradient(135deg, ${themeAccentColor}25, ${themeAccentColor}10)`,
+                color: themeAccentColor,
+                border: `1.5px solid ${themeAccentColor}60`,
                 direction: "rtl",
+                textShadow: `0 0 1px ${themeAccentColor}40`,
               }}
             >
               {RECITERS.map((r) => (
-                <option key={r.id} value={r.id} style={{ color: "#000" }}>
+                <option key={r.id} value={r.id} style={{ color: "#000", fontWeight: 700 }}>
                   {r.name}
                 </option>
               ))}
