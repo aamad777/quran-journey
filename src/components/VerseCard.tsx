@@ -624,6 +624,21 @@ const VerseCard = ({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Reading style */}
+            <div className="flex items-center gap-2">
+              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">نمط</span>
+              <Select value={readingStyle} onValueChange={(v) => setReadingStyle(v as "classic" | "minimal")}>
+                <SelectTrigger className="w-24 h-8 bg-background text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="classic">كلاسيكي</SelectItem>
+                  <SelectItem value="minimal">بساطة</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Tajweed Legend */}
