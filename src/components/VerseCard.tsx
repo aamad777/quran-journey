@@ -135,6 +135,11 @@ const VerseCard = ({
     baseData: LetterData;
     tajweedRule: TajweedRuleInfo | null;
   } | null>(null);
+  const [readingStyle, setReadingStyle] = useState<"classic" | "minimal">(() => {
+    try { return (localStorage.getItem("quran_reading_style") as "classic" | "minimal") || "classic"; } catch { return "classic"; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
+  const isMinimal = readingStyle === "minimal";
 
   // Vivid gradient colors for active word during recitation
   const RECITE_GRADIENTS = [
