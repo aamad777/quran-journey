@@ -101,6 +101,10 @@ const VerseCard = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false);
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
+  // Resolved playback URLs — replaced with local blob URLs when cached.
+  const [resolvedUrls, setResolvedUrls] = useState<string[]>([]);
+  const [cachedFlags, setCachedFlags] = useState<boolean[]>([]);
+  const [downloadingCache, setDownloadingCache] = useState(false);
   const [autoPlay, setAutoPlay] = useState(() => {
     try { return localStorage.getItem("quran_autoplay") === "true"; } catch { return false; }
   });
