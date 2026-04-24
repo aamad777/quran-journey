@@ -402,6 +402,13 @@ const Index = () => {
             themeCardBg={bgTheme.cardBg}
             themeAccentColor={bgTheme.btnBg}
           />
+        ) : activeTab === "downloads" ? (
+          <DownloadsManager
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
+          />
         ) : isLoading || verses.length === 0 ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
