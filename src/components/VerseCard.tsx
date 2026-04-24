@@ -206,13 +206,36 @@ const VerseCard = ({
     setCurrentAudioIndex(0);
   }, [audioUrl]);
 
+  // Resolve cached blob URLs (or fallback to originals) whenever audioUrls change.
   useEffect(() => {
-    if (autoPlay && audioRef.current && audioUrls.length > 0) {
+    let cancelled = false;
+    (async () => {
+      if (!audioUrls || audioUrls.length === 0) {
+        setResolvedUrls([]);
+        setCachedFlags([]);
+        return;
+      }
+      const [resolved, flags] = await Promise.all([
+        Promise.all(audioUrls.map((u) => resolveAudioUrl(u))),
+        Promise.all(audioUrls.map((u) => hasCached(u))),
+      ]);
+      if (!cancelled) {
+        setResolvedUrls(resolved);
+        setCachedFlags(flags);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [audioUrls]);
+
+  useEffect(() => {
+    if (autoPlay && audioRef.current && resolvedUrls.length > 0) {
       setCurrentAudioIndex(0);
-      audioRef.current.src = audioUrls[0];
+      audioRef.current.src = resolvedUrls[0];
       audioRef.current.play().catch(() => {});
     }
-  }, [audioUrls, autoPlay]);
+  }, [resolvedUrls, autoPlay]);
 
   useEffect(() => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
