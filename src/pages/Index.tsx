@@ -14,6 +14,7 @@ import SurahList from "@/components/SurahList";
 import VerseSearch from "@/components/VerseSearch";
 import AlphabetTajweed from "@/components/AlphabetTajweed";
 import MushafPage from "@/components/MushafPage";
+import DownloadsManager from "@/components/DownloadsManager";
 
 // ✅ FIXED merged icons
 import {
@@ -29,7 +30,8 @@ import {
   Search,
   Type,
   BookA,
-  BookMarked
+  BookMarked,
+  Download
 } from "lucide-react";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -116,7 +118,7 @@ const Index = () => {
   } = useQuranProgress(user);
 
   const [activeTab, setActiveTab] = useState<
-    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page"
+    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page" | "downloads"
   >(() => {
     try {
       return (
@@ -346,6 +348,7 @@ const Index = () => {
               { key: "page" as const, icon: <BookMarked className="w-4 h-4" />, label: "صفحة" },
               { key: "search" as const, icon: <Search className="w-4 h-4" />, label: "بحث" },
               { key: "alphabets" as const, icon: <BookA className="w-4 h-4" />, label: "حروف" },
+              { key: "downloads" as const, icon: <Download className="w-4 h-4" />, label: "تحميلات" },
             ]).map((tab) => (
               <button
                 key={tab.key}
@@ -394,6 +397,13 @@ const Index = () => {
           />
         ) : activeTab === "alphabets" ? (
           <AlphabetTajweed
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
+          />
+        ) : activeTab === "downloads" ? (
+          <DownloadsManager
             themeTextColor={bgTheme.textColor}
             themeMutedText={bgTheme.mutedText}
             themeCardBg={bgTheme.cardBg}

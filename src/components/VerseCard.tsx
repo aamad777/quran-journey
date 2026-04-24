@@ -25,6 +25,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { resolveAudioUrl, downloadAndCache, hasCached } from "@/lib/audioCache";
+import { toast } from "@/hooks/use-toast";
 
 type ReciterSource =
   | { type: "alquran"; id: string }
@@ -99,6 +101,10 @@ const VerseCard = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false);
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
+  // Resolved playback URLs — replaced with local blob URLs when cached.
+  const [resolvedUrls, setResolvedUrls] = useState<string[]>([]);
+  const [cachedFlags, setCachedFlags] = useState<boolean[]>([]);
+  const [downloadingCache, setDownloadingCache] = useState(false);
   const [autoPlay, setAutoPlay] = useState(() => {
     try { return localStorage.getItem("quran_autoplay") === "true"; } catch { return false; }
   });
@@ -200,13 +206,36 @@ const VerseCard = ({
     setCurrentAudioIndex(0);
   }, [audioUrl]);
 
+  // Resolve cached blob URLs (or fallback to originals) whenever audioUrls change.
   useEffect(() => {
-    if (autoPlay && audioRef.current && audioUrls.length > 0) {
+    let cancelled = false;
+    (async () => {
+      if (!audioUrls || audioUrls.length === 0) {
+        setResolvedUrls([]);
+        setCachedFlags([]);
+        return;
+      }
+      const [resolved, flags] = await Promise.all([
+        Promise.all(audioUrls.map((u) => resolveAudioUrl(u))),
+        Promise.all(audioUrls.map((u) => hasCached(u))),
+      ]);
+      if (!cancelled) {
+        setResolvedUrls(resolved);
+        setCachedFlags(flags);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [audioUrls]);
+
+  useEffect(() => {
+    if (autoPlay && audioRef.current && resolvedUrls.length > 0) {
       setCurrentAudioIndex(0);
-      audioRef.current.src = audioUrls[0];
+      audioRef.current.src = resolvedUrls[0];
       audioRef.current.play().catch(() => {});
     }
-  }, [audioUrls, autoPlay]);
+  }, [resolvedUrls, autoPlay]);
 
   useEffect(() => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
@@ -218,7 +247,7 @@ const VerseCard = ({
       audioRef.current.pause();
     } else {
       // Ensure we're playing the right verse audio
-      const url = audioUrls[currentAudioIndex] || audioUrl;
+      const url = resolvedUrls[currentAudioIndex] || audioUrls[currentAudioIndex] || audioUrl;
       if (audioRef.current.src !== url) {
         audioRef.current.src = url;
       }
@@ -251,7 +280,7 @@ const VerseCard = ({
       setCurrentAudioIndex(nextIndex);
       setTimeout(() => {
         if (audioRef.current) {
-          audioRef.current.src = audioUrls[nextIndex];
+          audioRef.current.src = resolvedUrls[nextIndex] || audioUrls[nextIndex];
           audioRef.current.play().catch(() => {});
         }
       }, 500);
@@ -761,25 +790,43 @@ const VerseCard = ({
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full border-border hover:bg-primary/10"
+              disabled={downloadingCache || audioUrls.length === 0}
+              className="rounded-full border-border hover:bg-primary/10 relative"
               onClick={async () => {
+                if (audioUrls.length === 0) return;
+                setDownloadingCache(true);
+                let saved = 0;
+                let already = 0;
                 for (let i = 0; i < audioUrls.length; i++) {
                   const url = audioUrls[i];
                   const v = verses[i] || verses[0];
                   try {
-                    const res = await fetch(url);
-                    const blob = await res.blob();
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(blob);
-                    a.download = `${v.surahNumber}_${v.ayahNumber}_${selectedReciter}.mp3`;
-                    a.click();
-                    URL.revokeObjectURL(a.href);
-                  } catch {}
+                    const wasNew = await downloadAndCache(url, {
+                      reciter: selectedReciter,
+                      surah: v.surahNumber,
+                      ayah: v.ayahNumber,
+                    });
+                    if (wasNew) saved++;
+                    else already++;
+                  } catch (e) {
+                    console.error("Cache failed:", e);
+                  }
                 }
+                // Refresh cached flags
+                const flags = await Promise.all(audioUrls.map((u) => hasCached(u)));
+                setCachedFlags(flags);
+                setDownloadingCache(false);
+                toast({
+                  title: "تم الحفظ للاستماع بدون إنترنت",
+                  description: `${saved} ملف جديد · ${already} موجود مسبقاً`,
+                });
               }}
-              title="تحميل الصوت"
+              title="حفظ الصوت للاستماع بدون إنترنت"
             >
-              <Download className="w-4 h-4" />
+              <Download className={`w-4 h-4 ${cachedFlags.length > 0 && cachedFlags.every(Boolean) ? "text-emerald-500" : ""}`} />
+              {downloadingCache && (
+                <span className="absolute inset-0 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+              )}
             </Button>
           </div>
         </div>
@@ -839,7 +886,7 @@ const VerseCard = ({
 
         <audio
           ref={audioRef}
-          src={audioUrls[0] || audioUrl}
+          src={resolvedUrls[0] || audioUrls[0] || audioUrl}
           onEnded={() => { handleEnded(); setActiveWordIndex(null); }}
           onPause={() => { setIsPlaying(false); isPlayingRef.current = false; setActiveWordIndex(null); }}
           onPlay={() => { setIsPlaying(true); isPlayingRef.current = true; }}
