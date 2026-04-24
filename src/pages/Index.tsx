@@ -14,6 +14,7 @@ import SurahList from "@/components/SurahList";
 import VerseSearch from "@/components/VerseSearch";
 import AlphabetTajweed from "@/components/AlphabetTajweed";
 import MushafPage from "@/components/MushafPage";
+import DownloadsManager from "@/components/DownloadsManager";
 
 // ✅ FIXED merged icons
 import {
@@ -29,7 +30,8 @@ import {
   Search,
   Type,
   BookA,
-  BookMarked
+  BookMarked,
+  Download
 } from "lucide-react";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -116,7 +118,7 @@ const Index = () => {
   } = useQuranProgress(user);
 
   const [activeTab, setActiveTab] = useState<
-    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page"
+    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page" | "downloads"
   >(() => {
     try {
       return (
