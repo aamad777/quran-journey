@@ -25,6 +25,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { resolveAudioUrl, downloadAndCache, hasCached } from "@/lib/audioCache";
+import { toast } from "@/hooks/use-toast";
 
 type ReciterSource =
   | { type: "alquran"; id: string }
