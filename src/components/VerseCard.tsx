@@ -886,7 +886,7 @@ const VerseCard = ({
 
         <audio
           ref={audioRef}
-          src={audioUrls[0] || audioUrl}
+          src={resolvedUrls[0] || audioUrls[0] || audioUrl}
           onEnded={() => { handleEnded(); setActiveWordIndex(null); }}
           onPause={() => { setIsPlaying(false); isPlayingRef.current = false; setActiveWordIndex(null); }}
           onPlay={() => { setIsPlaying(true); isPlayingRef.current = true; }}
