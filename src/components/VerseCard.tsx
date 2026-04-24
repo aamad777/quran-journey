@@ -247,7 +247,7 @@ const VerseCard = ({
       audioRef.current.pause();
     } else {
       // Ensure we're playing the right verse audio
-      const url = audioUrls[currentAudioIndex] || audioUrl;
+      const url = resolvedUrls[currentAudioIndex] || audioUrls[currentAudioIndex] || audioUrl;
       if (audioRef.current.src !== url) {
         audioRef.current.src = url;
       }
@@ -280,7 +280,7 @@ const VerseCard = ({
       setCurrentAudioIndex(nextIndex);
       setTimeout(() => {
         if (audioRef.current) {
-          audioRef.current.src = audioUrls[nextIndex];
+          audioRef.current.src = resolvedUrls[nextIndex] || audioUrls[nextIndex];
           audioRef.current.play().catch(() => {});
         }
       }, 500);
