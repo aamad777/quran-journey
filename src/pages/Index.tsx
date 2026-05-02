@@ -269,6 +269,23 @@ const Index = () => {
               <span className="text-sm font-arabic font-bold text-primary-foreground">قٌ</span>
             </div>
             <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            {/* Compact heart progress next to brand */}
+            <div className="relative w-7 h-7 shrink-0" title={`${progressPercent}٪ مكتمل`}>
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="3" style={{ stroke: `${bgTheme.btnBg}20` }} />
+                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="3" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Heart
+                  className="w-3 h-3 fill-current"
+                  style={{
+                    color: bgTheme.btnBg,
+                    filter: `drop-shadow(0 0 ${2 + progressPercent * 0.05}px ${bgTheme.btnBg})`,
+                    animation: `heartbeat ${Math.max(0.3, 1.5 - (progressPercent * 0.012))}s ease-in-out infinite`,
+                  }}
+                />
+              </div>
+            </div>
           </button>
           <div className="flex items-center gap-1">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
