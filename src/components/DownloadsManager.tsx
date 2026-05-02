@@ -183,7 +183,7 @@ const DownloadsManager = ({
       <div
         className="rounded-2xl p-5 backdrop-blur-md"
         style={{
-          backgroundColor: themeCardBg,
+          "--themed-card-bg": themeCardBg as any,
           border: `1px solid ${themeMutedText}20`,
         }}
       >
@@ -254,7 +254,7 @@ const DownloadsManager = ({
       <div
         className="rounded-2xl p-5 backdrop-blur-md space-y-4"
         style={{
-          backgroundColor: themeCardBg,
+          "--themed-card-bg": themeCardBg as any,
           border: `1px solid ${themeMutedText}20`,
         }}
       >

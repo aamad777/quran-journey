@@ -474,7 +474,7 @@ const MushafPage = ({
       {/* Juz progress card */}
       <div
         className="rounded-xl backdrop-blur-md p-3 space-y-2"
-        style={{ backgroundColor: themeCardBg, border: `1px solid ${themeMutedText}20` }}
+        style={{ "--themed-card-bg": themeCardBg as any, border: `1px solid ${themeMutedText}20` }}
       >
         <div className="flex items-center justify-between gap-2">
           <button
@@ -543,7 +543,7 @@ const MushafPage = ({
       {/* Compact toolbar */}
       <div
         className="rounded-xl backdrop-blur-md p-2 flex items-center justify-between gap-2 flex-wrap"
-        style={{ backgroundColor: themeCardBg, border: `1px solid ${themeMutedText}20` }}
+        style={{ "--themed-card-bg": themeCardBg as any, border: `1px solid ${themeMutedText}20` }}
       >
         <div className="flex items-center gap-1">
           <Button
@@ -669,7 +669,7 @@ const MushafPage = ({
       {showBookmarks && (
         <div
           className="rounded-xl backdrop-blur-md p-3"
-          style={{ backgroundColor: themeCardBg, border: `1px solid ${themeMutedText}20` }}
+          style={{ "--themed-card-bg": themeCardBg as any, border: `1px solid ${themeMutedText}20` }}
         >
           {bookmarks.length === 0 ? (
             <p className="text-sm text-center py-2" style={{ color: themeMutedText }}>
