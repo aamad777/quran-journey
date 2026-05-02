@@ -31,7 +31,9 @@ import {
   Type,
   BookA,
   BookMarked,
-  Download
+  Download,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -128,6 +130,20 @@ const Index = () => {
       return "read";
     }
   });
+
+  const [railPinned, setRailPinned] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("quran_rail_pinned") === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("quran_rail_pinned", railPinned ? "1" : "0");
+    } catch {}
+  }, [railPinned]);
 
   const [verseCount, setVerseCount] = useState(() => {
     try {
@@ -340,18 +356,31 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Floating Right-Side Tab Rail — auto-hides, expands on hover */}
+      {/* Floating Right-Side Tab Rail — toggle button + hover expand */}
       <div
-        className="fixed top-1/2 right-0 -translate-y-1/2 z-30 group"
+        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 group ${railPinned ? 'is-pinned' : ''}`}
         dir="ltr"
       >
-        {/* Thin edge indicator visible when idle */}
+        {/* Toggle button — always visible on the edge */}
+        <button
+          onClick={() => setRailPinned(p => !p)}
+          aria-label={railPinned ? "إغلاق شريط التبويبات" : "فتح شريط التبويبات"}
+          className="absolute top-1/2 -translate-y-1/2 -left-4 w-8 h-12 flex items-center justify-center rounded-l-xl backdrop-blur-md border border-r-0 shadow-lg transition-all duration-200 hover:scale-110 active:scale-95"
+          style={{
+            backgroundColor: `${bgTheme.cardBg}f0`,
+            borderColor: `${bgTheme.mutedText}25`,
+            color: bgTheme.btnBg,
+          }}
+        >
+          {railPinned ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        </button>
+        {/* Thin edge indicator visible when idle (hidden when pinned) */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-24 rounded-l-full transition-opacity duration-300 group-hover:opacity-0"
+          className={`absolute top-1/2 -translate-y-1/2 right-0 w-1 h-24 rounded-l-full transition-opacity duration-300 group-hover:opacity-0 ${railPinned ? 'opacity-0' : ''}`}
           style={{ backgroundColor: `${bgTheme.btnBg}60` }}
         />
         <div
-          className="flex flex-col gap-1.5 p-2 rounded-l-2xl backdrop-blur-xl border border-r-0 shadow-2xl transition-all duration-300 ease-out opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0"
+          className={`flex flex-col gap-1.5 p-2 rounded-l-2xl backdrop-blur-xl border border-r-0 shadow-2xl transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0 ${railPinned ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'}`}
           style={{
             backgroundColor: `${bgTheme.cardBg}f5`,
             borderColor: `${bgTheme.mutedText}25`,
