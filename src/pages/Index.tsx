@@ -31,7 +31,9 @@ import {
   Type,
   BookA,
   BookMarked,
-  Download
+  Download,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
