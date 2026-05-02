@@ -361,6 +361,24 @@ const Index = () => {
             boxShadow: `0 8px 32px ${bgTheme.btnBg}25`,
           }}
         >
+          {/* Reading progress summary */}
+          <div dir="rtl" className="px-2 pt-1 pb-2 border-b" style={{ borderColor: `${bgTheme.mutedText}20` }}>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-[11px] font-arabic font-semibold" style={{ color: bgTheme.textColor }}>
+                  {versesRead.toLocaleString("ar-EG")} مقروءة
+                </span>
+                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪</span>
+              </div>
+              <div className="h-1 w-full rounded-full overflow-hidden" style={{ backgroundColor: `${bgTheme.btnBg}15` }}>
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})` }} />
+              </div>
+              <span className="text-[10px] font-arabic" style={{ color: bgTheme.mutedText }}>
+                {versesRemaining.toLocaleString("ar-EG")} آية متبقية
+              </span>
+            </div>
+          </div>
+
           {([
             { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
             { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
