@@ -337,34 +337,53 @@ const Index = () => {
               <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})` }} />
             </div>
           </div>
-          {/* Tab Bar */}
-          <div className="flex gap-2 px-3 py-2.5 border-t overflow-x-auto" style={{ borderColor: `${bgTheme.mutedText}12` }}>
-            {([
-              { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
-              { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
-              { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
-              { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
-              { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
-              { key: "page" as const, icon: <BookMarked className="w-4 h-4" />, label: "صفحة" },
-              { key: "search" as const, icon: <Search className="w-4 h-4" />, label: "بحث" },
-              { key: "alphabets" as const, icon: <BookA className="w-4 h-4" />, label: "حروف" },
-              { key: "downloads" as const, icon: <Download className="w-4 h-4" />, label: "تحميلات" },
-            ]).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
-                style={
-                  activeTab === tab.key
-                    ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40` }
-                    : { backgroundColor: `${bgTheme.mutedText}15`, color: bgTheme.mutedText }
-                }
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        </div>
+      </div>
+
+      {/* Floating Right-Side Tab Rail — auto-hides, expands on hover */}
+      <div
+        className="fixed top-1/2 right-0 -translate-y-1/2 z-30 group"
+        dir="ltr"
+      >
+        {/* Thin edge indicator visible when idle */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-24 rounded-l-full transition-opacity duration-300 group-hover:opacity-0"
+          style={{ backgroundColor: `${bgTheme.btnBg}60` }}
+        />
+        <div
+          className="flex flex-col gap-1.5 p-2 rounded-l-2xl backdrop-blur-xl border border-r-0 shadow-2xl transition-all duration-300 ease-out opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0"
+          style={{
+            backgroundColor: `${bgTheme.cardBg}f5`,
+            borderColor: `${bgTheme.mutedText}25`,
+            boxShadow: `0 8px 32px ${bgTheme.btnBg}25`,
+          }}
+        >
+          {([
+            { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
+            { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
+            { key: "draw" as const, icon: <PenTool className="w-4 h-4" />, label: "رسم" },
+            { key: "type" as const, icon: <Keyboard className="w-4 h-4" />, label: "كتابة" },
+            { key: "stats" as const, icon: <BarChart3 className="w-4 h-4" />, label: "إحصائيات" },
+            { key: "page" as const, icon: <BookMarked className="w-4 h-4" />, label: "صفحة" },
+            { key: "search" as const, icon: <Search className="w-4 h-4" />, label: "بحث" },
+            { key: "alphabets" as const, icon: <BookA className="w-4 h-4" />, label: "حروف" },
+            { key: "downloads" as const, icon: <Download className="w-4 h-4" />, label: "تحميلات" },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              dir="rtl"
+              className={`flex items-center gap-2 py-2 px-3 text-xs font-semibold font-arabic rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
+              style={
+                activeTab === tab.key
+                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40` }
+                  : { backgroundColor: `${bgTheme.mutedText}15`, color: bgTheme.mutedText }
+              }
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
