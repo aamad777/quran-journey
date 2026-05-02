@@ -269,6 +269,23 @@ const Index = () => {
               <span className="text-sm font-arabic font-bold text-primary-foreground">قٌ</span>
             </div>
             <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            {/* Compact heart progress next to brand */}
+            <div className="relative w-7 h-7 shrink-0" title={`${progressPercent}٪ مكتمل`}>
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="3" style={{ stroke: `${bgTheme.btnBg}20` }} />
+                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="3" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Heart
+                  className="w-3 h-3 fill-current"
+                  style={{
+                    color: bgTheme.btnBg,
+                    filter: `drop-shadow(0 0 ${2 + progressPercent * 0.05}px ${bgTheme.btnBg})`,
+                    animation: `heartbeat ${Math.max(0.3, 1.5 - (progressPercent * 0.012))}s ease-in-out infinite`,
+                  }}
+                />
+              </div>
+            </div>
           </button>
           <div className="flex items-center gap-1">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
@@ -313,49 +330,6 @@ const Index = () => {
         <PermissionPrompt />
       </div>
 
-      {/* Progress + Tabs Combined Card */}
-      <div className="container max-w-4xl mx-auto px-4 pt-3 pb-2">
-        <div className="backdrop-blur-md rounded-xl overflow-hidden" style={{ backgroundColor: bgTheme.cardBg, border: `1px solid ${bgTheme.mutedText}15`, boxShadow: `0 1px 12px ${bgTheme.btnBg}08` }}>
-          {/* Progress Row — Heart centered */}
-          <div className="flex flex-col items-center gap-2 px-4 py-4">
-            {/* Heart inside progress circle — centered */}
-            <div className="relative w-16 h-16 shrink-0">
-              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" style={{ stroke: `${bgTheme.btnBg}18` }} />
-                <circle cx="18" cy="18" r="15.5" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${progressPercent * 0.975} 100`} style={{ stroke: bgTheme.btnBg, transition: 'stroke-dasharray 0.7s ease' }} />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Heart
-                  className="w-6 h-6 fill-current"
-                  style={{
-                    color: bgTheme.btnBg,
-                    filter: `drop-shadow(0 0 ${3 + progressPercent * 0.08}px ${bgTheme.btnBg})`,
-                    animation: `heartbeat ${Math.max(0.3, 1.5 - (progressPercent * 0.012))}s ease-in-out infinite`,
-                  }}
-                />
-              </div>
-            </div>
-            {/* Stats row */}
-            <div className="flex items-center justify-center gap-4 w-full">
-              <div className="flex flex-col items-center">
-                <span className="text-xs font-semibold" style={{ color: bgTheme.textColor }}>{versesRead.toLocaleString("ar-EG")} آية مقروءة</span>
-                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪ مكتمل</span>
-              </div>
-              <div className="w-px h-6" style={{ backgroundColor: `${bgTheme.mutedText}20` }} />
-              <div className="flex flex-col items-center">
-                <span className="text-xs font-bold font-arabic" style={{ color: bgTheme.textColor }}>{versesRemaining.toLocaleString("ar-EG")} آية متبقية</span>
-              </div>
-            </div>
-          </div>
-          {/* Slim Progress Bar */}
-          <div className="px-4 pb-3">
-            <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: `${bgTheme.btnBg}12` }}>
-              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})` }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Floating Right-Side Tab Rail — toggle button + hover expand */}
       <div
         className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 group ${railPinned ? 'is-pinned' : ''}`}
@@ -387,6 +361,24 @@ const Index = () => {
             boxShadow: `0 8px 32px ${bgTheme.btnBg}25`,
           }}
         >
+          {/* Reading progress summary */}
+          <div dir="rtl" className="px-2 pt-1 pb-2 border-b" style={{ borderColor: `${bgTheme.mutedText}20` }}>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-[11px] font-arabic font-semibold" style={{ color: bgTheme.textColor }}>
+                  {versesRead.toLocaleString("ar-EG")} مقروءة
+                </span>
+                <span className="text-[10px]" style={{ color: bgTheme.mutedText }}>{progressPercent}٪</span>
+              </div>
+              <div className="h-1 w-full rounded-full overflow-hidden" style={{ backgroundColor: `${bgTheme.btnBg}15` }}>
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${bgTheme.btnBg}, ${bgTheme.activeWordColor})` }} />
+              </div>
+              <span className="text-[10px] font-arabic" style={{ color: bgTheme.mutedText }}>
+                {versesRemaining.toLocaleString("ar-EG")} آية متبقية
+              </span>
+            </div>
+          </div>
+
           {([
             { key: "read" as const, icon: <BookOpen className="w-4 h-4" />, label: "قراءة" },
             { key: "practice" as const, icon: <Mic className="w-4 h-4" />, label: "صوت" },
