@@ -473,7 +473,7 @@ const MushafPage = ({
     <div className="max-w-2xl mx-auto space-y-3">
       {/* Juz progress card */}
       <div
-        className="rounded-xl backdrop-blur-md p-3 space-y-2"
+        className="rounded-xl backdrop-blur-md p-3 space-y-2 themed-card"
         style={{ "--themed-card-bg": themeCardBg as any, border: `1px solid ${themeMutedText}20` }}
       >
         <div className="flex items-center justify-between gap-2">
@@ -542,7 +542,7 @@ const MushafPage = ({
 
       {/* Compact toolbar */}
       <div
-        className="rounded-xl backdrop-blur-md p-2 flex items-center justify-between gap-2 flex-wrap"
+        className="rounded-xl backdrop-blur-md p-2 flex items-center justify-between gap-2 flex-wrap themed-card"
         style={{ "--themed-card-bg": themeCardBg as any, border: `1px solid ${themeMutedText}20` }}
       >
         <div className="flex items-center gap-1">
@@ -668,7 +668,7 @@ const MushafPage = ({
       {/* Bookmarks list */}
       {showBookmarks && (
         <div
-          className="rounded-xl backdrop-blur-md p-3"
+          className="rounded-xl backdrop-blur-md p-3 themed-card"
           style={{ "--themed-card-bg": themeCardBg as any, border: `1px solid ${themeMutedText}20` }}
         >
           {bookmarks.length === 0 ? (

@@ -36,7 +36,7 @@ const AlphabetTajweed = ({
     <div className="max-w-4xl mx-auto space-y-6 pb-20 fade-in">
       {/* Header + Legend */}
       <div
-        className="p-5 rounded-2xl border text-center"
+        className="p-5 rounded-2xl border text-center themed-card"
         style={{ "--themed-card-bg": themeCardBg as any, borderColor: `${themeMutedText}30` }}
       >
         <h2 className="text-xl font-bold font-arabic mb-1" style={{ color: themeTextColor }}>
@@ -106,7 +106,7 @@ const AlphabetTajweed = ({
           onClick={() => setSelectedLetter(null)}
         >
           <div
-            className="w-full max-w-lg rounded-3xl p-6 border-2 shadow-2xl relative max-h-[88vh] overflow-y-auto"
+            className="w-full max-w-lg rounded-3xl p-6 border-2 shadow-2xl relative max-h-[88vh] overflow-y-auto themed-card"
             style={{
               "--themed-card-bg": themeCardBg as any,
               borderColor: getLetterColor(selectedLetter),

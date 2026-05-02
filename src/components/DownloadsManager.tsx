@@ -181,7 +181,7 @@ const DownloadsManager = ({
     <div className="max-w-2xl mx-auto space-y-4" dir="rtl">
       {/* Storage usage card */}
       <div
-        className="rounded-2xl p-5 backdrop-blur-md"
+        className="rounded-2xl p-5 backdrop-blur-md themed-card"
         style={{
           "--themed-card-bg": themeCardBg as any,
           border: `1px solid ${themeMutedText}20`,
@@ -252,7 +252,7 @@ const DownloadsManager = ({
 
       {/* Download form */}
       <div
-        className="rounded-2xl p-5 backdrop-blur-md space-y-4"
+        className="rounded-2xl p-5 backdrop-blur-md space-y-4 themed-card"
         style={{
           "--themed-card-bg": themeCardBg as any,
           border: `1px solid ${themeMutedText}20`,
