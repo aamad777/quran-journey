@@ -387,7 +387,7 @@ const VerseCard = ({
 
       {/* Verse Card */}
       <div
-        className={isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed"}
+        className={isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card"}
         style={
           isMinimal
             ? {
@@ -401,7 +401,6 @@ const VerseCard = ({
                 '--themed-card-bg': "#ffffff",
               } as React.CSSProperties
             : ({
-          backgroundColor: themeCardBg,
           borderColor: themeMutedText ? `${themeMutedText}30` : undefined,
           boxShadow: themeAccentColor ? `0 4px 30px ${themeAccentColor}15` : undefined,
           color: themeTextColor,
