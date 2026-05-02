@@ -131,6 +131,20 @@ const Index = () => {
     }
   });
 
+  const [railPinned, setRailPinned] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("quran_rail_pinned") === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("quran_rail_pinned", railPinned ? "1" : "0");
+    } catch {}
+  }, [railPinned]);
+
   const [verseCount, setVerseCount] = useState(() => {
     try {
       return parseInt(localStorage.getItem("quran_verse_count") || "1");
