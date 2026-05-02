@@ -60,8 +60,8 @@ const VerseSearch = ({
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div 
-        className="p-6 rounded-2xl border backdrop-blur-sm"
-        style={{ backgroundColor: themeCardBg, borderColor: `${themeMutedText}30` }}
+        className="p-6 rounded-2xl border backdrop-blur-sm themed-card"
+        style={{ "--themed-card-bg": themeCardBg as any, borderColor: `${themeMutedText}30` }}
       >
         <h2 className="text-xl font-bold font-arabic mb-4 text-center" style={{ color: themeTextColor }}>
           البحث في القرآن
@@ -106,9 +106,9 @@ const VerseSearch = ({
             <button
               key={`${result.surah.number}-${result.numberInSurah}-${idx}`}
               onClick={() => onSelectVerse(result.surah.number, result.numberInSurah)}
-              className="w-full p-4 rounded-xl border text-right transition-all hover:scale-[1.01] active:scale-95 flex flex-col gap-2"
+              className="w-full p-4 rounded-xl border text-right transition-all hover:scale-[1.01] active:scale-95 flex flex-col gap-2 themed-card"
               style={{ 
-                backgroundColor: themeCardBg, 
+                "--themed-card-bg": themeCardBg as any, 
                 borderColor: `${themeMutedText}30`,
               }}
             >
