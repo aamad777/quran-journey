@@ -795,16 +795,10 @@ const VerseCard = ({
             )}
           </div>
 
-          {/* Controls */}
+          {/* Play + Download (collapsed inside settings) */}
           <div className="flex items-center justify-center gap-4">
-            <Button variant="outline" size="icon" onClick={onPrev} className="rounded-full border-border hover:bg-primary/10">
-              <SkipBack className="w-4 h-4" />
-            </Button>
             <Button onClick={togglePlay} size="icon" className="w-14 h-14 rounded-full gradient-islamic text-gold hover:opacity-90 transition-opacity">
               {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
-            </Button>
-            <Button variant="outline" size="icon" onClick={onNext} className="rounded-full border-border hover:bg-primary/10">
-              <SkipForward className="w-4 h-4" />
             </Button>
             <Button
               variant="outline"
@@ -831,7 +825,6 @@ const VerseCard = ({
                     console.error("Cache failed:", e);
                   }
                 }
-                // Refresh cached flags
                 const flags = await Promise.all(audioUrls.map((u) => hasCached(u)));
                 setCachedFlags(flags);
                 setDownloadingCache(false);
@@ -848,6 +841,16 @@ const VerseCard = ({
               )}
             </Button>
           </div>
+        </div>
+
+        {/* Always-visible navigation: previous / next verse */}
+        <div className="flex items-center justify-center gap-6 mt-4">
+          <Button variant="outline" size="icon" onClick={onPrev} className="rounded-full border-border hover:bg-primary/10 w-12 h-12" title="السابق">
+            <SkipBack className="w-5 h-5" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={onNext} className="rounded-full border-border hover:bg-primary/10 w-12 h-12" title="التالي">
+            <SkipForward className="w-5 h-5" />
+          </Button>
         </div>
 
         {/* Individual Letter Information Popup */}
