@@ -147,6 +147,11 @@ const VerseCard = ({
   useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
   const isMinimal = readingStyle === "minimal";
 
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(() => {
+    try { return localStorage.getItem("quran_settings_open") === "1"; } catch { return false; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_settings_open", settingsOpen ? "1" : "0"); } catch {} }, [settingsOpen]);
+
   // Vivid gradient colors for active word during recitation
   const RECITE_GRADIENTS = [
     'linear-gradient(135deg, #FF6B35, #E91E63)',
