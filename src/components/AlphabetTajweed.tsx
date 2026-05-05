@@ -37,7 +37,7 @@ const AlphabetTajweed = ({
       {/* Header + Legend */}
       <div
         className="p-5 rounded-2xl border text-center themed-card"
-        style={{ "--themed-card-bg": themeCardBg as any, borderColor: `${themeMutedText}30` }}
+        style={{ "--themed-card-bg": themeCardBg, borderColor: `${themeMutedText}30` } as React.CSSProperties}
       >
         <h2 className="text-xl font-bold font-arabic mb-1" style={{ color: themeTextColor }}>
           مخارج الحروف وأحكام التجويد
@@ -108,9 +108,9 @@ const AlphabetTajweed = ({
           <div
             className="w-full max-w-lg rounded-3xl p-6 border-2 shadow-2xl relative max-h-[88vh] overflow-y-auto themed-card"
             style={{
-              "--themed-card-bg": themeCardBg as any,
+              "--themed-card-bg": themeCardBg,
               borderColor: getLetterColor(selectedLetter),
-            }}
+            } as React.CSSProperties}
             onClick={(e) => e.stopPropagation()}
             dir="rtl"
           >
