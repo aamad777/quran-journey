@@ -609,15 +609,30 @@ const VerseCard = ({
           </DialogContent>
         </Dialog>
 
-        {/* Divider before controls */}
-        <div className="flex items-center gap-4 my-6">
+        {/* Divider + Settings toggle */}
+        <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-border" />
-          <div className="w-2 h-2 rounded-full bg-gold" />
+          <button
+            type="button"
+            onClick={() => setSettingsOpen((s) => !s)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border hover:bg-primary/10 transition-colors text-xs text-muted-foreground"
+            aria-expanded={settingsOpen}
+            title={settingsOpen ? "إخفاء الإعدادات" : "إظهار الإعدادات"}
+          >
+            <Settings2 className="w-3.5 h-3.5" />
+            <span className="font-arabic">{settingsOpen ? "إخفاء الإعدادات" : "الإعدادات"}</span>
+            <ChevronUp className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "" : "rotate-180"}`} />
+          </button>
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Settings Row */}
-        <div className="space-y-4">
+        {/* Settings Row (collapsible) */}
+        <div
+          className={`space-y-4 overflow-hidden transition-all duration-300 ${
+            settingsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+          }`}
+          aria-hidden={!settingsOpen}
+        >
           {/* Font size + verse count + tajweed */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* Font size */}
