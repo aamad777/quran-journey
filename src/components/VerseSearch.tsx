@@ -61,7 +61,7 @@ const VerseSearch = ({
     <div className="max-w-2xl mx-auto space-y-6">
       <div 
         className="p-6 rounded-2xl border backdrop-blur-sm themed-card"
-        style={{ "--themed-card-bg": themeCardBg as any, borderColor: `${themeMutedText}30` }}
+        style={{ "--themed-card-bg": themeCardBg, borderColor: `${themeMutedText}30` } as React.CSSProperties}
       >
         <h2 className="text-xl font-bold font-arabic mb-4 text-center" style={{ color: themeTextColor }}>
           البحث في القرآن
@@ -108,9 +108,9 @@ const VerseSearch = ({
               onClick={() => onSelectVerse(result.surah.number, result.numberInSurah)}
               className="w-full p-4 rounded-xl border text-right transition-all hover:scale-[1.01] active:scale-95 flex flex-col gap-2 themed-card"
               style={{ 
-                "--themed-card-bg": themeCardBg as any, 
+                "--themed-card-bg": themeCardBg, 
                 borderColor: `${themeMutedText}30`,
-              }}
+              } as React.CSSProperties}
             >
               <div className="flex justify-between items-center w-full">
                 <span className="text-xs font-semibold px-2 py-1 rounded-md" style={{ backgroundColor: `${themeAccentColor}20`, color: themeAccentColor }}>

@@ -183,9 +183,9 @@ const DownloadsManager = ({
       <div
         className="rounded-2xl p-5 backdrop-blur-md themed-card"
         style={{
-          "--themed-card-bg": themeCardBg as any,
+          "--themed-card-bg": themeCardBg,
           border: `1px solid ${themeMutedText}20`,
-        }}
+        } as React.CSSProperties}
       >
         <div className="flex items-center gap-3 mb-4">
           <div
@@ -254,9 +254,9 @@ const DownloadsManager = ({
       <div
         className="rounded-2xl p-5 backdrop-blur-md space-y-4 themed-card"
         style={{
-          "--themed-card-bg": themeCardBg as any,
+          "--themed-card-bg": themeCardBg,
           border: `1px solid ${themeMutedText}20`,
-        }}
+        } as React.CSSProperties}
       >
         <h3 className="font-arabic font-bold text-base" style={{ color: themeTextColor }}>
           تحميل سورة للاستماع بدون إنترنت
