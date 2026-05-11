@@ -693,6 +693,22 @@ const VerseCard = ({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Font color */}
+            <div className="flex items-center gap-2">
+              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">لون الخط</span>
+              <Select value={fontColorMode} onValueChange={(v) => setFontColorMode(v as "colored" | "white" | "black")}>
+                <SelectTrigger className="w-24 h-8 bg-background text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="colored">ملوّن</SelectItem>
+                  <SelectItem value="white">أبيض</SelectItem>
+                  <SelectItem value="black">أسود</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Tajweed Legend */}
