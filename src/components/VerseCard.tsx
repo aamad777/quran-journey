@@ -514,10 +514,10 @@ const VerseCard = ({
                         >
                           {graphemes.map((g, gi) => {
                             const baseData = getBaseArabicLetter(g);
-                            const letterColor: string =
+                            const letterColor: string = forcedFontColor ?? (
                               baseData && baseData.tajweedRules.length > 0
                                 ? (TAJWEED_RULES[baseData.tajweedRules[0]]?.color ?? themeTextColor)
-                                : themeTextColor;
+                                : themeTextColor);
                             return (
                               <span
                                 key={gi}
