@@ -332,7 +332,7 @@ const Index = () => {
 
       {/* Floating Right-Side Tab Rail — toggle button + hover expand */}
       <div
-        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 group ${railPinned ? 'is-pinned' : ''}`}
+        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 ${railPinned ? 'is-pinned' : ''}`}
         dir="ltr"
       >
         {/* Toggle button — always visible on the edge */}
@@ -348,13 +348,13 @@ const Index = () => {
         >
           {railPinned ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
-        {/* Thin edge indicator visible when idle (hidden when pinned) */}
+        {/* Thin edge indicator visible when collapsed */}
         <div
-          className={`absolute top-1/2 -translate-y-1/2 right-0 w-1 h-24 rounded-l-full transition-opacity duration-300 group-hover:opacity-0 ${railPinned ? 'opacity-0' : ''}`}
+          className={`absolute top-1/2 -translate-y-1/2 right-0 w-1 h-24 rounded-l-full transition-opacity duration-300 ${railPinned ? 'opacity-0' : 'opacity-100'}`}
           style={{ backgroundColor: `${bgTheme.btnBg}60` }}
         />
         <div
-          className={`flex flex-col gap-1.5 p-2 rounded-l-2xl backdrop-blur-xl border border-r-0 shadow-2xl transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0 ${railPinned ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'}`}
+          className={`flex flex-col gap-1.5 p-2 rounded-l-2xl backdrop-blur-xl border border-r-0 shadow-2xl transition-all duration-300 ease-out ${railPinned ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full pointer-events-none'}`}
           style={{
             backgroundColor: `${bgTheme.cardBg}f5`,
             borderColor: `${bgTheme.mutedText}25`,
