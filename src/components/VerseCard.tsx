@@ -620,6 +620,20 @@ const VerseCard = ({
           <div className="flex-1 h-px bg-border" />
           <button
             type="button"
+            onClick={() => {
+              const next = fontColorMode === "colored" ? "white" : fontColorMode === "white" ? "black" : "colored";
+              setFontColorMode(next);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border hover:bg-primary/10 transition-colors text-xs text-muted-foreground"
+            title="لون الخط"
+          >
+            <Palette className="w-3.5 h-3.5" />
+            <span className="font-arabic">
+              {fontColorMode === "colored" ? "ملوّن" : fontColorMode === "white" ? "أبيض" : "أسود"}
+            </span>
+          </button>
+          <button
+            type="button"
             onClick={() => setSettingsOpen((s) => !s)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border hover:bg-primary/10 transition-colors text-xs text-muted-foreground"
             aria-expanded={settingsOpen}
