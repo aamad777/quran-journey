@@ -147,6 +147,12 @@ const VerseCard = ({
   useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
   const isMinimal = readingStyle === "minimal";
 
+  const [fontColorMode, setFontColorMode] = useState<"colored" | "white" | "black">(() => {
+    try { return (localStorage.getItem("quran_font_color_mode") as "colored" | "white" | "black") || "colored"; } catch { return "colored"; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_font_color_mode", fontColorMode); } catch {} }, [fontColorMode]);
+  const forcedFontColor: string | null = fontColorMode === "white" ? "#ffffff" : fontColorMode === "black" ? "#000000" : null;
+
   const [settingsOpen, setSettingsOpen] = useState<boolean>(() => {
     try { return localStorage.getItem("quran_settings_open") === "1"; } catch { return false; }
   });
