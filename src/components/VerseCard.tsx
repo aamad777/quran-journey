@@ -147,6 +147,12 @@ const VerseCard = ({
   useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
   const isMinimal = readingStyle === "minimal";
 
+  const [fontColorMode, setFontColorMode] = useState<"colored" | "white" | "black">(() => {
+    try { return (localStorage.getItem("quran_font_color_mode") as "colored" | "white" | "black") || "colored"; } catch { return "colored"; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_font_color_mode", fontColorMode); } catch {} }, [fontColorMode]);
+  const forcedFontColor: string | null = fontColorMode === "white" ? "#ffffff" : fontColorMode === "black" ? "#000000" : null;
+
   const [settingsOpen, setSettingsOpen] = useState<boolean>(() => {
     try { return localStorage.getItem("quran_settings_open") === "1"; } catch { return false; }
   });
@@ -441,7 +447,7 @@ const VerseCard = ({
             >
               <p
                 className="font-arabic leading-[2.2]"
-                style={{ fontSize: `${fontSize}px`, color: themeTextColor, textShadow: themeTextColor ? `0 1px 10px ${themeTextColor}22` : undefined }}
+                style={{ fontSize: `${fontSize}px`, color: forcedFontColor ?? themeTextColor, textShadow: !forcedFontColor && themeTextColor ? `0 1px 10px ${themeTextColor}22` : undefined }}
               >
                 {tajweedMode && v.tajweedText ? (
                   (() => {
@@ -460,11 +466,11 @@ const VerseCard = ({
                                 {graphemes.map((g, gi) => {
                                   const baseData = getBaseArabicLetter(g);
                                   // API rule takes priority; fall back to letter-identity colour from arabicData
-                                  const letterColor: string =
+                                  const letterColor: string = forcedFontColor ?? (
                                     rule?.color ??
                                     (baseData && baseData.tajweedRules.length > 0
                                       ? (TAJWEED_RULES[baseData.tajweedRules[0]]?.color ?? themeTextColor)
-                                      : themeTextColor);
+                                      : themeTextColor));
                                   return (
                                     <span
                                       key={gi}
@@ -508,10 +514,10 @@ const VerseCard = ({
                         >
                           {graphemes.map((g, gi) => {
                             const baseData = getBaseArabicLetter(g);
-                            const letterColor: string =
+                            const letterColor: string = forcedFontColor ?? (
                               baseData && baseData.tajweedRules.length > 0
                                 ? (TAJWEED_RULES[baseData.tajweedRules[0]]?.color ?? themeTextColor)
-                                : themeTextColor;
+                                : themeTextColor);
                             return (
                               <span
                                 key={gi}
@@ -684,6 +690,22 @@ const VerseCard = ({
                 <SelectContent>
                   <SelectItem value="classic">كلاسيكي</SelectItem>
                   <SelectItem value="minimal">بساطة</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Font color */}
+            <div className="flex items-center gap-2">
+              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">لون الخط</span>
+              <Select value={fontColorMode} onValueChange={(v) => setFontColorMode(v as "colored" | "white" | "black")}>
+                <SelectTrigger className="w-24 h-8 bg-background text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="colored">ملوّن</SelectItem>
+                  <SelectItem value="white">أبيض</SelectItem>
+                  <SelectItem value="black">أسود</SelectItem>
                 </SelectContent>
               </Select>
             </div>
