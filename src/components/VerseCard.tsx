@@ -466,11 +466,11 @@ const VerseCard = ({
                                 {graphemes.map((g, gi) => {
                                   const baseData = getBaseArabicLetter(g);
                                   // API rule takes priority; fall back to letter-identity colour from arabicData
-                                  const letterColor: string =
+                                  const letterColor: string = forcedFontColor ?? (
                                     rule?.color ??
                                     (baseData && baseData.tajweedRules.length > 0
                                       ? (TAJWEED_RULES[baseData.tajweedRules[0]]?.color ?? themeTextColor)
-                                      : themeTextColor);
+                                      : themeTextColor));
                                   return (
                                     <span
                                       key={gi}
