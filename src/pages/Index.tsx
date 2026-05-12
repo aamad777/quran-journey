@@ -33,8 +33,7 @@ import {
   BookMarked,
   Download,
   ChevronLeft,
-  ChevronRight,
-  Layers
+  ChevronRight
 } from "lucide-react";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
