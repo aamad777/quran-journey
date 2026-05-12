@@ -287,7 +287,7 @@ const Index = () => {
               </div>
             </div>
           </button>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
@@ -297,11 +297,17 @@ const Index = () => {
               </Button>
             ) : (
               <>
-                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 sm:hidden" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }} aria-label="دخول">
+                  <LogIn className="w-4 h-4" />
+                </Button>
+                <Button size="icon" className="h-8 w-8 sm:hidden" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }} aria-label="تسجيل">
+                  <UserPlus className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3 hidden sm:inline-flex" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
                   <LogIn className="w-3.5 h-3.5" />
                   دخول
                 </Button>
-                <Button size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
+                <Button size="sm" className="h-8 text-xs gap-1.5 px-3 hidden sm:inline-flex" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
                   <UserPlus className="w-3.5 h-3.5" />
                   تسجيل
                 </Button>
