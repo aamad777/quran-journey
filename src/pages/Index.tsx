@@ -336,9 +336,9 @@ const Index = () => {
         <PermissionPrompt />
       </div>
 
-      {/* Floating Right-Side Tab Rail — toggle button + hover expand */}
+      {/* Floating Right-Side Tab Rail — toggle button + manual expand (desktop only) */}
       <div
-        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 ${railPinned ? 'is-pinned' : ''}`}
+        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 hidden md:block ${railPinned ? 'is-pinned' : ''}`}
         dir="ltr"
       >
         {/* Toggle button — always visible on the edge */}
@@ -414,8 +414,39 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Mobile Bottom Tab Bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden backdrop-blur-xl border-t" style={{ backgroundColor: `${bgTheme.cardBg}f0`, borderColor: `${bgTheme.mutedText}20` }}>
+        <div className="flex items-center h-14 overflow-x-auto scrollbar-hide px-2 gap-1">
+          {([
+            { key: "read" as const, icon: <BookOpen className="w-5 h-5" />, label: "قراءة" },
+            { key: "practice" as const, icon: <Mic className="w-5 h-5" />, label: "صوت" },
+            { key: "draw" as const, icon: <PenTool className="w-5 h-5" />, label: "رسم" },
+            { key: "type" as const, icon: <Keyboard className="w-5 h-5" />, label: "كتابة" },
+            { key: "stats" as const, icon: <BarChart3 className="w-5 h-5" />, label: "إحصائيات" },
+            { key: "page" as const, icon: <BookMarked className="w-5 h-5" />, label: "صفحة" },
+            { key: "search" as const, icon: <Search className="w-5 h-5" />, label: "بحث" },
+            { key: "alphabets" as const, icon: <BookA className="w-5 h-5" />, label: "حروف" },
+            { key: "downloads" as const, icon: <Download className="w-5 h-5" />, label: "تحميلات" },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className="flex flex-col items-center justify-center gap-0.5 min-w-[4rem] h-12 rounded-xl transition-all duration-200 active:scale-95 shrink-0"
+              style={
+                activeTab === tab.key
+                  ? { color: bgTheme.btnBg, backgroundColor: `${bgTheme.btnBg}15` }
+                  : { color: bgTheme.mutedText }
+              }
+            >
+              {tab.icon}
+              <span className="text-[10px] font-arabic font-medium">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="container max-w-4xl mx-auto px-4 py-6 md:py-10">
+      <main className="container max-w-4xl mx-auto px-4 py-6 md:py-10 pb-24 md:pb-10">
         {activeTab === "stats" ? (
           <QuranStats
             surahNumber={progress.surah_number}
