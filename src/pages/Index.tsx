@@ -263,12 +263,12 @@ const Index = () => {
 
       {/* Compact Header */}
       <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: `${bgTheme.cardBg}ee`, borderColor: `${bgTheme.mutedText}18` }}>
-        <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-4">
-          <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
+        <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-3 sm:px-4 gap-2">
+          <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-80 transition-opacity min-w-0">
+            <div className="w-8 h-8 shrink-0 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
               <span className="text-sm font-arabic font-bold text-primary-foreground">قٌ</span>
             </div>
-            <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            <h1 className="font-arabic text-sm sm:text-base font-bold truncate hidden xs:block sm:block" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
             {/* Compact heart progress next to brand */}
             <div className="relative w-7 h-7 shrink-0" title={`${progressPercent}٪ مكتمل`}>
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
