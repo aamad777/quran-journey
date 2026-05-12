@@ -263,12 +263,12 @@ const Index = () => {
 
       {/* Compact Header */}
       <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: `${bgTheme.cardBg}ee`, borderColor: `${bgTheme.mutedText}18` }}>
-        <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-4">
-          <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
+        <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-3 sm:px-4 gap-2">
+          <button onClick={() => { setActiveTab("read"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-80 transition-opacity min-w-0">
+            <div className="w-8 h-8 shrink-0 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
               <span className="text-sm font-arabic font-bold text-primary-foreground">قٌ</span>
             </div>
-            <h1 className="font-arabic text-base font-bold" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            <h1 className="font-arabic text-sm sm:text-base font-bold truncate" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
             {/* Compact heart progress next to brand */}
             <div className="relative w-7 h-7 shrink-0" title={`${progressPercent}٪ مكتمل`}>
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
@@ -287,7 +287,7 @@ const Index = () => {
               </div>
             </div>
           </button>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
@@ -297,11 +297,17 @@ const Index = () => {
               </Button>
             ) : (
               <>
-                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 sm:hidden" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }} aria-label="دخول">
+                  <LogIn className="w-4 h-4" />
+                </Button>
+                <Button size="icon" className="h-8 w-8 sm:hidden" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }} aria-label="تسجيل">
+                  <UserPlus className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 px-3 hidden sm:inline-flex" onClick={() => navigate("/auth")} style={{ color: bgTheme.mutedText }}>
                   <LogIn className="w-3.5 h-3.5" />
                   دخول
                 </Button>
-                <Button size="sm" className="h-8 text-xs gap-1.5 px-3" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
+                <Button size="sm" className="h-8 text-xs gap-1.5 px-3 hidden sm:inline-flex" onClick={() => navigate("/auth?tab=register")} style={{ backgroundColor: bgTheme.btnBg, color: bgTheme.btnText }}>
                   <UserPlus className="w-3.5 h-3.5" />
                   تسجيل
                 </Button>
