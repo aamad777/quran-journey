@@ -336,9 +336,9 @@ const Index = () => {
         <PermissionPrompt />
       </div>
 
-      {/* Floating Right-Side Tab Rail — toggle button + hover expand */}
+      {/* Floating Right-Side Tab Rail — toggle button + manual expand (desktop only) */}
       <div
-        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 ${railPinned ? 'is-pinned' : ''}`}
+        className={`fixed top-1/2 right-0 -translate-y-1/2 z-30 hidden md:block ${railPinned ? 'is-pinned' : ''}`}
         dir="ltr"
       >
         {/* Toggle button — always visible on the edge */}
@@ -409,6 +409,33 @@ const Index = () => {
             >
               {tab.icon}
               <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile Bottom Tab Bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden backdrop-blur-xl border-t" style={{ backgroundColor: `${bgTheme.cardBg}f0`, borderColor: `${bgTheme.mutedText}20` }}>
+        <div className="flex items-center justify-around h-14 px-1">
+          {([
+            { key: "read" as const, icon: <BookOpen className="w-5 h-5" />, label: "قراءة" },
+            { key: "search" as const, icon: <Search className="w-5 h-5" />, label: "بحث" },
+            { key: "page" as const, icon: <BookMarked className="w-5 h-5" />, label: "صفحة" },
+            { key: "practice" as const, icon: <Mic className="w-5 h-5" />, label: "صوت" },
+            { key: "more" as const, icon: <Layers className="w-5 h-5" />, label: "المزيد" },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => tab.key === "more" ? setRailPinned(true) : setActiveTab(tab.key as any)}
+              className="flex flex-col items-center justify-center gap-0.5 w-16 h-12 rounded-xl transition-all duration-200 active:scale-95"
+              style={
+                (tab.key !== "more" && activeTab === tab.key)
+                  ? { color: bgTheme.btnBg }
+                  : { color: bgTheme.mutedText }
+              }
+            >
+              {tab.icon}
+              <span className="text-[10px] font-arabic font-medium">{tab.label}</span>
             </button>
           ))}
         </div>
