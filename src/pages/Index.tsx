@@ -268,7 +268,7 @@ const Index = () => {
             <div className="w-8 h-8 shrink-0 rounded-lg gradient-gold flex items-center justify-center" style={{ boxShadow: `0 2px 8px ${bgTheme.btnBg}30` }}>
               <span className="text-sm font-arabic font-bold text-primary-foreground">قٌ</span>
             </div>
-            <h1 className="font-arabic text-sm sm:text-base font-bold truncate hidden xs:block sm:block" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
+            <h1 className="font-arabic text-sm sm:text-base font-bold truncate" style={{ color: bgTheme.textColor }}>قارئ القرآن</h1>
             {/* Compact heart progress next to brand */}
             <div className="relative w-7 h-7 shrink-0" title={`${progressPercent}٪ مكتمل`}>
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
