@@ -665,9 +665,9 @@ const VerseCard = ({
                 min={20}
                 max={56}
                 step={2}
-                className="w-24"
+                className="w-28"
               />
-              <span className="text-sm text-muted-foreground w-6 text-center">{fontSize}</span>
+              <span className="text-sm text-muted-foreground w-7 text-center font-semibold">{fontSize}</span>
             </div>
 
             {/* Tajweed */}
