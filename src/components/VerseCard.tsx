@@ -657,32 +657,32 @@ const VerseCard = ({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* Font size */}
             <div className="flex items-center gap-2 min-w-[180px]">
-              <Type className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              <span className="text-xs text-muted-foreground whitespace-nowrap">حجم الخط</span>
+              <Type className="w-4 h-4 text-muted-foreground shrink-0" />
+              <span className="text-sm text-muted-foreground whitespace-nowrap">حجم الخط</span>
               <Slider
                 value={[fontSize]}
                 onValueChange={(v) => setFontSize(v[0])}
                 min={20}
                 max={56}
                 step={2}
-                className="w-24"
+                className="w-28"
               />
-              <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
+              <span className="text-sm text-muted-foreground w-7 text-center font-semibold">{fontSize}</span>
             </div>
 
             {/* Tajweed */}
             <div className="flex items-center gap-2">
-              <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
-              <Label htmlFor="tajweed" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">تجويد</Label>
-              <Switch id="tajweed" checked={tajweedMode} onCheckedChange={setTajweedMode} className="scale-75" />
+              <BookOpen className="w-4 h-4 text-muted-foreground" />
+              <Label htmlFor="tajweed" className="text-sm text-muted-foreground cursor-pointer whitespace-nowrap">تجويد</Label>
+              <Switch id="tajweed" checked={tajweedMode} onCheckedChange={setTajweedMode} className="scale-90" />
             </div>
 
             {/* Verse count */}
             <div className="flex items-center gap-2">
-              <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">آيات</span>
+              <Layers className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">آيات</span>
               <Select value={String(verseCount)} onValueChange={(v) => onVerseCountChange(parseInt(v))}>
-                <SelectTrigger className="w-16 h-8 bg-background text-xs">
+                <SelectTrigger className="w-16 h-9 bg-background text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -695,10 +695,10 @@ const VerseCard = ({
 
             {/* Reading style */}
             <div className="flex items-center gap-2">
-              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">نمط</span>
+              <Palette className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">نمط</span>
               <Select value={readingStyle} onValueChange={(v) => setReadingStyle(v as "classic" | "minimal")}>
-                <SelectTrigger className="w-24 h-8 bg-background text-xs">
+                <SelectTrigger className="w-24 h-9 bg-background text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -710,10 +710,10 @@ const VerseCard = ({
 
             {/* Font color */}
             <div className="flex items-center gap-2">
-              <Palette className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">لون الخط</span>
+              <Palette className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">لون الخط</span>
               <Select value={fontColorMode} onValueChange={(v) => setFontColorMode(v as "colored" | "white" | "black")}>
-                <SelectTrigger className="w-24 h-8 bg-background text-xs">
+                <SelectTrigger className="w-24 h-9 bg-background text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -739,10 +739,10 @@ const VerseCard = ({
 
           {/* Repeat count */}
           <div className="flex items-center justify-center gap-2">
-            <Repeat className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">تكرار</span>
+            <Repeat className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">تكرار</span>
             <Select value={String(repeatCount)} onValueChange={(v) => setRepeatCount(parseInt(v))}>
-              <SelectTrigger className="w-16 h-8 bg-background text-xs">
+              <SelectTrigger className="w-16 h-9 bg-background text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -759,15 +759,15 @@ const VerseCard = ({
           {/* Auto-play toggle + delay */}
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <RotateCw className="w-3.5 h-3.5 text-muted-foreground" />
-              <Label htmlFor="autoplay" className="text-xs text-muted-foreground cursor-pointer">تقدّم تلقائي</Label>
-              <Switch id="autoplay" checked={autoPlay} onCheckedChange={setAutoPlay} className="scale-75" />
+              <RotateCw className="w-4 h-4 text-muted-foreground" />
+              <Label htmlFor="autoplay" className="text-sm text-muted-foreground cursor-pointer">تقدّم تلقائي</Label>
+              <Switch id="autoplay" checked={autoPlay} onCheckedChange={setAutoPlay} className="scale-90" />
             </div>
             {autoPlay && (
               <div className="flex items-center gap-2">
-                <Timer className="w-3.5 h-3.5 text-muted-foreground" />
+                <Timer className="w-4 h-4 text-muted-foreground" />
                 <Select value={advanceDelay} onValueChange={setAdvanceDelay}>
-                  <SelectTrigger className="w-32 h-8 bg-background text-xs">
+                  <SelectTrigger className="w-32 h-9 bg-background text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -785,7 +785,7 @@ const VerseCard = ({
           {/* Countdown with pause */}
           {countdown !== null && (
             <div className="flex items-center justify-center gap-3">
-              <span className="text-xs text-muted-foreground animate-pulse">
+              <span className="text-sm text-muted-foreground animate-pulse">
                 الآية التالية بعد {countdown} ثانية...
               </span>
               <Button
