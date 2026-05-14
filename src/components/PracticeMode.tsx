@@ -45,21 +45,64 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
   const recognitionRef = useRef<any>(null);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const lastBeepRef = useRef<number>(0);
+  const lastSpokenSigRef = useRef<string>("");
+  const wrongAttemptsRef = useRef<number>(0);
 
   const currentVerse = verses[currentVerseIndex] || verses[0];
   const words = currentVerse ? splitWords(currentVerse.arabic) : [];
   const normalizedWords = words.map(normalizeArabic);
 
-  // Reset state when verse changes
+  const playBeep = useCallback((kind: "wrong" | "right" = "wrong") => {
+    try {
+      const now = Date.now();
+      if (now - lastBeepRef.current < 400) return;
+      lastBeepRef.current = now;
+      if (!audioCtxRef.current) {
+        const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (!Ctx) return;
+        audioCtxRef.current = new Ctx();
+      }
+      const ctx = audioCtxRef.current!;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      if (kind === "wrong") {
+        osc.type = "square";
+        osc.frequency.value = 220;
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.24);
+      } else {
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.16);
+      }
+    } catch {}
+  }, []);
+
+  // Reset state when verse list changes
   useEffect(() => {
     setRevealedCount(0);
     setVerseComplete(false);
     setCurrentVerseIndex(0);
+    lastSpokenSigRef.current = "";
+    wrongAttemptsRef.current = 0;
   }, [verses]);
 
   useEffect(() => {
     setRevealedCount(0);
     setVerseComplete(false);
+    lastSpokenSigRef.current = "";
+    wrongAttemptsRef.current = 0;
   }, [currentVerseIndex]);
 
   // Auto-advance when all words revealed
