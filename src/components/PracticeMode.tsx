@@ -362,7 +362,7 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
             value={[fontSize]}
             onValueChange={(v) => setFontSize(v[0])}
             min={20}
-            max={56}
+            max={100}
             step={2}
             className="w-24"
           />
