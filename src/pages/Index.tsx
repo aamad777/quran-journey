@@ -177,6 +177,13 @@ const Index = () => {
     localStorage.setItem("quran_active_tab", activeTab);
   }, [activeTab]);
 
+  useEffect(() => {
+    try {
+      const v = parseInt(localStorage.getItem("quran_tab_font_size") || "16");
+      document.documentElement.style.setProperty("--tab-fs", `${v}px`);
+    } catch {}
+  }, []);
+
   const {
     verses,
     audioUrl,
@@ -385,6 +392,26 @@ const Index = () => {
             </div>
           </div>
 
+          {(() => {
+            const tabFs = (() => { try { return parseInt(localStorage.getItem("quran_tab_font_size") || "16"); } catch { return 16; } })();
+            const setTabFs = (v: number) => { try { localStorage.setItem("quran_tab_font_size", String(v)); } catch {} ; window.dispatchEvent(new Event("storage")); };
+            return (
+              <div dir="rtl" className="flex items-center gap-2 px-2 py-1.5 mb-1 rounded-lg" style={{ backgroundColor: `${bgTheme.mutedText}10` }}>
+                <span className="text-[10px] font-arabic" style={{ color: bgTheme.mutedText }}>حجم الخط</span>
+                <input
+                  type="range"
+                  min={12}
+                  max={28}
+                  step={1}
+                  defaultValue={tabFs}
+                  onChange={(e) => { const v = parseInt(e.target.value); setTabFs(v); document.documentElement.style.setProperty("--tab-fs", `${v}px`); }}
+                  className="flex-1 accent-current"
+                  style={{ color: bgTheme.btnBg }}
+                />
+                <span className="text-[10px] font-mono" style={{ color: bgTheme.mutedText }}>{tabFs}</span>
+              </div>
+            );
+          })()}
           {([
             { key: "read" as const, icon: <BookOpen className="w-5 h-5" />, label: "قراءة" },
             { key: "practice" as const, icon: <Mic className="w-5 h-5" />, label: "صوت" },
@@ -400,11 +427,11 @@ const Index = () => {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               dir="rtl"
-              className={`flex items-center gap-2 py-2.5 px-4 text-sm font-semibold font-arabic rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
+              className={`flex items-center gap-2 py-2.5 px-4 font-semibold font-arabic rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab !== tab.key ? 'hover:scale-[1.03] hover:brightness-110 active:scale-95' : ''}`}
               style={
                 activeTab === tab.key
-                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40` }
-                  : { backgroundColor: `${bgTheme.mutedText}15`, color: bgTheme.mutedText }
+                  ? { backgroundColor: bgTheme.btnBg, color: bgTheme.btnText, boxShadow: `0 2px 8px ${bgTheme.btnBg}40`, fontSize: "var(--tab-fs, 16px)" }
+                  : { backgroundColor: `${bgTheme.mutedText}15`, color: bgTheme.mutedText, fontSize: "var(--tab-fs, 16px)" }
               }
             >
               {tab.icon}
