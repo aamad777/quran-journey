@@ -177,6 +177,13 @@ const Index = () => {
     localStorage.setItem("quran_active_tab", activeTab);
   }, [activeTab]);
 
+  useEffect(() => {
+    try {
+      const v = parseInt(localStorage.getItem("quran_tab_font_size") || "16");
+      document.documentElement.style.setProperty("--tab-fs", `${v}px`);
+    } catch {}
+  }, []);
+
   const {
     verses,
     audioUrl,
