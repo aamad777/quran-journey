@@ -127,33 +127,67 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
       alert("متصفحك لا يدعم التعرف على الصوت. جرّب Chrome.");
       return;
     }
+    if (recognitionRef.current) return;
+
+    try {
+      if (!audioCtxRef.current) {
+        const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (Ctx) audioCtxRef.current = new Ctx();
+      }
+      audioCtxRef.current?.resume?.();
+    } catch {}
 
     const recognition = new SpeechRecognition();
     recognition.lang = "ar-SA";
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.maxAlternatives = 5;
+    recognition.maxAlternatives = 6;
 
-    recognition.onresult = (event: any) => {
-      // Gather all spoken words from results
-      const spokenWords: string[] = [];
-      for (let i = 0; i < event.results.length; i++) {
-        for (let alt = 0; alt < event.results[i].length; alt++) {
-          const transcript = event.results[i][alt].transcript;
-          spokenWords.push(...splitWords(transcript));
+    const lev = (a: string, b: string) => {
+      if (a === b) return 0;
+      const m = a.length, n = b.length;
+      if (!m) return n; if (!n) return m;
+      const dp = new Array(n + 1);
+      for (let j = 0; j <= n; j++) dp[j] = j;
+      for (let i = 1; i <= m; i++) {
+        let prev = dp[0];
+        dp[0] = i;
+        for (let j = 1; j <= n; j++) {
+          const tmp = dp[j];
+          dp[j] = a[i - 1] === b[j - 1]
+            ? prev
+            : 1 + Math.min(prev, dp[j], dp[j - 1]);
+          prev = tmp;
         }
       }
+      return dp[n];
+    };
 
-      const normalizedSpoken = spokenWords.map(normalizeArabic);
+    const isMatch = (spoken: string, expected: string) => {
+      if (!spoken || !expected) return false;
+      if (spoken === expected) return true;
+      if (expected.includes(spoken) || spoken.includes(expected)) return true;
+      const tol = Math.max(1, Math.floor(expected.length * 0.25));
+      return lev(spoken, expected) <= tol;
+    };
 
-      // Check how many consecutive words from start match
+    recognition.onresult = (event: any) => {
+      const spokenWords: string[] = [];
+      for (let i = 0; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        spokenWords.push(...splitWords(transcript));
+      }
+      const normalizedSpoken = spokenWords.map(normalizeArabic).filter(Boolean);
+      const sig = normalizedSpoken.join(" ");
+      if (sig === lastSpokenSigRef.current) return;
+      const prevSig = lastSpokenSigRef.current;
+      lastSpokenSigRef.current = sig;
+
       setRevealedCount((prev) => {
         let matched = prev;
         while (matched < normalizedWords.length) {
           const expected = normalizedWords[matched];
-          const found = normalizedSpoken.some((sw) => {
-            return sw === expected || expected.includes(sw) || sw.includes(expected);
-          });
+          const found = normalizedSpoken.some((sw) => isMatch(sw, expected));
           if (found) {
             matched++;
             onCorrectWord?.();
@@ -162,10 +196,19 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
           }
         }
 
+        if (matched === prev && normalizedSpoken.length > 0 && sig !== prevSig) {
+          const expected = normalizedWords[matched];
+          const latest = normalizedSpoken[normalizedSpoken.length - 1];
+          if (expected && latest && !isMatch(latest, expected)) {
+            wrongAttemptsRef.current++;
+            playBeep("wrong");
+          }
+        }
+
         if (matched >= normalizedWords.length) {
           setVerseComplete(true);
-          recognition.stop();
-          setIsListening(false);
+          playBeep("right");
+          try { recognition.stop(); } catch {}
         }
 
         return matched;
@@ -173,24 +216,21 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
     };
 
     recognition.onerror = (event: any) => {
-      if (event.error !== "no-speech") {
+      if (event.error !== "no-speech" && event.error !== "aborted") {
         console.error("Speech recognition error:", event.error);
       }
     };
 
     recognition.onend = () => {
-      // Restart if still listening and not complete
-      if (recognitionRef.current && !verseComplete) {
-        try {
-          recognition.start();
-        } catch {}
+      if (recognitionRef.current === recognition && !verseComplete) {
+        try { recognition.start(); } catch {}
       }
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
+    try { recognition.start(); } catch {}
     setIsListening(true);
-  }, [normalizedWords, verseComplete]);
+  }, [normalizedWords, verseComplete, onCorrectWord, playBeep]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
