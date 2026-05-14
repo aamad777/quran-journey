@@ -103,7 +103,19 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
     setVerseComplete(false);
     lastSpokenSigRef.current = "";
     wrongAttemptsRef.current = 0;
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.stop();
+      } catch {}
+      recognitionRef.current = null;
+      setIsListening(false);
+    }
+    const t = setTimeout(() => startListeningRef.current?.(), 350);
+    return () => clearTimeout(t);
   }, [currentVerseIndex]);
+
+  const startListeningRef = useRef<(() => void) | null>(null);
 
   // Auto-advance when all words revealed
   useEffect(() => {
