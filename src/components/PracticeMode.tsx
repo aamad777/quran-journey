@@ -218,7 +218,7 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
 
         if (matched >= normalizedWords.length) {
           setVerseComplete(true);
-          playBeep("right");
+          
           try { recognition.stop(); } catch {}
         }
 
