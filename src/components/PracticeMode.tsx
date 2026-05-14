@@ -65,27 +65,26 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
         audioCtxRef.current = new Ctx();
       }
       const ctx = audioCtxRef.current!;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      if (kind === "wrong") {
+      if (kind !== "wrong") return; // only beep on wrong
+      // Error buzzer: two short descending square-wave tones
+      const t0 = ctx.currentTime;
+      const tones = [
+        { f: 360, start: 0, dur: 0.13 },
+        { f: 240, start: 0.14, dur: 0.18 },
+      ];
+      tones.forEach(({ f, start, dur }) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = "square";
-        osc.frequency.value = 220;
-        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.24);
-      } else {
-        osc.type = "sine";
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.16);
-      }
+        osc.frequency.value = f;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.0001, t0 + start);
+        gain.gain.exponentialRampToValueAtTime(0.22, t0 + start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
+        osc.start(t0 + start);
+        osc.stop(t0 + start + dur + 0.02);
+      });
     } catch {}
   }, []);
 
@@ -219,7 +218,7 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
 
         if (matched >= normalizedWords.length) {
           setVerseComplete(true);
-          playBeep("right");
+          
           try { recognition.stop(); } catch {}
         }
 
