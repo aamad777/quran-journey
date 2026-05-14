@@ -253,6 +253,18 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
     setIsListening(false);
   }, []);
 
+  // Keep ref in sync for auto-start across verse changes / mount
+  useEffect(() => {
+    startListeningRef.current = startListening;
+  }, [startListening]);
+
+  // Auto-start mic on mount (entering voice tab)
+  useEffect(() => {
+    const t = setTimeout(() => startListeningRef.current?.(), 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
