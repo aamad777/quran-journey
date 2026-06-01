@@ -579,19 +579,64 @@ const VerseCard = ({
 
         {/* Tafseer Dialog */}
         <Dialog open={tafseerOpen} onOpenChange={setTafseerOpen}>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto" dir="rtl">
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" dir="rtl">
             <DialogHeader>
               <DialogTitle className="font-arabic text-lg text-foreground">
-                التفسير الميسّر — آية {tafseerVerse}
+                تفسير الآية {tafseerVerse}
               </DialogTitle>
             </DialogHeader>
+
+            {/* Tafseer source selector */}
+            <div className="flex flex-col gap-2 mb-2">
+              <Label className="text-xs text-muted-foreground">مصدر التفسير</Label>
+              <Select
+                value={selectedTafseer}
+                onValueChange={(v) => {
+                  setSelectedTafseer(v);
+                  if (tafseerVerseRef) fetchTafseer(tafseerVerseRef.surah, tafseerVerseRef.ayah, v);
+                }}
+              >
+                <SelectTrigger className="font-arabic text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent className="font-arabic">
+                  {TAFSEER_EDITIONS.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {tafseerLoading ? (
               <p className="text-muted-foreground text-center py-8 animate-pulse">جاري تحميل التفسير...</p>
             ) : (
-              <p className="font-arabic text-base leading-[2] text-foreground">{tafseerText}</p>
+              <p className="font-arabic text-base leading-[2] text-foreground whitespace-pre-line">{tafseerText}</p>
+            )}
+
+            {/* Audio tafseer buttons */}
+            {tafseerVerseRef && (
+              <div className="mt-4 pt-4 border-t">
+                <Label className="text-xs text-muted-foreground mb-2 block">استمع للتفسير صوتياً</Label>
+                <div className="flex flex-wrap gap-2">
+                  {AUDIO_TAFSEER_PROVIDERS.map((p) => {
+                    const surahName = verses.find(v => v.surahNumber === tafseerVerseRef.surah)?.surahNameArabic || `${tafseerVerseRef.surah}`;
+                    return (
+                      <Button
+                        key={p.id}
+                        size="sm"
+                        variant="outline"
+                        className="font-arabic gap-2"
+                        onClick={() => window.open(p.search(tafseerVerseRef.surah, tafseerVerseRef.ayah, surahName), "_blank", "noopener,noreferrer")}
+                      >
+                        <Volume2 className="w-4 h-4" />
+                        {p.name}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </DialogContent>
         </Dialog>
+
 
         {/* Tajweed Rule Popup */}
         <Dialog open={tajweedPopupOpen} onOpenChange={(open) => { setTajweedPopupOpen(open); if (!open) stopTajweedExample(); }}>
