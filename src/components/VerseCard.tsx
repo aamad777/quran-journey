@@ -56,6 +56,23 @@ const DELAY_OPTIONS = [
   { value: "5", label: "٥ ثواني" },
 ];
 
+const TAFSEER_EDITIONS: { id: string; name: string }[] = [
+  { id: "ar.muyassar", name: "التفسير الميسّر" },
+  { id: "ar.jalalayn", name: "تفسير الجلالين" },
+  { id: "ar.qurtubi", name: "تفسير القرطبي" },
+  { id: "ar.baghawi", name: "تفسير البغوي" },
+  { id: "ar.ibnkathir", name: "تفسير ابن كثير" },
+  { id: "ar.waseet", name: "التفسير الوسيط (طنطاوي)" },
+  { id: "ar.tustari", name: "تفسير التستري" },
+];
+
+// Audio tafseer providers — opens external listening for reliability.
+const AUDIO_TAFSEER_PROVIDERS: { id: string; name: string; search: (surah: number, ayah: number, surahName: string) => string }[] = [
+  { id: "youtube", name: "يوتيوب", search: (s, a, sn) => `https://www.youtube.com/results?search_query=${encodeURIComponent(`تفسير سورة ${sn} الآية ${a}`)}` },
+  { id: "shaarawi_yt", name: "الشعراوي (يوتيوب)", search: (s, a, sn) => `https://www.youtube.com/results?search_query=${encodeURIComponent(`الشعراوي تفسير سورة ${sn} آية ${a}`)}` },
+  { id: "saadi_yt", name: "السعدي (يوتيوب)", search: (s, a, sn) => `https://www.youtube.com/results?search_query=${encodeURIComponent(`السعدي تفسير سورة ${sn} آية ${a}`)}` },
+];
+
 interface VerseCardProps {
   verses: VerseData[];
   audioUrl: string;
@@ -127,6 +144,11 @@ const VerseCard = ({
   const [tafseerText, setTafseerText] = useState("");
   const [tafseerLoading, setTafseerLoading] = useState(false);
   const [tafseerVerse, setTafseerVerse] = useState("");
+  const [tafseerVerseRef, setTafseerVerseRef] = useState<{ surah: number; ayah: number } | null>(null);
+  const [selectedTafseer, setSelectedTafseer] = useState<string>(() => {
+    try { return localStorage.getItem("quran_tafseer_edition") || "ar.muyassar"; } catch { return "ar.muyassar"; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_tafseer_edition", selectedTafseer); } catch {} }, [selectedTafseer]);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tajweedPopupOpen, setTajweedPopupOpen] = useState(false);
   const [selectedTajweedRule, setSelectedTajweedRule] = useState<TajweedRuleInfo | null>(null);
@@ -323,23 +345,25 @@ const VerseCard = ({
     }
   };
 
-  const fetchTafseer = useCallback(async (surah: number, ayah: number) => {
+  const fetchTafseer = useCallback(async (surah: number, ayah: number, edition?: string) => {
+    const ed = edition || selectedTafseer;
     setTafseerLoading(true);
     setTafseerOpen(true);
     setTafseerVerse(`${surah}:${ayah}`);
+    setTafseerVerseRef({ surah, ayah });
     try {
-      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.muyassar`);
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${ed}`);
       const data = await res.json();
       if (data.code === 200 && data.data?.text) {
         setTafseerText(data.data.text);
       } else {
-        setTafseerText("لم يتم العثور على التفسير");
+        setTafseerText("لم يتم العثور على التفسير لهذه الآية في هذا المصدر");
       }
     } catch {
       setTafseerText("حدث خطأ في تحميل التفسير");
     }
     setTafseerLoading(false);
-  }, []);
+  }, [selectedTafseer]);
 
   const handleLongPressStart = useCallback((surah: number, ayah: number) => {
     longPressTimer.current = setTimeout(() => {
@@ -555,19 +579,64 @@ const VerseCard = ({
 
         {/* Tafseer Dialog */}
         <Dialog open={tafseerOpen} onOpenChange={setTafseerOpen}>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto" dir="rtl">
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" dir="rtl">
             <DialogHeader>
               <DialogTitle className="font-arabic text-lg text-foreground">
-                التفسير الميسّر — آية {tafseerVerse}
+                تفسير الآية {tafseerVerse}
               </DialogTitle>
             </DialogHeader>
+
+            {/* Tafseer source selector */}
+            <div className="flex flex-col gap-2 mb-2">
+              <Label className="text-xs text-muted-foreground">مصدر التفسير</Label>
+              <Select
+                value={selectedTafseer}
+                onValueChange={(v) => {
+                  setSelectedTafseer(v);
+                  if (tafseerVerseRef) fetchTafseer(tafseerVerseRef.surah, tafseerVerseRef.ayah, v);
+                }}
+              >
+                <SelectTrigger className="font-arabic text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent className="font-arabic">
+                  {TAFSEER_EDITIONS.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {tafseerLoading ? (
               <p className="text-muted-foreground text-center py-8 animate-pulse">جاري تحميل التفسير...</p>
             ) : (
-              <p className="font-arabic text-base leading-[2] text-foreground">{tafseerText}</p>
+              <p className="font-arabic text-base leading-[2] text-foreground whitespace-pre-line">{tafseerText}</p>
+            )}
+
+            {/* Audio tafseer buttons */}
+            {tafseerVerseRef && (
+              <div className="mt-4 pt-4 border-t">
+                <Label className="text-xs text-muted-foreground mb-2 block">استمع للتفسير صوتياً</Label>
+                <div className="flex flex-wrap gap-2">
+                  {AUDIO_TAFSEER_PROVIDERS.map((p) => {
+                    const surahName = verses.find(v => v.surahNumber === tafseerVerseRef.surah)?.surahNameArabic || `${tafseerVerseRef.surah}`;
+                    return (
+                      <Button
+                        key={p.id}
+                        size="sm"
+                        variant="outline"
+                        className="font-arabic gap-2"
+                        onClick={() => window.open(p.search(tafseerVerseRef.surah, tafseerVerseRef.ayah, surahName), "_blank", "noopener,noreferrer")}
+                      >
+                        <Volume2 className="w-4 h-4" />
+                        {p.name}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </DialogContent>
         </Dialog>
+
 
         {/* Tajweed Rule Popup */}
         <Dialog open={tajweedPopupOpen} onOpenChange={(open) => { setTajweedPopupOpen(open); if (!open) stopTajweedExample(); }}>
