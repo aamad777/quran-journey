@@ -56,6 +56,22 @@ const DELAY_OPTIONS = [
   { value: "5", label: "٥ ثواني" },
 ];
 
+const TAFSEER_EDITIONS: { id: string; name: string }[] = [
+  { id: "ar.muyassar", name: "التفسير الميسّر" },
+  { id: "ar.jalalayn", name: "تفسير الجلالين" },
+  { id: "ar.qurtubi", name: "تفسير القرطبي" },
+  { id: "ar.baghawi", name: "تفسير البغوي" },
+  { id: "ar.ibnkathir", name: "تفسير ابن كثير" },
+  { id: "ar.waseet", name: "التفسير الوسيط (طنطاوي)" },
+  { id: "ar.tustari", name: "تفسير التستري" },
+];
+
+// Audio tafseer reciters (surah-level mp3). Plays full-surah tafsir audio.
+const AUDIO_TAFSEER: { id: string; name: string; url: (surah: number) => string }[] = [
+  { id: "shaarawi", name: "الشيخ الشعراوي", url: (s) => `https://server6.mp3quran.net/shaarawe/tafseer/${s.toString().padStart(3, "0")}.mp3` },
+  { id: "khaled_jaleel", name: "خالد الجليل", url: (s) => `https://server10.mp3quran.net/jaleel/tafseer/${s.toString().padStart(3, "0")}.mp3` },
+];
+
 interface VerseCardProps {
   verses: VerseData[];
   audioUrl: string;
