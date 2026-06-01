@@ -345,23 +345,25 @@ const VerseCard = ({
     }
   };
 
-  const fetchTafseer = useCallback(async (surah: number, ayah: number) => {
+  const fetchTafseer = useCallback(async (surah: number, ayah: number, edition?: string) => {
+    const ed = edition || selectedTafseer;
     setTafseerLoading(true);
     setTafseerOpen(true);
     setTafseerVerse(`${surah}:${ayah}`);
+    setTafseerVerseRef({ surah, ayah });
     try {
-      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.muyassar`);
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${ed}`);
       const data = await res.json();
       if (data.code === 200 && data.data?.text) {
         setTafseerText(data.data.text);
       } else {
-        setTafseerText("لم يتم العثور على التفسير");
+        setTafseerText("لم يتم العثور على التفسير لهذه الآية في هذا المصدر");
       }
     } catch {
       setTafseerText("حدث خطأ في تحميل التفسير");
     }
     setTafseerLoading(false);
-  }, []);
+  }, [selectedTafseer]);
 
   const handleLongPressStart = useCallback((surah: number, ayah: number) => {
     longPressTimer.current = setTimeout(() => {
