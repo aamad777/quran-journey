@@ -127,6 +127,11 @@ const VerseCard = ({
   const [tafseerText, setTafseerText] = useState("");
   const [tafseerLoading, setTafseerLoading] = useState(false);
   const [tafseerVerse, setTafseerVerse] = useState("");
+  const [tafseerVerseRef, setTafseerVerseRef] = useState<{ surah: number; ayah: number } | null>(null);
+  const [selectedTafseer, setSelectedTafseer] = useState<string>(() => {
+    try { return localStorage.getItem("quran_tafseer_edition") || "ar.muyassar"; } catch { return "ar.muyassar"; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_tafseer_edition", selectedTafseer); } catch {} }, [selectedTafseer]);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tajweedPopupOpen, setTajweedPopupOpen] = useState(false);
   const [selectedTajweedRule, setSelectedTajweedRule] = useState<TajweedRuleInfo | null>(null);
