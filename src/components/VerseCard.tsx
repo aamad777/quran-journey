@@ -66,10 +66,11 @@ const TAFSEER_EDITIONS: { id: string; name: string }[] = [
   { id: "ar.tustari", name: "تفسير التستري" },
 ];
 
-// Audio tafseer reciters (surah-level mp3). Plays full-surah tafsir audio.
-const AUDIO_TAFSEER: { id: string; name: string; url: (surah: number) => string }[] = [
-  { id: "shaarawi", name: "الشيخ الشعراوي", url: (s) => `https://server6.mp3quran.net/shaarawe/tafseer/${s.toString().padStart(3, "0")}.mp3` },
-  { id: "khaled_jaleel", name: "خالد الجليل", url: (s) => `https://server10.mp3quran.net/jaleel/tafseer/${s.toString().padStart(3, "0")}.mp3` },
+// Audio tafseer providers — opens external listening for reliability.
+const AUDIO_TAFSEER_PROVIDERS: { id: string; name: string; search: (surah: number, ayah: number, surahName: string) => string }[] = [
+  { id: "youtube", name: "يوتيوب", search: (s, a, sn) => `https://www.youtube.com/results?search_query=${encodeURIComponent(`تفسير سورة ${sn} الآية ${a}`)}` },
+  { id: "shaarawi_yt", name: "الشعراوي (يوتيوب)", search: (s, a, sn) => `https://www.youtube.com/results?search_query=${encodeURIComponent(`الشعراوي تفسير سورة ${sn} آية ${a}`)}` },
+  { id: "saadi_yt", name: "السعدي (يوتيوب)", search: (s, a, sn) => `https://www.youtube.com/results?search_query=${encodeURIComponent(`السعدي تفسير سورة ${sn} آية ${a}`)}` },
 ];
 
 interface VerseCardProps {
