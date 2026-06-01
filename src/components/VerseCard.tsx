@@ -618,17 +618,18 @@ const VerseCard = ({
                 <div className="flex flex-wrap gap-2">
                   {AUDIO_TAFSEER_PROVIDERS.map((p) => {
                     const surahName = verses.find(v => v.surahNumber === tafseerVerseRef.surah)?.surahNameArabic || `${tafseerVerseRef.surah}`;
+                    const href = p.search(tafseerVerseRef.surah, tafseerVerseRef.ayah, surahName);
                     return (
-                      <Button
+                      <a
                         key={p.id}
-                        size="sm"
-                        variant="outline"
-                        className="font-arabic gap-2"
-                        onClick={() => window.open(p.search(tafseerVerseRef.surah, tafseerVerseRef.ayah, surahName), "_blank", "noopener,noreferrer")}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 font-arabic text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
                       >
                         <Volume2 className="w-4 h-4" />
                         {p.name}
-                      </Button>
+                      </a>
                     );
                   })}
                 </div>
