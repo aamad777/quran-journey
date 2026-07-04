@@ -1087,4 +1087,61 @@ const VerseCard = ({
   );
 };
 
+function VerseActionsRow({
+  verse,
+  accent,
+  muted,
+  onBookmark,
+  onShare,
+  onTafseer,
+}: {
+  verse: VerseData;
+  accent?: string;
+  muted?: string;
+  onBookmark: () => void;
+  onShare: () => void;
+  onTafseer: () => void;
+}) {
+  const bookmarked = useIsBookmarked(verse.surahNumber, verse.ayahNumber);
+  const btn = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-arabic border transition-all hover:scale-105 active:scale-95";
+  return (
+    <div className="flex items-center justify-center gap-1.5 mt-3 flex-wrap" dir="rtl">
+      <button
+        type="button"
+        onClick={onBookmark}
+        className={btn}
+        style={{
+          borderColor: `${muted}30`,
+          color: bookmarked ? accent : muted,
+          backgroundColor: bookmarked ? `${accent}15` : "transparent",
+        }}
+        title={bookmarked ? "إزالة من المحفوظات" : "حفظ الآية"}
+      >
+        <Heart className={`w-3.5 h-3.5 ${bookmarked ? "fill-current" : ""}`} />
+        <span>{bookmarked ? "محفوظة" : "حفظ"}</span>
+      </button>
+      <button
+        type="button"
+        onClick={onTafseer}
+        className={btn}
+        style={{ borderColor: `${muted}30`, color: muted }}
+        title="تفسير الآية"
+      >
+        <BookOpen className="w-3.5 h-3.5" />
+        <span>تفسير</span>
+      </button>
+      <button
+        type="button"
+        onClick={onShare}
+        className={btn}
+        style={{ borderColor: `${muted}30`, color: muted }}
+        title="مشاركة"
+      >
+        <Share2 className="w-3.5 h-3.5" />
+        <span>مشاركة</span>
+      </button>
+    </div>
+  );
+}
+
 export default VerseCard;
