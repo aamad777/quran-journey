@@ -301,6 +301,27 @@ const Index = () => {
             </div>
           </button>
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            {/* Streak + daily goal chip */}
+            <button
+              onClick={() => setActiveTab("stats")}
+              className="hidden sm:flex items-center gap-1 h-8 px-2 rounded-full border text-xs font-arabic transition-all hover:scale-105"
+              style={{ borderColor: `${bgTheme.mutedText}30`, backgroundColor: `${bgTheme.cardBg}cc`, color: bgTheme.textColor }}
+              title={`${gami.streak} يوم متتالي • ${gami.todayCount}/${gami.dailyGoal} اليوم`}
+            >
+              <Flame className={`w-3.5 h-3.5 ${gami.streak > 0 ? "text-orange-500" : ""}`} style={{ filter: gami.streak > 0 ? "drop-shadow(0 0 4px rgba(249,115,22,0.6))" : undefined }} />
+              <span className="font-semibold">{gami.streak.toLocaleString("ar-EG")}</span>
+              <span className="opacity-60 mx-1">•</span>
+              <Target className="w-3.5 h-3.5" style={{ color: bgTheme.btnBg }} />
+              <span>{gami.todayCount.toLocaleString("ar-EG")}/{gami.dailyGoal.toLocaleString("ar-EG")}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("bookmarks")}
+              className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-primary/10 transition-colors"
+              style={{ color: activeTab === "bookmarks" ? bgTheme.btnBg : bgTheme.mutedText }}
+              title="المحفوظات"
+            >
+              <Bookmark className={`w-4 h-4 ${activeTab === "bookmarks" ? "fill-current" : ""}`} />
+            </button>
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
