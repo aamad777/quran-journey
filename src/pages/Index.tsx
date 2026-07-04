@@ -481,6 +481,7 @@ const Index = () => {
             { key: "page" as const, icon: <BookMarked className="w-[22px] h-[22px]" />, label: "صفحة" },
             { key: "search" as const, icon: <Search className="w-[22px] h-[22px]" />, label: "بحث" },
             { key: "alphabets" as const, icon: <BookA className="w-[22px] h-[22px]" />, label: "حروف" },
+            { key: "bookmarks" as const, icon: <Heart className="w-[22px] h-[22px]" />, label: "حفظ" },
             { key: "downloads" as const, icon: <Download className="w-[22px] h-[22px]" />, label: "تحميل" },
           ]).map((tab) => (
             <button
