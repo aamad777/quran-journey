@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat, Download, Palette, Settings2, ChevronUp } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat, Download, Palette, Settings2, ChevronUp, Heart, Share2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import { resolveAudioUrl, downloadAndCache, hasCached } from "@/lib/audioCache";
 import { toast } from "@/hooks/use-toast";
+import { toggleBookmark, useIsBookmarked } from "@/lib/bookmarks";
+import { recordVerseActivity } from "@/lib/gamification";
 
 type ReciterSource =
   | { type: "alquran"; id: string }
