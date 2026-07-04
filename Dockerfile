@@ -1,5 +1,5 @@
 # ---------- build ----------
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 # Add build tools for native dependencies like sharp
 RUN apk add --no-cache build-base g++ make
