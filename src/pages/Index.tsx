@@ -125,7 +125,7 @@ const Index = () => {
   } = useQuranProgress(user);
 
   const [activeTab, setActiveTab] = useState<
-    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page" | "downloads"
+    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page" | "downloads" | "bookmarks"
   >(() => {
     try {
       return (
@@ -135,6 +135,7 @@ const Index = () => {
       return "read";
     }
   });
+  const gami = useGamification();
 
   const [railPinned, setRailPinned] = useState<boolean>(() => {
     try {
