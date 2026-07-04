@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Mic, MicOff, SkipForward, SkipBack, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Mic, MicOff, SkipForward, SkipBack, RotateCcw, CheckCircle2, Eye, TrendingUp, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Type } from "lucide-react";
+import { recordVerseActivity } from "@/lib/gamification";
 
 interface VerseData {
   arabic: string;
@@ -24,31 +27,42 @@ interface PracticeModeProps {
 const normalizeArabic = (text: string): string => {
   return text
     .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/g, "")
-    .replace(/\u0671/g, "\u0627") // alef wasla -> alef
-    .replace(/[\u0622\u0623\u0625]/g, "\u0627") // normalize alef variants
-    .replace(/\u0649/g, "\u064A") // alef maqsura -> ya
-    .replace(/\u0629/g, "\u0647") // ta marbuta -> ha
+    .replace(/\u0671/g, "\u0627")
+    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
+    .replace(/\u0649/g, "\u064A")
+    .replace(/\u0629/g, "\u0647")
     .trim();
 };
 
-const splitWords = (text: string): string[] => {
-  return text.split(/\s+/).filter(Boolean);
-};
+const splitWords = (text: string): string[] => text.split(/\s+/).filter(Boolean);
 
 const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModeProps) => {
   const [fontSize, setFontSize] = useState(() => {
     try { return parseInt(localStorage.getItem("quran_font_size") || "36"); } catch { return 36; }
   });
+  const [autoAdvance, setAutoAdvance] = useState(() => {
+    try { return localStorage.getItem("quran_practice_autoadv") !== "false"; } catch { return true; }
+  });
+  useEffect(() => { try { localStorage.setItem("quran_practice_autoadv", String(autoAdvance)); } catch {} }, [autoAdvance]);
+
   const [revealedCount, setRevealedCount] = useState(0);
   const [isListening, setIsListening] = useState(false);
   const [verseComplete, setVerseComplete] = useState(false);
+  const [wrongFlash, setWrongFlash] = useState(false);
+  const [hintIndex, setHintIndex] = useState<number | null>(null);
   const recognitionRef = useRef<any>(null);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const lastBeepRef = useRef<number>(0);
   const lastSpokenSigRef = useRef<string>("");
   const wrongAttemptsRef = useRef<number>(0);
+
+  // session stats
+  const [sessionCorrect, setSessionCorrect] = useState(0);
+  const [sessionWrong, setSessionWrong] = useState(0);
+  const [sessionVersesDone, setSessionVersesDone] = useState(0);
 
   const currentVerse = verses[currentVerseIndex] || verses[0];
   const words = currentVerse ? splitWords(currentVerse.arabic) : [];
@@ -65,34 +79,49 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
         audioCtxRef.current = new Ctx();
       }
       const ctx = audioCtxRef.current!;
-      if (kind !== "wrong") return; // only beep on wrong
-      // Error buzzer: two short descending square-wave tones
       const t0 = ctx.currentTime;
-      const tones = [
-        { f: 360, start: 0, dur: 0.13 },
-        { f: 240, start: 0.14, dur: 0.18 },
-      ];
-      tones.forEach(({ f, start, dur }) => {
+      if (kind === "wrong") {
+        const tones = [
+          { f: 360, start: 0, dur: 0.13 },
+          { f: 240, start: 0.14, dur: 0.18 },
+        ];
+        tones.forEach(({ f, start, dur }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "square";
+          osc.frequency.value = f;
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.0001, t0 + start);
+          gain.gain.exponentialRampToValueAtTime(0.22, t0 + start + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
+          osc.start(t0 + start);
+          osc.stop(t0 + start + dur + 0.02);
+        });
+      } else {
+        // subtle chime for correct
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = "square";
-        osc.frequency.value = f;
+        osc.type = "sine";
+        osc.frequency.value = 880;
         osc.connect(gain);
         gain.connect(ctx.destination);
-        gain.gain.setValueAtTime(0.0001, t0 + start);
-        gain.gain.exponentialRampToValueAtTime(0.22, t0 + start + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
-        osc.start(t0 + start);
-        osc.stop(t0 + start + dur + 0.02);
-      });
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+        osc.start(t0);
+        osc.stop(t0 + 0.2);
+      }
     } catch {}
   }, []);
 
-  // Reset state when verse list changes
   useEffect(() => {
     setRevealedCount(0);
     setVerseComplete(false);
     setCurrentVerseIndex(0);
+    setSessionCorrect(0);
+    setSessionWrong(0);
+    setSessionVersesDone(0);
     lastSpokenSigRef.current = "";
     wrongAttemptsRef.current = 0;
   }, [verses]);
@@ -100,6 +129,7 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
   useEffect(() => {
     setRevealedCount(0);
     setVerseComplete(false);
+    setHintIndex(null);
     lastSpokenSigRef.current = "";
     wrongAttemptsRef.current = 0;
     if (recognitionRef.current) {
@@ -116,21 +146,24 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
 
   const startListeningRef = useRef<(() => void) | null>(null);
 
-  // Auto-advance when all words revealed
   useEffect(() => {
     if (verseComplete) {
-      autoAdvanceTimer.current = setTimeout(() => {
-        if (currentVerseIndex < verses.length - 1) {
-          setCurrentVerseIndex((i) => i + 1);
-        } else {
-          onNext();
-        }
-      }, 1500);
+      setSessionVersesDone((n) => n + 1);
+      recordVerseActivity("practice");
+      if (autoAdvance) {
+        autoAdvanceTimer.current = setTimeout(() => {
+          if (currentVerseIndex < verses.length - 1) {
+            setCurrentVerseIndex((i) => i + 1);
+          } else {
+            onNext();
+          }
+        }, 1500);
+      }
     }
     return () => {
       if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
     };
-  }, [verseComplete, currentVerseIndex, verses.length, onNext]);
+  }, [verseComplete, currentVerseIndex, verses.length, onNext, autoAdvance]);
 
   const startListening = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -202,6 +235,8 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
           if (found) {
             matched++;
             onCorrectWord?.();
+            setSessionCorrect((c) => c + 1);
+            playBeep("right");
           } else {
             break;
           }
@@ -212,13 +247,15 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
           const latest = normalizedSpoken[normalizedSpoken.length - 1];
           if (expected && latest && !isMatch(latest, expected)) {
             wrongAttemptsRef.current++;
+            setSessionWrong((w) => w + 1);
+            setWrongFlash(true);
+            setTimeout(() => setWrongFlash(false), 400);
             playBeep("wrong");
           }
         }
 
         if (matched >= normalizedWords.length) {
           setVerseComplete(true);
-          
           try { recognition.stop(); } catch {}
         }
 
@@ -252,25 +289,23 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
     setIsListening(false);
   }, []);
 
-  // Keep ref in sync for auto-start across verse changes / mount
   useEffect(() => {
     startListeningRef.current = startListening;
   }, [startListening]);
 
-  // Auto-start mic on mount (entering voice tab)
   useEffect(() => {
     const t = setTimeout(() => startListeningRef.current?.(), 300);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.onend = null;
         recognitionRef.current.stop();
       }
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     };
   }, []);
 
@@ -278,14 +313,24 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
     stopListening();
     setRevealedCount(0);
     setVerseComplete(false);
+    setHintIndex(null);
+  };
+
+  const showHint = () => {
+    if (revealedCount >= words.length) return;
+    setHintIndex(revealedCount);
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = setTimeout(() => setHintIndex(null), 2500);
   };
 
   const primaryVerse = verses[0];
   if (!primaryVerse) return null;
 
+  const totalAttempts = sessionCorrect + sessionWrong;
+  const accuracy = totalAttempts > 0 ? Math.round((sessionCorrect / totalAttempts) * 100) : 100;
+
   return (
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
-      {/* Surah Header */}
       <div className="text-center mb-6">
         <div className="inline-block px-6 py-2 rounded-full bg-primary/10 border border-primary/20">
           <span className="font-arabic text-lg text-gold">{primaryVerse.surahNameArabic}</span>
@@ -297,9 +342,29 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
         </p>
       </div>
 
-      {/* Practice Card */}
-      <div className="bg-card rounded-2xl border border-border p-8 md:p-12 shadow-gold">
-        {/* Progress */}
+      {/* Session stats */}
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="rounded-xl border border-border bg-card/60 p-2 text-center">
+          <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground font-arabic">
+            <TrendingUp className="w-3 h-3" /> دقة
+          </div>
+          <div className="text-lg font-bold text-primary">{accuracy}٪</div>
+        </div>
+        <div className="rounded-xl border border-border bg-card/60 p-2 text-center">
+          <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground font-arabic">
+            <CheckCircle2 className="w-3 h-3" /> صحيح
+          </div>
+          <div className="text-lg font-bold text-emerald-500">{sessionCorrect.toLocaleString("ar-EG")}</div>
+        </div>
+        <div className="rounded-xl border border-border bg-card/60 p-2 text-center">
+          <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground font-arabic">
+            <Zap className="w-3 h-3" /> آيات
+          </div>
+          <div className="text-lg font-bold text-foreground">{sessionVersesDone.toLocaleString("ar-EG")}</div>
+        </div>
+      </div>
+
+      <div className={`bg-card rounded-2xl border border-border p-8 md:p-12 shadow-gold transition-all ${wrongFlash ? "ring-2 ring-destructive animate-pulse" : ""}`}>
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs text-muted-foreground">
             {revealedCount} / {words.length} كلمات
@@ -312,7 +377,6 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
           )}
         </div>
 
-        {/* Progress bar */}
         <div className="w-full h-1.5 rounded-full bg-muted mb-6 overflow-hidden">
           <div
             className="h-full rounded-full bg-primary transition-all duration-300"
@@ -320,70 +384,81 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
           />
         </div>
 
-        {/* Words display */}
         <div className="text-center mb-6 select-none" dir="rtl">
           <p className="font-arabic leading-[2.4]" style={{ fontSize: `${fontSize}px` }}>
-            {words.map((word, i) => (
-              <span
-                key={i}
-                className={`inline-block mx-1 transition-all duration-300 ${
-                  i < revealedCount
-                    ? "text-foreground"
-                    : "text-muted-foreground/20"
-                }`}
-                style={{
-                  filter: i < revealedCount ? "none" : "blur(2px)",
-                }}
-              >
-                {word}
-              </span>
-            ))}
+            {words.map((word, i) => {
+              const done = i < revealedCount;
+              const isHint = hintIndex === i;
+              return (
+                <span
+                  key={i}
+                  className={`inline-block mx-1 transition-all duration-300 ${
+                    done ? "text-emerald-600 dark:text-emerald-400" : isHint ? "text-primary animate-pulse" : "text-muted-foreground/25"
+                  }`}
+                  style={{
+                    filter: done || isHint ? "none" : "blur(2px)",
+                  }}
+                >
+                  {word}
+                </span>
+              );
+            })}
           </p>
         </div>
 
-        {verseComplete && (
+        {verseComplete && autoAdvance && (
           <p className="text-center text-sm text-muted-foreground mb-4 animate-pulse">
             الانتقال للآية التالية...
           </p>
         )}
 
-        {/* Divider */}
         <div className="flex items-center gap-4 my-3">
           <div className="flex-1 h-px bg-border" />
           <div className="w-2 h-2 rounded-full bg-gold" />
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Font size */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <Type className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <span className="text-xs text-muted-foreground whitespace-nowrap">حجم الخط</span>
-          <Slider
-            value={[fontSize]}
-            onValueChange={(v) => setFontSize(v[0])}
-            min={20}
-            max={100}
-            step={2}
-            className="w-24"
-          />
-          <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
+        <div className="flex items-center justify-center gap-4 flex-wrap mb-4">
+          <div className="flex items-center gap-2">
+            <Type className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <span className="text-xs text-muted-foreground whitespace-nowrap">حجم الخط</span>
+            <Slider
+              value={[fontSize]}
+              onValueChange={(v) => setFontSize(v[0])}
+              min={20}
+              max={100}
+              step={2}
+              className="w-24"
+            />
+            <span className="text-xs text-muted-foreground w-6 text-center">{fontSize}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="autoadv" className="text-xs text-muted-foreground cursor-pointer font-arabic">تقدّم تلقائي</Label>
+            <Switch id="autoadv" checked={autoAdvance} onCheckedChange={setAutoAdvance} className="scale-90" />
+          </div>
         </div>
 
-        {/* Controls - mobile labeled */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          {/* Back */}
           <button onClick={() => { stopListening(); onPrev(); }} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <SkipBack className="w-4 h-4" />
             <span className="text-[10px] text-muted-foreground">رجوع</span>
           </button>
 
-          {/* Reset */}
           <button onClick={resetPractice} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <RotateCcw className="w-4 h-4" />
             <span className="text-[10px] text-muted-foreground">إعادة</span>
           </button>
 
-          {/* Mic */}
+          <button
+            onClick={showHint}
+            disabled={verseComplete || revealedCount >= words.length}
+            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px] disabled:opacity-40"
+            title="اكشف الكلمة التالية"
+          >
+            <Eye className="w-4 h-4" />
+            <span className="text-[10px] text-muted-foreground">تلميح</span>
+          </button>
+
           <button
             onClick={isListening ? stopListening : startListening}
             disabled={verseComplete}
@@ -397,7 +472,6 @@ const PracticeMode = ({ verses, onNext, onPrev, onCorrectWord }: PracticeModePro
             <span className="text-[10px]">{isListening ? "إيقاف" : "ميك"}</span>
           </button>
 
-          {/* Next */}
           <button onClick={() => { stopListening(); onNext(); }} className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-border hover:bg-primary/10 transition-all min-w-[52px]">
             <SkipForward className="w-4 h-4" />
             <span className="text-[10px] text-muted-foreground">التالي</span>
