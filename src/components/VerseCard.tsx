@@ -605,6 +605,14 @@ const VerseCard = ({
                   ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
                 </span>
               </p>
+              <VerseActionsRow
+                verse={v}
+                accent={themeAccentColor}
+                muted={themeMutedText}
+                onBookmark={() => handleBookmark(v)}
+                onShare={() => shareVerse(v)}
+                onTafseer={() => fetchTafseer(v.surahNumber, v.ayahNumber)}
+              />
               <p className="text-xs mt-2" style={{ color: themeMutedText }}>اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
