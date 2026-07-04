@@ -241,6 +241,38 @@ const VerseCard = ({
     setCurrentAudioIndex(0);
   }, [audioUrl]);
 
+  // Record verse activity for gamification (streak / daily goal / achievements)
+  // Debounced by primary verse ref so scrolling through verses only counts each new position once.
+  useEffect(() => {
+    if (!verses[0]) return;
+    const t = setTimeout(() => {
+      recordVerseActivity("read");
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [verses[0]?.surahNumber, verses[0]?.ayahNumber]);
+
+  const shareVerse = useCallback(async (v: VerseData) => {
+    const text = `${v.arabic}\n\n— سورة ${v.surahNameArabic} • آية ${v.ayahNumber}`;
+    try {
+      if ((navigator as any).share) {
+        await (navigator as any).share({ title: `سورة ${v.surahNameArabic} ${v.ayahNumber}`, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast({ title: "تم النسخ", description: "نُسخت الآية إلى الحافظة" });
+      }
+    } catch {}
+  }, []);
+
+  const handleBookmark = useCallback((v: VerseData) => {
+    const added = toggleBookmark({
+      surah: v.surahNumber,
+      ayah: v.ayahNumber,
+      surahNameArabic: v.surahNameArabic,
+      arabicPreview: v.arabic.slice(0, 120),
+    });
+    toast({ title: added ? "أُضيفت للمحفوظات" : "أُزيلت من المحفوظات" });
+  }, []);
+
   // Resolve cached blob URLs (or fallback to originals) whenever audioUrls change.
   useEffect(() => {
     let cancelled = false;
