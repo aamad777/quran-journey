@@ -512,6 +512,16 @@ const Index = () => {
             progressPercent={progressPercent}
             voiceCorrect={voiceCorrect}
             drawCorrect={drawCorrect}
+            gami={gami}
+            onSetDailyGoal={setDailyGoal}
+          />
+        ) : activeTab === "bookmarks" ? (
+          <BookmarksList
+            onSelectVerse={(surah, ayah) => { goToVerse(surah, ayah); setActiveTab("read"); }}
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
           />
         ) : activeTab === "search" ? (
           <VerseSearch
