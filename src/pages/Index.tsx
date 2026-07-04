@@ -33,8 +33,13 @@ import {
   BookMarked,
   Download,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Flame,
+  Target,
+  Bookmark
 } from "lucide-react";
+import BookmarksList from "@/components/BookmarksList";
+import { useGamification, setDailyGoal } from "@/lib/gamification";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
