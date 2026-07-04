@@ -1,5 +1,6 @@
-import { BookOpen, Layers, Grid3X3, FileText, Mic, PenTool } from "lucide-react";
+import { BookOpen, Layers, Grid3X3, FileText, Mic, PenTool, Flame, Target, Award } from "lucide-react";
 import { Progress as ProgressBar } from "@/components/ui/progress";
+import { ACHIEVEMENTS, type GamiState } from "@/lib/gamification";
 
 // Juz boundaries: [surah, ayah] for the start of each juz (1-30)
 const JUZ_STARTS: [number, number][] = [
@@ -8,7 +9,6 @@ const JUZ_STARTS: [number, number][] = [
   [29,46],[33,31],[36,28],[39,32],[41,47],[46,1],[51,31],[58,1],[67,1],[78,1]
 ];
 
-// Hizb = 60 parts (each juz has 2 hizbs). Hizb boundaries:
 const HIZB_STARTS: [number, number][] = [
   [1,1],[2,26],[2,142],[2,203],[2,253],[3,15],[3,93],[3,171],
   [4,24],[4,88],[4,148],[5,27],[5,83],[6,36],[6,111],[6,165],
@@ -53,9 +53,11 @@ interface QuranStatsProps {
   progressPercent: number;
   voiceCorrect: number;
   drawCorrect: number;
+  gami?: GamiState;
+  onSetDailyGoal?: (n: number) => void;
 }
 
-export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent, voiceCorrect, drawCorrect }: QuranStatsProps) {
+export default function QuranStats({ surahNumber, ayahNumber, versesRead, versesRemaining, progressPercent, voiceCorrect, drawCorrect, gami, onSetDailyGoal }: QuranStatsProps) {
   const currentJuz = getCurrentPart(surahNumber, ayahNumber, JUZ_STARTS);
   const currentHizb = getCurrentPart(surahNumber, ayahNumber, HIZB_STARTS);
   const completedJuz = currentJuz - 1;
@@ -66,66 +68,106 @@ export default function QuranStats({ surahNumber, ayahNumber, versesRead, verses
   const surahPercent = Math.round((completedSurahs / 114) * 100);
 
   const stats = [
-    {
-      icon: FileText,
-      label: "الآيات",
-      value: `${versesRead.toLocaleString("ar-EG")} / ٦٬٢٣٦`,
-      percent: progressPercent,
-      detail: `${versesRemaining.toLocaleString("ar-EG")} متبقية`,
-    },
-    {
-      icon: Layers,
-      label: "الأجزاء",
-      value: `${completedJuz.toLocaleString("ar-EG")} / ٣٠`,
-      percent: juzPercent,
-      detail: `الجزء الحالي: ${currentJuz.toLocaleString("ar-EG")}`,
-    },
-    {
-      icon: Grid3X3,
-      label: "الأحزاب",
-      value: `${completedHizb.toLocaleString("ar-EG")} / ٦٠`,
-      percent: hizbPercent,
-      detail: `الحزب الحالي: ${currentHizb.toLocaleString("ar-EG")}`,
-    },
-    {
-      icon: BookOpen,
-      label: "السور",
-      value: `${completedSurahs.toLocaleString("ar-EG")} / ١١٤`,
-      percent: surahPercent,
-      detail: `السورة الحالية: ${surahNumber.toLocaleString("ar-EG")}`,
-    },
-    {
-      icon: Mic,
-      label: "صوت صحيح",
-      value: voiceCorrect.toLocaleString("ar-EG"),
-      percent: null,
-      detail: "كلمات نُطقت بدون تخطي",
-    },
-    {
-      icon: PenTool,
-      label: "رسم صحيح",
-      value: drawCorrect.toLocaleString("ar-EG"),
-      percent: null,
-      detail: "كلمات رُسمت بدون تخطي",
-    },
+    { icon: FileText, label: "الآيات", value: `${versesRead.toLocaleString("ar-EG")} / ٦٬٢٣٦`, percent: progressPercent, detail: `${versesRemaining.toLocaleString("ar-EG")} متبقية` },
+    { icon: Layers, label: "الأجزاء", value: `${completedJuz.toLocaleString("ar-EG")} / ٣٠`, percent: juzPercent, detail: `الجزء الحالي: ${currentJuz.toLocaleString("ar-EG")}` },
+    { icon: Grid3X3, label: "الأحزاب", value: `${completedHizb.toLocaleString("ar-EG")} / ٦٠`, percent: hizbPercent, detail: `الحزب الحالي: ${currentHizb.toLocaleString("ar-EG")}` },
+    { icon: BookOpen, label: "السور", value: `${completedSurahs.toLocaleString("ar-EG")} / ١١٤`, percent: surahPercent, detail: `السورة الحالية: ${surahNumber.toLocaleString("ar-EG")}` },
+    { icon: Mic, label: "صوت صحيح", value: voiceCorrect.toLocaleString("ar-EG"), percent: null as number | null, detail: "كلمات نُطقت بدون تخطي" },
+    { icon: PenTool, label: "رسم صحيح", value: drawCorrect.toLocaleString("ar-EG"), percent: null as number | null, detail: "كلمات رُسمت بدون تخطي" },
   ];
 
+  const dailyPercent = gami ? Math.min(100, Math.round((gami.todayCount / Math.max(1, gami.dailyGoal)) * 100)) : 0;
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="bg-card/70 backdrop-blur-sm border border-border rounded-xl p-3 flex flex-col gap-2"
-        >
-          <div className="flex items-center gap-2">
-            <stat.icon className="w-4 h-4 text-primary" />
-            <span className="text-xs font-bold text-foreground">{stat.label}</span>
+    <div className="space-y-6" dir="rtl">
+      {gami && (
+        <>
+          {/* Streak + Daily Goal hero */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="rounded-2xl border border-border bg-gradient-to-br from-orange-500/10 to-red-500/5 p-4 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-orange-500/15 flex items-center justify-center">
+                <Flame className={`w-7 h-7 ${gami.streak > 0 ? "text-orange-500" : "text-muted-foreground"}`} style={{ filter: gami.streak > 0 ? "drop-shadow(0 0 8px rgba(249,115,22,0.6))" : undefined }} />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-arabic">سلسلة متتالية</div>
+                <div className="text-2xl font-bold">{gami.streak.toLocaleString("ar-EG")} <span className="text-sm font-normal text-muted-foreground">يوم</span></div>
+                <div className="text-[11px] text-muted-foreground font-arabic">الأفضل: {gami.bestStreak.toLocaleString("ar-EG")}</div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/10 to-transparent p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-bold font-arabic">الهدف اليومي</span>
+                </div>
+                <span className="text-sm font-bold text-primary">{gami.todayCount.toLocaleString("ar-EG")}/{gami.dailyGoal.toLocaleString("ar-EG")}</span>
+              </div>
+              <ProgressBar value={dailyPercent} className="h-2 mb-2" />
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-muted-foreground font-arabic whitespace-nowrap">اضبط الهدف:</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={500}
+                  defaultValue={gami.dailyGoal}
+                  onBlur={(e) => onSetDailyGoal?.(parseInt(e.target.value) || 10)}
+                  className="w-16 h-7 px-2 rounded-md border border-border bg-background text-xs text-center"
+                />
+                <span className="text-[11px] text-muted-foreground font-arabic">آية</span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Award className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold font-arabic">الإنجازات</span>
+              </div>
+              <div className="text-2xl font-bold">{gami.achievements.length} <span className="text-sm font-normal text-muted-foreground">/ {ACHIEVEMENTS.length}</span></div>
+              <div className="text-[11px] text-muted-foreground font-arabic">{gami.totalVerses.toLocaleString("ar-EG")} آية إجمالاً</div>
+            </div>
           </div>
-          <span className="text-lg font-bold text-primary">{stat.value}</span>
-          {stat.percent !== null && <ProgressBar value={stat.percent} className="h-1.5" />}
-          <span className="text-[10px] text-muted-foreground">{stat.detail}</span>
+
+          {/* Achievements grid */}
+          <div>
+            <h3 className="font-arabic text-sm font-bold mb-2 flex items-center gap-2">
+              <Award className="w-4 h-4 text-primary" /> شارات الإنجاز
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {ACHIEVEMENTS.map((a) => {
+                const unlocked = gami.achievements.includes(a.id);
+                return (
+                  <div
+                    key={a.id}
+                    className={`rounded-xl border p-3 text-center transition-all ${unlocked ? "border-primary/40 bg-primary/5" : "border-border bg-muted/20 opacity-50 grayscale"}`}
+                  >
+                    <div className="text-2xl mb-1">{a.emoji}</div>
+                    <div className="text-[11px] font-arabic font-bold">{a.labelAr}</div>
+                    <div className="text-[10px] text-muted-foreground font-arabic mt-0.5">{a.descAr}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      <div>
+        <h3 className="font-arabic text-sm font-bold mb-2">إحصائيات القراءة</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-card/70 backdrop-blur-sm border border-border rounded-xl p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <stat.icon className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold text-foreground">{stat.label}</span>
+              </div>
+              <span className="text-lg font-bold text-primary">{stat.value}</span>
+              {stat.percent !== null && <ProgressBar value={stat.percent} className="h-1.5" />}
+              <span className="text-[10px] text-muted-foreground">{stat.detail}</span>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 }
