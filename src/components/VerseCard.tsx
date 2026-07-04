@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat, Download, Palette, Settings2, ChevronUp } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, RotateCw, Timer, Type, Layers, BookOpen, X, Repeat, Download, Palette, Settings2, ChevronUp, Heart, Share2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import { resolveAudioUrl, downloadAndCache, hasCached } from "@/lib/audioCache";
 import { toast } from "@/hooks/use-toast";
+import { toggleBookmark, useIsBookmarked } from "@/lib/bookmarks";
+import { recordVerseActivity } from "@/lib/gamification";
 
 type ReciterSource =
   | { type: "alquran"; id: string }
@@ -238,6 +240,38 @@ const VerseCard = ({
     currentRepeatRef.current = 0;
     setCurrentAudioIndex(0);
   }, [audioUrl]);
+
+  // Record verse activity for gamification (streak / daily goal / achievements)
+  // Debounced by primary verse ref so scrolling through verses only counts each new position once.
+  useEffect(() => {
+    if (!verses[0]) return;
+    const t = setTimeout(() => {
+      recordVerseActivity("read");
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [verses[0]?.surahNumber, verses[0]?.ayahNumber]);
+
+  const shareVerse = useCallback(async (v: VerseData) => {
+    const text = `${v.arabic}\n\n— سورة ${v.surahNameArabic} • آية ${v.ayahNumber}`;
+    try {
+      if ((navigator as any).share) {
+        await (navigator as any).share({ title: `سورة ${v.surahNameArabic} ${v.ayahNumber}`, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast({ title: "تم النسخ", description: "نُسخت الآية إلى الحافظة" });
+      }
+    } catch {}
+  }, []);
+
+  const handleBookmark = useCallback((v: VerseData) => {
+    const added = toggleBookmark({
+      surah: v.surahNumber,
+      ayah: v.ayahNumber,
+      surahNameArabic: v.surahNameArabic,
+      arabicPreview: v.arabic.slice(0, 120),
+    });
+    toast({ title: added ? "أُضيفت للمحفوظات" : "أُزيلت من المحفوظات" });
+  }, []);
 
   // Resolve cached blob URLs (or fallback to originals) whenever audioUrls change.
   useEffect(() => {
@@ -571,6 +605,14 @@ const VerseCard = ({
                   ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
                 </span>
               </p>
+              <VerseActionsRow
+                verse={v}
+                accent={themeAccentColor}
+                muted={themeMutedText}
+                onBookmark={() => handleBookmark(v)}
+                onShare={() => shareVerse(v)}
+                onTafseer={() => fetchTafseer(v.surahNumber, v.ayahNumber)}
+              />
               <p className="text-xs mt-2" style={{ color: themeMutedText }}>اضغط مطوّلاً للتفسير</p>
             </div>
           </div>
@@ -1044,5 +1086,62 @@ const VerseCard = ({
     </div>
   );
 };
+
+function VerseActionsRow({
+  verse,
+  accent,
+  muted,
+  onBookmark,
+  onShare,
+  onTafseer,
+}: {
+  verse: VerseData;
+  accent?: string;
+  muted?: string;
+  onBookmark: () => void;
+  onShare: () => void;
+  onTafseer: () => void;
+}) {
+  const bookmarked = useIsBookmarked(verse.surahNumber, verse.ayahNumber);
+  const btn = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-arabic border transition-all hover:scale-105 active:scale-95";
+  return (
+    <div className="flex items-center justify-center gap-1.5 mt-3 flex-wrap" dir="rtl">
+      <button
+        type="button"
+        onClick={onBookmark}
+        className={btn}
+        style={{
+          borderColor: `${muted}30`,
+          color: bookmarked ? accent : muted,
+          backgroundColor: bookmarked ? `${accent}15` : "transparent",
+        }}
+        title={bookmarked ? "إزالة من المحفوظات" : "حفظ الآية"}
+      >
+        <Heart className={`w-3.5 h-3.5 ${bookmarked ? "fill-current" : ""}`} />
+        <span>{bookmarked ? "محفوظة" : "حفظ"}</span>
+      </button>
+      <button
+        type="button"
+        onClick={onTafseer}
+        className={btn}
+        style={{ borderColor: `${muted}30`, color: muted }}
+        title="تفسير الآية"
+      >
+        <BookOpen className="w-3.5 h-3.5" />
+        <span>تفسير</span>
+      </button>
+      <button
+        type="button"
+        onClick={onShare}
+        className={btn}
+        style={{ borderColor: `${muted}30`, color: muted }}
+        title="مشاركة"
+      >
+        <Share2 className="w-3.5 h-3.5" />
+        <span>مشاركة</span>
+      </button>
+    </div>
+  );
+}
 
 export default VerseCard;

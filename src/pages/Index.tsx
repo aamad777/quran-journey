@@ -33,8 +33,13 @@ import {
   BookMarked,
   Download,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Flame,
+  Target,
+  Bookmark
 } from "lucide-react";
+import BookmarksList from "@/components/BookmarksList";
+import { useGamification, setDailyGoal } from "@/lib/gamification";
 
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import PrayerBanner from "@/components/PrayerBanner";
@@ -120,7 +125,7 @@ const Index = () => {
   } = useQuranProgress(user);
 
   const [activeTab, setActiveTab] = useState<
-    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page" | "downloads"
+    "read" | "practice" | "draw" | "type" | "stats" | "search" | "alphabets" | "page" | "downloads" | "bookmarks"
   >(() => {
     try {
       return (
@@ -130,6 +135,7 @@ const Index = () => {
       return "read";
     }
   });
+  const gami = useGamification();
 
   const [railPinned, setRailPinned] = useState<boolean>(() => {
     try {
@@ -295,6 +301,27 @@ const Index = () => {
             </div>
           </button>
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            {/* Streak + daily goal chip */}
+            <button
+              onClick={() => setActiveTab("stats")}
+              className="hidden sm:flex items-center gap-1 h-8 px-2 rounded-full border text-xs font-arabic transition-all hover:scale-105"
+              style={{ borderColor: `${bgTheme.mutedText}30`, backgroundColor: `${bgTheme.cardBg}cc`, color: bgTheme.textColor }}
+              title={`${gami.streak} يوم متتالي • ${gami.todayCount}/${gami.dailyGoal} اليوم`}
+            >
+              <Flame className={`w-3.5 h-3.5 ${gami.streak > 0 ? "text-orange-500" : ""}`} style={{ filter: gami.streak > 0 ? "drop-shadow(0 0 4px rgba(249,115,22,0.6))" : undefined }} />
+              <span className="font-semibold">{gami.streak.toLocaleString("ar-EG")}</span>
+              <span className="opacity-60 mx-1">•</span>
+              <Target className="w-3.5 h-3.5" style={{ color: bgTheme.btnBg }} />
+              <span>{gami.todayCount.toLocaleString("ar-EG")}/{gami.dailyGoal.toLocaleString("ar-EG")}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("bookmarks")}
+              className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-primary/10 transition-colors"
+              style={{ color: activeTab === "bookmarks" ? bgTheme.btnBg : bgTheme.mutedText }}
+              title="المحفوظات"
+            >
+              <Bookmark className={`w-4 h-4 ${activeTab === "bookmarks" ? "fill-current" : ""}`} />
+            </button>
             <BackgroundSelector background={background} setBackground={setBackground} opacity={bgOpacity} setOpacity={setBgOpacity} />
             <ThemeSwitcher theme={theme} setTheme={setTheme} mode={mode} toggleMode={toggleMode} />
             <SurahList currentSurah={progress.surah_number} onSelect={goToSurah} />
@@ -421,6 +448,7 @@ const Index = () => {
             { key: "page" as const, icon: <BookMarked className="w-5 h-5" />, label: "صفحة" },
             { key: "search" as const, icon: <Search className="w-5 h-5" />, label: "بحث" },
             { key: "alphabets" as const, icon: <BookA className="w-5 h-5" />, label: "حروف" },
+            { key: "bookmarks" as const, icon: <Heart className="w-5 h-5" />, label: "محفوظات" },
             { key: "downloads" as const, icon: <Download className="w-5 h-5" />, label: "تحميلات" },
           ]).map((tab) => (
             <button
@@ -453,6 +481,7 @@ const Index = () => {
             { key: "page" as const, icon: <BookMarked className="w-[22px] h-[22px]" />, label: "صفحة" },
             { key: "search" as const, icon: <Search className="w-[22px] h-[22px]" />, label: "بحث" },
             { key: "alphabets" as const, icon: <BookA className="w-[22px] h-[22px]" />, label: "حروف" },
+            { key: "bookmarks" as const, icon: <Heart className="w-[22px] h-[22px]" />, label: "حفظ" },
             { key: "downloads" as const, icon: <Download className="w-[22px] h-[22px]" />, label: "تحميل" },
           ]).map((tab) => (
             <button
@@ -483,6 +512,16 @@ const Index = () => {
             progressPercent={progressPercent}
             voiceCorrect={voiceCorrect}
             drawCorrect={drawCorrect}
+            gami={gami}
+            onSetDailyGoal={setDailyGoal}
+          />
+        ) : activeTab === "bookmarks" ? (
+          <BookmarksList
+            onSelectVerse={(surah, ayah) => { goToVerse(surah, ayah); setActiveTab("read"); }}
+            themeTextColor={bgTheme.textColor}
+            themeMutedText={bgTheme.mutedText}
+            themeCardBg={bgTheme.cardBg}
+            themeAccentColor={bgTheme.btnBg}
           />
         ) : activeTab === "search" ? (
           <VerseSearch
