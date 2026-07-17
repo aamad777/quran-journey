@@ -165,11 +165,21 @@ const VerseCard = ({
     baseData: LetterData;
     tajweedRule: TajweedRuleInfo | null;
   } | null>(null);
-  const [readingStyle, setReadingStyle] = useState<"classic" | "minimal">(() => {
-    try { return (localStorage.getItem("quran_reading_style") as "classic" | "minimal") || "classic"; } catch { return "classic"; }
+  const [readingStyle, setReadingStyle] = useState<"classic" | "minimal" | "mushaf">(() => {
+    try { return (localStorage.getItem("quran_reading_style") as "classic" | "minimal" | "mushaf") || "classic"; } catch { return "classic"; }
   });
   useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
   const isMinimal = readingStyle === "minimal";
+  const isMushaf = readingStyle === "mushaf";
+  // Mushaf palette — authentic printed mushaf feel
+  const MUSHAF = {
+    paper: "#f5ecd7",
+    paperEdge: "#e9dcb8",
+    ink: "#1a1208",
+    gold: "#a8802a",
+    goldSoft: "#c9a24a",
+    muted: "#6b5a3a",
+  };
 
   const [fontColorMode, setFontColorMode] = useState<"colored" | "white" | "black">(() => {
     try { return (localStorage.getItem("quran_font_color_mode") as "colored" | "white" | "black") || "colored"; } catch { return "colored"; }
