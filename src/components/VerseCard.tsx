@@ -849,13 +849,14 @@ const VerseCard = ({
             <div className="flex items-center gap-2">
               <Palette className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">نمط</span>
-              <Select value={readingStyle} onValueChange={(v) => setReadingStyle(v as "classic" | "minimal")}>
-                <SelectTrigger className="w-24 h-9 bg-background text-sm">
+              <Select value={readingStyle} onValueChange={(v) => setReadingStyle(v as "classic" | "minimal" | "mushaf")}>
+                <SelectTrigger className="w-28 h-9 bg-background text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="classic">كلاسيكي</SelectItem>
                   <SelectItem value="minimal">بساطة</SelectItem>
+                  <SelectItem value="mushaf">مصحف</SelectItem>
                 </SelectContent>
               </Select>
             </div>
