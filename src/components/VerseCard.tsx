@@ -446,19 +446,36 @@ const VerseCard = ({
     <div className="animate-verse-enter w-full max-w-2xl mx-auto">
       {/* Surah Header */}
       <div className="text-center mb-6">
-        <div
-          className={isMinimal ? "inline-block px-8 py-2.5" : "inline-block px-6 py-2 rounded-full border backdrop-blur-sm"}
-          style={
-            isMinimal
-              ? { borderBottom: "2px solid #0d9488", backgroundColor: "transparent" }
-              : { backgroundColor: themeCardBg, borderColor: themeAccentColor ? `${themeAccentColor}40` : undefined }
-          }
-        >
-          <span className="font-arabic text-lg font-bold" style={{ color: isMinimal ? "#0d9488" : (themeAccentColor || 'hsl(var(--gold))') }}>{primaryVerse.surahNameArabic}</span>
-          <span className="mx-3" style={{ color: isMinimal ? "#94a3b8" : themeMutedText }}>|</span>
-          <span className="font-display text-sm font-medium" style={{ color: isMinimal ? "#1e293b" : themeTextColor }}>{primaryVerse.surahName}</span>
-        </div>
-        <p className="text-sm mt-2 font-semibold" style={{ color: isMinimal ? "#64748b" : themeTextColor, textShadow: isMinimal ? "none" : '0 1px 8px rgba(0,0,0,0.3)' }}>
+        {isMushaf ? (
+          <div
+            className="inline-flex flex-col items-center px-10 py-3"
+            style={{
+              background: `linear-gradient(180deg, ${MUSHAF.paper} 0%, ${MUSHAF.paperEdge} 100%)`,
+              border: `2px solid ${MUSHAF.gold}`,
+              borderRadius: "6px",
+              boxShadow: `inset 0 0 0 3px ${MUSHAF.paper}, inset 0 0 0 4px ${MUSHAF.goldSoft}, 0 2px 12px rgba(0,0,0,0.15)`,
+            }}
+          >
+            <span className="font-arabic text-2xl font-bold tracking-wide" style={{ color: MUSHAF.ink }}>
+              ﴾ سورة {primaryVerse.surahNameArabic} ﴿
+            </span>
+            <span className="text-[10px] mt-0.5 tracking-widest" style={{ color: MUSHAF.gold }}>✦ ✦ ✦</span>
+          </div>
+        ) : (
+          <div
+            className={isMinimal ? "inline-block px-8 py-2.5" : "inline-block px-6 py-2 rounded-full border backdrop-blur-sm"}
+            style={
+              isMinimal
+                ? { borderBottom: "2px solid #0d9488", backgroundColor: "transparent" }
+                : { backgroundColor: themeCardBg, borderColor: themeAccentColor ? `${themeAccentColor}40` : undefined }
+            }
+          >
+            <span className="font-arabic text-lg font-bold" style={{ color: isMinimal ? "#0d9488" : (themeAccentColor || 'hsl(var(--gold))') }}>{primaryVerse.surahNameArabic}</span>
+            <span className="mx-3" style={{ color: isMinimal ? "#94a3b8" : themeMutedText }}>|</span>
+            <span className="font-display text-sm font-medium" style={{ color: isMinimal ? "#1e293b" : themeTextColor }}>{primaryVerse.surahName}</span>
+          </div>
+        )}
+        <p className="text-sm mt-2 font-semibold" style={{ color: isMushaf ? MUSHAF.muted : (isMinimal ? "#64748b" : themeTextColor), textShadow: (isMinimal || isMushaf) ? "none" : '0 1px 8px rgba(0,0,0,0.3)' }}>
           سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
           {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
         </p>
@@ -466,9 +483,22 @@ const VerseCard = ({
 
       {/* Verse Card */}
       <div
-        className={isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card"}
+        className={isMushaf ? "rounded-md p-8 md:p-12 verse-card-themed" : (isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card")}
         style={
-          isMinimal
+          isMushaf
+            ? {
+                backgroundColor: MUSHAF.paper,
+                backgroundImage: `radial-gradient(ellipse at center, ${MUSHAF.paper} 0%, ${MUSHAF.paperEdge} 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.28  0 0 0 0 0.1  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                backgroundBlendMode: "multiply",
+                border: `2px solid ${MUSHAF.gold}`,
+                boxShadow: `inset 0 0 0 4px ${MUSHAF.paper}, inset 0 0 0 5px ${MUSHAF.goldSoft}, inset 0 0 80px rgba(120,80,20,0.10), 0 8px 30px rgba(0,0,0,0.25)`,
+                color: MUSHAF.ink,
+                '--themed-muted': MUSHAF.muted,
+                '--themed-text': MUSHAF.ink,
+                '--themed-accent': MUSHAF.gold,
+                '--themed-card-bg': MUSHAF.paper,
+              } as React.CSSProperties
+            : (isMinimal
             ? {
                 backgroundColor: "#ffffff",
                 border: "1px solid #e8ecf1",
