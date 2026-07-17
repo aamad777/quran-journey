@@ -169,6 +169,12 @@ const VerseCard = ({
     try { return (localStorage.getItem("quran_reading_style") as "classic" | "minimal" | "mushaf") || "classic"; } catch { return "classic"; }
   });
   useEffect(() => { try { localStorage.setItem("quran_reading_style", readingStyle); } catch {} }, [readingStyle]);
+  useEffect(() => {
+    const cls = "mushaf-mode";
+    if (readingStyle === "mushaf") document.body.classList.add(cls);
+    else document.body.classList.remove(cls);
+    return () => document.body.classList.remove(cls);
+  }, [readingStyle]);
   const isMinimal = readingStyle === "minimal";
   const isMushaf = readingStyle === "mushaf";
   // Mushaf palette — authentic printed mushaf feel
