@@ -518,7 +518,7 @@ const VerseCard = ({
           '--themed-text': themeTextColor,
           '--themed-accent': themeAccentColor,
           '--themed-card-bg': themeCardBg,
-        } as React.CSSProperties)}
+        } as React.CSSProperties))}
       >
         {/* Verses */}
         {verses.map((v, i) => {
