@@ -325,3 +325,62 @@ audio::-webkit-media-controls-panel {
 .verse-card-themed .gradient-islamic {
   color: hsl(var(--gold)) !important;
 }
+
+/* ===== Mushaf mode: transform entire read/listen page into parchment ===== */
+body.mushaf-mode {
+  background:
+    radial-gradient(ellipse at top, #f5ecd7 0%, #e9dcb8 60%, #d9c896 100%) !important;
+  background-attachment: fixed;
+}
+
+/* Fade the animated background overlay behind mushaf paper */
+body.mushaf-mode > div > div[style*="position: fixed"],
+body.mushaf-mode .fixed.inset-0 {
+  opacity: 0 !important;
+}
+
+/* Header, prayer strip, progress card: warm parchment tone with gold accents */
+body.mushaf-mode header {
+  background-color: rgba(245, 236, 215, 0.92) !important;
+  border-color: rgba(168, 128, 42, 0.35) !important;
+  backdrop-filter: blur(10px);
+}
+body.mushaf-mode header h1,
+body.mushaf-mode header span,
+body.mushaf-mode header button {
+  color: #1a1208 !important;
+}
+body.mushaf-mode header .gradient-gold {
+  background: linear-gradient(135deg, #a8802a, #c9a24a) !important;
+}
+
+/* All backdrop-blur strips (prayer banner, guest banner, progress card) */
+body.mushaf-mode .backdrop-blur-sm,
+body.mushaf-mode .backdrop-blur-md,
+body.mushaf-mode .backdrop-blur-xl {
+  background-color: rgba(245, 236, 215, 0.85) !important;
+  border-color: rgba(168, 128, 42, 0.25) !important;
+}
+
+/* Progress/tabs card gold trim */
+body.mushaf-mode main .rounded-xl,
+body.mushaf-mode main .rounded-2xl {
+  border-color: rgba(168, 128, 42, 0.3) !important;
+}
+
+/* Active tab in mushaf mode: gold */
+body.mushaf-mode nav button[style*="background"],
+body.mushaf-mode .flex button[style*="background"] {
+  /* leave inline styles alone; tabs use dynamic theme colors */
+}
+
+/* Text tones on parchment */
+body.mushaf-mode main,
+body.mushaf-mode main span,
+body.mushaf-mode main p {
+  color: #1a1208;
+}
+body.mushaf-mode main .text-muted-foreground {
+  color: #6b5a3a !important;
+}
+
