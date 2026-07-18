@@ -502,7 +502,7 @@ const VerseCard = ({
 
       {/* Verse Card */}
       <div
-        className={isMushaf ? "rounded-md p-8 md:p-12 verse-card-themed" : (isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card")}
+        className={isMushaf ? "mushaf-frame verse-card-themed font-mushaf" : (isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card")}
         style={
           isMushaf
             ? {
