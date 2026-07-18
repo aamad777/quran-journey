@@ -453,19 +453,30 @@ const VerseCard = ({
       {/* Surah Header */}
       <div className="text-center mb-6">
         {isMushaf ? (
-          <div
-            className="inline-flex flex-col items-center px-10 py-3"
-            style={{
-              background: `linear-gradient(180deg, ${MUSHAF.paper} 0%, ${MUSHAF.paperEdge} 100%)`,
-              border: `2px solid ${MUSHAF.gold}`,
-              borderRadius: "6px",
-              boxShadow: `inset 0 0 0 3px ${MUSHAF.paper}, inset 0 0 0 4px ${MUSHAF.goldSoft}, 0 2px 12px rgba(0,0,0,0.15)`,
-            }}
-          >
-            <span className="font-arabic text-2xl font-bold tracking-wide" style={{ color: MUSHAF.ink }}>
-              ﴾ سورة {primaryVerse.surahNameArabic} ﴿
-            </span>
-            <span className="text-[10px] mt-0.5 tracking-widest" style={{ color: MUSHAF.gold }}>✦ ✦ ✦</span>
+          <div className="flex flex-col items-center gap-2">
+            {/* Ornate ottoman-style surah band */}
+            <div
+              className="relative inline-flex items-center justify-center px-16 py-4 min-w-[280px]"
+              style={{
+                background: `linear-gradient(180deg, #f5ecd7 0%, #efe0b8 50%, #e9dcb8 100%)`,
+                border: `1.5px solid ${MUSHAF.gold}`,
+                borderRadius: "3px",
+                boxShadow: `inset 0 0 0 3px #f5ecd7, inset 0 0 0 4px ${MUSHAF.goldSoft}, inset 0 0 0 6px #f5ecd7, inset 0 0 0 7px ${MUSHAF.gold}, 0 3px 14px rgba(120,80,20,0.25)`,
+              }}
+            >
+              {/* Decorative corner ornaments */}
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" style={{ color: MUSHAF.gold }}>❋</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg" style={{ color: MUSHAF.gold }}>❋</span>
+              <span className="font-mushaf text-3xl font-bold tracking-wide" style={{ color: MUSHAF.ink, textShadow: `0 1px 0 rgba(255,255,255,0.4)` }}>
+                سُورَةُ {primaryVerse.surahNameArabic}
+              </span>
+            </div>
+            {/* Basmala (skip for At-Tawbah #9 and if not first ayah shown) */}
+            {primaryVerse.surahNumber !== 9 && primaryVerse.ayahNumber === 1 && (
+              <p className="font-mushaf text-2xl mt-2" style={{ color: MUSHAF.ink }}>
+                بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+              </p>
+            )}
           </div>
         ) : (
           <div
@@ -481,23 +492,23 @@ const VerseCard = ({
             <span className="font-display text-sm font-medium" style={{ color: isMinimal ? "#1e293b" : themeTextColor }}>{primaryVerse.surahName}</span>
           </div>
         )}
-        <p className="text-sm mt-2 font-semibold" style={{ color: isMushaf ? MUSHAF.muted : (isMinimal ? "#64748b" : themeTextColor), textShadow: (isMinimal || isMushaf) ? "none" : '0 1px 8px rgba(0,0,0,0.3)' }}>
-          سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
-          {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
-        </p>
+        {!isMushaf && (
+          <p className="text-sm mt-2 font-semibold" style={{ color: isMinimal ? "#64748b" : themeTextColor, textShadow: isMinimal ? "none" : '0 1px 8px rgba(0,0,0,0.3)' }}>
+            سورة {primaryVerse.surahNumber} • آية {primaryVerse.ayahNumber}
+            {verses.length > 1 && `–${verses[verses.length - 1].ayahNumber}`}
+          </p>
+        )}
       </div>
 
       {/* Verse Card */}
       <div
-        className={isMushaf ? "rounded-md p-8 md:p-12 verse-card-themed" : (isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card")}
+        className={isMushaf ? "mushaf-frame verse-card-themed font-mushaf" : (isMinimal ? "rounded-3xl p-10 md:p-14 verse-card-themed" : "rounded-2xl border p-8 md:p-12 backdrop-blur-sm verse-card-themed themed-card")}
         style={
           isMushaf
             ? {
                 backgroundColor: MUSHAF.paper,
                 backgroundImage: `radial-gradient(ellipse at center, ${MUSHAF.paper} 0%, ${MUSHAF.paperEdge} 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.28  0 0 0 0 0.1  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
                 backgroundBlendMode: "multiply",
-                border: `2px solid ${MUSHAF.gold}`,
-                boxShadow: `inset 0 0 0 4px ${MUSHAF.paper}, inset 0 0 0 5px ${MUSHAF.goldSoft}, inset 0 0 80px rgba(120,80,20,0.10), 0 8px 30px rgba(0,0,0,0.25)`,
                 color: MUSHAF.ink,
                 '--themed-muted': MUSHAF.muted,
                 '--themed-text': MUSHAF.ink,
@@ -531,7 +542,7 @@ const VerseCard = ({
           const isActive = isPlaying && i === currentAudioIndex;
           return (
           <div key={`${v.surahNumber}:${v.ayahNumber}`}>
-            {i > 0 && (
+            {i > 0 && !isMushaf && (
               <div className="flex items-center gap-4 my-6">
                 <div className="flex-1 h-px bg-border" />
                 <span className="text-xs text-muted-foreground">{v.ayahNumber}</span>
@@ -540,7 +551,7 @@ const VerseCard = ({
             )}
             {/* Arabic Text - long press for tafseer */}
             <div
-              className={`text-center mb-4 select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3`}
+              className={`${isMushaf ? "mb-2" : "text-center mb-4"} select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3`}
               dir="rtl"
               onMouseDown={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
               onMouseUp={handleLongPressEnd}
@@ -550,8 +561,8 @@ const VerseCard = ({
               onContextMenu={(e) => e.preventDefault()}
             >
               <p
-                className="font-arabic leading-[2.2]"
-                style={{ fontSize: `${fontSize}px`, color: forcedFontColor ?? themeTextColor, textShadow: !forcedFontColor && themeTextColor ? `0 1px 10px ${themeTextColor}22` : undefined }}
+                className={isMushaf ? "font-mushaf mushaf-page-text" : "font-arabic leading-[2.2]"}
+                style={{ fontSize: `${fontSize}px`, color: forcedFontColor ?? (isMushaf ? MUSHAF.ink : themeTextColor), textShadow: !forcedFontColor && themeTextColor && !isMushaf ? `0 1px 10px ${themeTextColor}22` : undefined }}
               >
                 {tajweedMode && v.tajweedText ? (
                   (() => {
@@ -647,9 +658,15 @@ const VerseCard = ({
                     )});
                   })()
                 )}
-                <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
-                  ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
-                </span>
+                {isMushaf ? (
+                  <span className="mushaf-ayah-mark" style={{ fontSize: `${fontSize * 0.95}px` }}>
+                    ۝{v.ayahNumber.toLocaleString("ar-EG")}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
+                    ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
+                  </span>
+                )}
               </p>
               <VerseActionsRow
                 verse={v}
