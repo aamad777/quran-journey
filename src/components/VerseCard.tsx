@@ -551,7 +551,7 @@ const VerseCard = ({
             )}
             {/* Arabic Text - long press for tafseer */}
             <div
-              className={`text-center mb-4 select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3`}
+              className={`${isMushaf ? "mb-2" : "text-center mb-4"} select-none cursor-pointer rounded-xl transition-all duration-300 px-4 py-3`}
               dir="rtl"
               onMouseDown={() => handleLongPressStart(v.surahNumber, v.ayahNumber)}
               onMouseUp={handleLongPressEnd}
@@ -561,8 +561,8 @@ const VerseCard = ({
               onContextMenu={(e) => e.preventDefault()}
             >
               <p
-                className="font-arabic leading-[2.2]"
-                style={{ fontSize: `${fontSize}px`, color: forcedFontColor ?? themeTextColor, textShadow: !forcedFontColor && themeTextColor ? `0 1px 10px ${themeTextColor}22` : undefined }}
+                className={isMushaf ? "font-mushaf mushaf-page-text" : "font-arabic leading-[2.2]"}
+                style={{ fontSize: `${fontSize}px`, color: forcedFontColor ?? (isMushaf ? MUSHAF.ink : themeTextColor), textShadow: !forcedFontColor && themeTextColor && !isMushaf ? `0 1px 10px ${themeTextColor}22` : undefined }}
               >
                 {tajweedMode && v.tajweedText ? (
                   (() => {
