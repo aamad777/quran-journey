@@ -658,9 +658,15 @@ const VerseCard = ({
                     )});
                   })()
                 )}
-                <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
-                  ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
-                </span>
+                {isMushaf ? (
+                  <span className="mushaf-ayah-mark" style={{ fontSize: `${fontSize * 0.95}px` }}>
+                    ۝{v.ayahNumber.toLocaleString("ar-EG")}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center justify-center text-primary/70 mx-1" style={{ fontSize: `${Math.max(fontSize * 0.55, 14)}px` }}>
+                    ﴿{v.ayahNumber.toLocaleString("ar-EG")}﴾
+                  </span>
+                )}
               </p>
               <VerseActionsRow
                 verse={v}
