@@ -542,7 +542,7 @@ const VerseCard = ({
           const isActive = isPlaying && i === currentAudioIndex;
           return (
           <div key={`${v.surahNumber}:${v.ayahNumber}`}>
-            {i > 0 && (
+            {i > 0 && !isMushaf && (
               <div className="flex items-center gap-4 my-6">
                 <div className="flex-1 h-px bg-border" />
                 <span className="text-xs text-muted-foreground">{v.ayahNumber}</span>
