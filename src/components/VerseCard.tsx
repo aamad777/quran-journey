@@ -509,8 +509,6 @@ const VerseCard = ({
                 backgroundColor: MUSHAF.paper,
                 backgroundImage: `radial-gradient(ellipse at center, ${MUSHAF.paper} 0%, ${MUSHAF.paperEdge} 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.28  0 0 0 0 0.1  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
                 backgroundBlendMode: "multiply",
-                border: `2px solid ${MUSHAF.gold}`,
-                boxShadow: `inset 0 0 0 4px ${MUSHAF.paper}, inset 0 0 0 5px ${MUSHAF.goldSoft}, inset 0 0 80px rgba(120,80,20,0.10), 0 8px 30px rgba(0,0,0,0.25)`,
                 color: MUSHAF.ink,
                 '--themed-muted': MUSHAF.muted,
                 '--themed-text': MUSHAF.ink,
